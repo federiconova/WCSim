@@ -25,6 +25,9 @@
 # diameter of 69m with 12" HPD and 14.59% photocoverage
 #/WCSim/WCgeom Cylinder_12inchHPD_15perCent # Note: the actual coverage is 14.59%
 
+# TITUS detector
+/WCSim/WCgeom TITUS_20inchPMT_40perCent # Note: the actual coverage is 20.27%
+
 #/WCSim/WCgeom HyperK #default length is 49500 mm unless changed in /WCSim/HK/waterTankLength below.
 #/WCSim/WCgeom HyperK_withHPD #default length is 49500 mm unless changed in /WCSim/HK/waterTankLength below.
 
@@ -37,7 +40,7 @@
 #/WCSim/HyperK/waterTank_Length 247500. mm # Equivalent length for 1 partition
 
 
-#/WCSim/Construct # This must be uncommented in order to construct a new detector configuration. 
+/WCSim/Construct # This must be uncommented in order to construct a new detector configuration. 
 
 #Added for the PMT QE option 08/17/10 (XQ)
 # 1. Stacking only mean when the photon is generated
