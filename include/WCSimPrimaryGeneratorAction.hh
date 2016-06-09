@@ -7,6 +7,17 @@
 
 #include <fstream>
 
+//from CRY
+#include "G4DataVector.hh"
+#include "Randomize.hh"
+#include "CRYSetup.h"
+#include "CRYGenerator.h"
+#include "CRYParticle.h"
+#include "CRYUtils.h"
+#include "vector"
+#include "RNGWrapper.hh"
+#include "G4ParticleTable.hh"
+
 class WCSimDetectorConstruction;
 class G4ParticleGun;
 class G4GeneralParticleSource;
@@ -51,6 +62,15 @@ public:
   G4double GetYDir() {return yDir;};
   G4double GetZDir() {return zDir;};
 
+  //from CRY
+  public:
+
+  void InputCRY();
+  void UpdateCRY(std::string* MessInput);
+  void CRYFromFile(G4String newValue);
+  void useCRY(G4bool usecry);
+
+
 private:
   WCSimDetectorConstruction*      myDetector;
   G4ParticleGun*                  particleGun;
@@ -82,6 +102,15 @@ private:
 
   G4int    _counterRock; 
   G4int    _counterCublic; 
+
+  std::vector<CRYParticle*> *vect; // vector of generated particles
+  CRYGenerator* gen;
+  G4bool fuseCRY;
+  G4int InputState;
+  G4String CRYFileName;
+  std::fstream CRYFile;
+  char* pPath;
+  
 public:
 
   inline void SetMulineEvtGenerator(G4bool choice) { useMulineEvt = choice; }
@@ -109,6 +138,20 @@ public:
   }
   inline G4bool IsGeneratingVertexInRock() { return GenerateVertexInRock; }
   inline void SetGenerateVertexInRock(G4bool choice) { GenerateVertexInRock = choice; }
+
+  inline void OpenCRYFile(G4String fileName) 
+  {
+    if ( CRYFile.is_open() ) 
+      CRYFile.close();
+
+    CRYFileName = fileName;
+    CRYFile.open(CRYFileName, std::fstream::in);
+
+    if ( !CRYFile.is_open() ) {
+      G4cout << "CRY file " << CRYFileName << " not found" << G4endl;
+      exit(-1);
+    }
+  }
 
 };
 

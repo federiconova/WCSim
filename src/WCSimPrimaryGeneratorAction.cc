@@ -35,7 +35,7 @@ inline int   atoi( const string& s ) {return std::atoi( s.c_str() );}
 
 WCSimPrimaryGeneratorAction::WCSimPrimaryGeneratorAction(
 					  WCSimDetectorConstruction* myDC)
-  :myDetector(myDC)
+  :myDetector(myDC), fuseCRY(true)
 {
   //T. Akiri: Initialize GPS to allow for the laser use 
   MyGPS = new G4GeneralParticleSource();
@@ -62,10 +62,37 @@ WCSimPrimaryGeneratorAction::WCSimPrimaryGeneratorAction(
 
   particleGun->
     SetParticlePosition(G4ThreeVector(0.*m,0.*m,0.*m));
+
+  // Read the cry input file
+  {
+    pPath = getenv ("CRYDATAPATH");
+
+    std::string setupString("");
+    char buffer[1000];
+    while ( !CRYFile.getline(buffer,1000).eof()) {
+      setupString.append(buffer);
+      setupString.append(" ");
+    }
+
+    CRYSetup *setup=new CRYSetup(setupString,pPath);
+
+    gen = new CRYGenerator(setup);
+
+    // set random number generator
+    RNGWrapper<CLHEP::HepRandomEngine>::set(CLHEP::HepRandom::getTheEngine(),&CLHEP::HepRandomEngine::flat);
+    setup->setRandomFunction(RNGWrapper<CLHEP::HepRandomEngine>::rng);
+    InputState=0;
+  }
+
+  // create a vector to store the CRY particle properties
+  vect=new std::vector<CRYParticle*>;
+
     
   messenger = new WCSimPrimaryGeneratorMessenger(this);
   useMulineEvt = true;
   useNormalEvt = false;
+
+
 }
 
 WCSimPrimaryGeneratorAction::~WCSimPrimaryGeneratorAction()
@@ -77,6 +104,7 @@ WCSimPrimaryGeneratorAction::~WCSimPrimaryGeneratorAction()
              << " = " << _counterRock/(G4double)_counterCublic << G4endl;
   }
   inputFile.close();
+  CRYFile.close();
   delete particleGun;
   delete MyGPS;   //T. Akiri: Delete the GPS variable
   delete messenger;
@@ -262,6 +290,67 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       SetBeamDir(dir);
       SetBeamPDG(pdg);
     }
+  //if using CRY
+  else  if(fuseCRY){
+    if (InputState != 0) {
+      G4String* str = new G4String("CRY library was not successfully initialized");
+      G4Exception("PrimaryGeneratorAction", "1",
+                  RunMustBeAborted, *str);
+    }
+    G4String particleName;
+    vect->clear();
+    gen->genEvent(vect);
+
+    //....debug output
+    /*
+    G4cout << "\nEvent=" << anEvent->GetEventID() << " "
+           << "CRY generated nparticles=" << vect->size()
+           << G4endl;
+    */
+
+    for ( unsigned j=0; j<vect->size(); j++) {
+      particleName=CRYUtils::partName((*vect)[j]->id());
+
+      //....debug output
+      /*
+      G4cout << "  "          << particleName << " "
+             << "charge="      << (*vect)[j]->charge() << " "
+             << std::setprecision(4) 
+             << "energy (MeV)=" << (*vect)[j]->ke()*MeV << " "
+             << "pos (m)"
+             << G4ThreeVector((*vect)[j]->x(), (*vect)[j]->y(), (*vect)[j]->z())
+             << " " << "direction cosines "
+             << G4ThreeVector((*vect)[j]->u(), (*vect)[j]->v(), (*vect)[j]->w())
+             << " " << G4endl;
+      */
+
+      /*
+      std::ofstream fcosmic;
+      fcosmic.open("fcosmic.txt", std::ios::app);
+      fcosmic << particleName << " "
+              <<  (*vect)[j]->charge() << " "
+	      << std::setprecision(4)
+              << (*vect)[j]->ke()*MeV << " "
+              << (*vect)[j]->x() << " "
+              << (*vect)[j]->y() << " "
+              << (*vect)[j]->z() << " "
+              << (*vect)[j]->u() << " "
+              << (*vect)[j]->v() << " "
+              << (*vect)[j]->w() << " "
+              << " " << G4endl;
+      fcosmic.close();
+      */
+
+      particleGun->SetParticleDefinition(particleTable->FindParticle((*vect)[j]->PDGid()));
+      particleGun->SetParticleEnergy((*vect)[j]->ke()*MeV);
+      particleGun->SetParticlePosition(G4ThreeVector((*vect)[j]->x()*m, (*vect)[j]->y()*m, (*vect)[j]->z()*m));
+      particleGun->SetParticleMomentumDirection(G4ThreeVector((*vect)[j]->u(), (*vect)[j]->v(), (*vect)[j]->w()));
+      particleGun->SetParticleTime((*vect)[j]->t());
+      particleGun->GeneratePrimaryVertex(anEvent);
+      delete (*vect)[j];
+    }
+  }
+ 
 }
 
 // Returns a vector with the tokens
@@ -299,3 +388,50 @@ vector<string> tokenize( string separators, string input )
   return tokens;
 }
 
+void WCSimPrimaryGeneratorAction::useCRY(G4bool usecry){
+  fuseCRY = usecry;
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void WCSimPrimaryGeneratorAction::InputCRY()
+{
+  InputState=1;
+}
+
+void WCSimPrimaryGeneratorAction::UpdateCRY(std::string* MessInput)
+{
+  CRYSetup *setup=new CRYSetup(*MessInput,pPath);
+
+  gen = new CRYGenerator(setup);
+
+  // set random number generator
+  RNGWrapper<CLHEP::HepRandomEngine>::set(CLHEP::HepRandom::getTheEngine(),&CLHEP::HepRandomEngine::flat);
+  setup->setRandomFunction(RNGWrapper<CLHEP::HepRandomEngine>::rng);
+  InputState=0;
+
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void WCSimPrimaryGeneratorAction::CRYFromFile(G4String newValue)
+{
+  // Read the cry input file
+  {
+    std::string setupString("");
+    char buffer[1000];
+    while ( !CRYFile.getline(buffer,1000).eof()) {
+      setupString.append(buffer);
+      setupString.append(" ");
+    }
+
+    CRYSetup *setup=new CRYSetup(setupString,pPath);
+
+    gen = new CRYGenerator(setup);
+
+    // set random number generator
+    RNGWrapper<CLHEP::HepRandomEngine>::set(CLHEP::HepRandom::getTheEngine(),&CLHEP::HepRandomEngine::flat);
+    setup->setRandomFunction(RNGWrapper<CLHEP::HepRandomEngine>::rng);
+    InputState=0;
+  }
+}
