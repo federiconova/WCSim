@@ -35,8 +35,10 @@ inline int   atoi( const string& s ) {return std::atoi( s.c_str() );}
 
 WCSimPrimaryGeneratorAction::WCSimPrimaryGeneratorAction(
 					  WCSimDetectorConstruction* myDC)
-  :myDetector(myDC), fuseCRY(true)
+  :myDetector(myDC)
 {
+
+
   //T. Akiri: Initialize GPS to allow for the laser use 
   MyGPS = new G4GeneralParticleSource();
 
@@ -50,6 +52,7 @@ WCSimPrimaryGeneratorAction::WCSimPrimaryGeneratorAction(
   
   //---Set defaults. Do once at beginning of session.
   
+
   G4int n_particle = 1;
   particleGun = new G4ParticleGun(n_particle);
   particleGun->SetParticleEnergy(1.0*GeV);
@@ -62,6 +65,7 @@ WCSimPrimaryGeneratorAction::WCSimPrimaryGeneratorAction(
 
   particleGun->
     SetParticlePosition(G4ThreeVector(0.*m,0.*m,0.*m));
+
 
   // Read the cry input file
   {
@@ -84,6 +88,7 @@ WCSimPrimaryGeneratorAction::WCSimPrimaryGeneratorAction(
     InputState=0;
   }
 
+
   // create a vector to store the CRY particle properties
   vect=new std::vector<CRYParticle*>;
 
@@ -91,6 +96,7 @@ WCSimPrimaryGeneratorAction::WCSimPrimaryGeneratorAction(
   messenger = new WCSimPrimaryGeneratorMessenger(this);
   useMulineEvt = true;
   useNormalEvt = false;
+  useCRYEvt = false;
 
 
 }
@@ -119,7 +125,6 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   // Temporary kludge to turn on/off vector text format 
 
   G4bool useNuanceTextFormat = true;
-
 
   // Do for every event
 
@@ -291,7 +296,7 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       SetBeamPDG(pdg);
     }
   //if using CRY
-  else  if(fuseCRY){
+  else  if(useCRYEvt){
     if (InputState != 0) {
       G4String* str = new G4String("CRY library was not successfully initialized");
       G4Exception("PrimaryGeneratorAction", "1",
@@ -388,10 +393,6 @@ vector<string> tokenize( string separators, string input )
   return tokens;
 }
 
-void WCSimPrimaryGeneratorAction::useCRY(G4bool usecry){
-  fuseCRY = usecry;
-}
-
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void WCSimPrimaryGeneratorAction::InputCRY()
@@ -416,6 +417,8 @@ void WCSimPrimaryGeneratorAction::UpdateCRY(std::string* MessInput)
 
 void WCSimPrimaryGeneratorAction::CRYFromFile(G4String newValue)
 {
+
+  OpenCRYFile(newValue);
   // Read the cry input file
   {
     std::string setupString("");

@@ -8,17 +8,19 @@
 WCSimPrimaryGeneratorMessenger::WCSimPrimaryGeneratorMessenger(WCSimPrimaryGeneratorAction* pointerToAction)
 :myAction(pointerToAction)
 {
+
+
   mydetDirectory = new G4UIdirectory("/mygen/");
   mydetDirectory->SetGuidance("WCSim detector control commands.");
 
   genCmd = new G4UIcmdWithAString("/mygen/generator",this);
   genCmd->SetGuidance("Select primary generator.");
   //T. Akiri: Addition of laser
-  genCmd->SetGuidance(" Available generators : muline, normal, laser");
+  genCmd->SetGuidance(" Available generators : muline, normal, laser, CRY");
   genCmd->SetParameterName("generator",true);
   genCmd->SetDefaultValue("muline");
   //T. Akiri: Addition of laser
-  genCmd->SetCandidates("muline normal laser");
+  genCmd->SetCandidates("muline normal laser CRY");
 
   fileNameCmd = new G4UIcmdWithAString("/mygen/vecfile",this);
   fileNameCmd->SetGuidance("Select the file of vectors.");
@@ -32,6 +34,7 @@ WCSimPrimaryGeneratorMessenger::WCSimPrimaryGeneratorMessenger(WCSimPrimaryGener
   FileCmd->SetGuidance("This reads the CRY definition from a file");
   FileCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 
+
   InputCmd = new G4UIcmdWithAString("/CRY/input",this);
   InputCmd->SetGuidance("CRY input lines");
   InputCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
@@ -42,8 +45,7 @@ WCSimPrimaryGeneratorMessenger::WCSimPrimaryGeneratorMessenger(WCSimPrimaryGener
   UpdateCmd->SetGuidance("if you changed the CRY definition.");
   UpdateCmd->AvailableForStates(G4State_Idle);
 
-  fuseCRYCmd = new G4UIcmdWithABool("/CRY/useCRY",this);
-  fuseCRYCmd->SetGuidance("Enable/Disable CRY, 1 for using CRY, 0 for using a pencil beam");
+  MessInput = new std::string;
 
 
 }
@@ -67,18 +69,28 @@ void WCSimPrimaryGeneratorMessenger::SetNewValue(G4UIcommand * command,G4String 
       myAction->SetMulineEvtGenerator(true);
       myAction->SetNormalEvtGenerator(false);
       myAction->SetLaserEvtGenerator(false);
+      myAction->SetCRYEvtGenerator(false);
     }
     else if ( newValue == "normal")
     {
       myAction->SetMulineEvtGenerator(false);
       myAction->SetNormalEvtGenerator(true);
       myAction->SetLaserEvtGenerator(false);
+      myAction->SetCRYEvtGenerator(false);
     }
     else if ( newValue == "laser")   //T. Akiri: Addition of laser
     {
       myAction->SetMulineEvtGenerator(false);
       myAction->SetNormalEvtGenerator(false);
       myAction->SetLaserEvtGenerator(true);
+      myAction->SetCRYEvtGenerator(false);
+    }
+    else if ( newValue == "CRY")
+    {
+      myAction->SetMulineEvtGenerator(false);
+      myAction->SetNormalEvtGenerator(false);
+      myAction->SetLaserEvtGenerator(false);
+      myAction->SetCRYEvtGenerator(true);
     }
   }
 
@@ -104,9 +116,6 @@ void WCSimPrimaryGeneratorMessenger::SetNewValue(G4UIcommand * command,G4String 
   if( command == FileCmd )
    { myAction->CRYFromFile(newValue); }
 
-  if( command == fuseCRYCmd ){
-    myAction->useCRY(fuseCRYCmd->GetNewBoolValue(newValue));
-  }
 
 }
 
@@ -122,6 +131,8 @@ G4String WCSimPrimaryGeneratorMessenger::GetCurrentValue(G4UIcommand* command)
       { cv = "normal"; }
     else if(myAction->IsUsingLaserEvtGenerator())
       { cv = "laser"; }   //T. Akiri: Addition of laser
+    else if(myAction->IsUsingCRYEvtGenerator())
+      { cv = "CRY"; }   
   }
   
   return cv;

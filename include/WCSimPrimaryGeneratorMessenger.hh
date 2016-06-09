@@ -31,7 +31,6 @@ class WCSimPrimaryGeneratorMessenger: public G4UImessenger
   G4UIcmdWithAString*          FileCmd;
   G4UIcmdWithAString*          InputCmd;
   G4UIcmdWithoutParameter*     UpdateCmd;
-  G4UIcmdWithABool*            fuseCRYCmd;
   std::string* MessInput;
   
 };

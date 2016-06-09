@@ -68,7 +68,6 @@ public:
   void InputCRY();
   void UpdateCRY(std::string* MessInput);
   void CRYFromFile(G4String newValue);
-  void useCRY(G4bool usecry);
 
 
 private:
@@ -81,6 +80,7 @@ private:
   G4bool   useMulineEvt;
   G4bool   useNormalEvt;
   G4bool   useLaserEvt;  //T. Akiri: Laser flag
+  G4bool   useCRYEvt;
   std::fstream inputFile;
   G4String vectorFileName;
   G4bool   GenerateVertexInRock;
@@ -105,7 +105,6 @@ private:
 
   std::vector<CRYParticle*> *vect; // vector of generated particles
   CRYGenerator* gen;
-  G4bool fuseCRY;
   G4int InputState;
   G4String CRYFileName;
   std::fstream CRYFile;
@@ -118,6 +117,9 @@ public:
 
   inline void SetNormalEvtGenerator(G4bool choice) { useNormalEvt = choice; }
   inline G4bool IsUsingNormalEvtGenerator()  { return useNormalEvt; }
+
+  inline void SetCRYEvtGenerator(G4bool choice) { useCRYEvt = choice; }
+  inline G4bool IsUsingCRYEvtGenerator()  { return useCRYEvt; }
 
   //T. Akiri: Addition of function for the laser flag
   inline void SetLaserEvtGenerator(G4bool choice) { useLaserEvt = choice; }
