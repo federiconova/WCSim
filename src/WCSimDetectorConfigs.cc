@@ -320,7 +320,7 @@ void WCSimDetectorConstruction::TITUS_20inchPMT_40perCent()
   WCBarrelPMTOffset     = 0.0715*m; //offset from vertical
   WCPMTperCellHorizontal= 4;
   WCPMTperCellVertical  = 3; 
-  WCPMTPercentCoverage  = 40.0;
+  WCPMTPercentCoverage  = 50.0;
   WCBarrelNumPMTHorizontal = round(WCIDDiameter*sqrt(pi*WCPMTPercentCoverage)/(10.0*WCPMTRadius));
   WCBarrelNRings           = round(((WCBarrelNumPMTHorizontal*((WCIDHeight-2*WCBarrelPMTOffset)/(pi*WCIDDiameter)))
                                       /WCPMTperCellVertical));
