@@ -26,7 +26,7 @@
 #/WCSim/WCgeom Cylinder_12inchHPD_15perCent # Note: the actual coverage is 14.59%
 
 # TITUS detector
-/WCSim/WCgeom TITUS_20inchPMT_40perCent # Note: the actual coverage is 20.27%
+/WCSim/WCgeom TITUS_20inchPMT_40perCent # Note: the actual coverage is 33\%
 
 #/WCSim/WCgeom HyperK #default length is 49500 mm unless changed in /WCSim/HK/waterTankLength below.
 #/WCSim/WCgeom HyperK_withHPD #default length is 49500 mm unless changed in /WCSim/HK/waterTankLength below.
