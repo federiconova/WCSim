@@ -26,7 +26,7 @@
 #/WCSim/WCgeom Cylinder_12inchHPD_15perCent # Note: the actual coverage is 14.59%
 
 # TITUS detector
-/WCSim/WCgeom TITUS_20inchPMT_40perCent #
+/WCSim/WCgeom TITUS_12inchPMT_40perCent #
 
 # NuPRISM detector
 #/WCSim/WCgeom NuPRISM_8inchPMT_40perCent #

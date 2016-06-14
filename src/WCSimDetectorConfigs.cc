@@ -306,11 +306,11 @@ void WCSimDetectorConstruction::SetHyperKGeometry_withHPD()
    MatchWCSimAndHyperK();
 }
 
-void WCSimDetectorConstruction::TITUS_20inchPMT_40perCent()
+void WCSimDetectorConstruction::TITUS_12inchPMT_40perCent()
 {
-  WCDetectorName = "TITUS_20inchPMT_40perCent";
+  WCDetectorName = "TITUS_12inchPMT_40perCent";
   WCIDCollectionName = WCDetectorName +"-glassFaceWCPMT";
-  WCSimPMTObject * PMT = CreatePMTObject("PMT20inch", WCIDCollectionName);
+  WCSimPMTObject * PMT = CreatePMTObject("HPD12inchHQE", WCIDCollectionName);
   WCPMTName           = PMT->GetPMTName();
   WCPMTExposeHeight   = PMT->GetExposeHeight();
   WCPMTRadius         = PMT->GetRadius();
@@ -320,7 +320,7 @@ void WCSimDetectorConstruction::TITUS_20inchPMT_40perCent()
   WCBarrelPMTOffset     = 0.0715*m; //offset from vertical
   WCPMTperCellHorizontal= 4;
   WCPMTperCellVertical  = 3; 
-  WCPMTPercentCoverage  = 50.0;
+  WCPMTPercentCoverage  = 44.0;
   WCBarrelNumPMTHorizontal = round(WCIDDiameter*sqrt(pi*WCPMTPercentCoverage)/(10.0*WCPMTRadius));
   WCBarrelNRings           = round(((WCBarrelNumPMTHorizontal*((WCIDHeight-2*WCBarrelPMTOffset)/(pi*WCIDDiameter)))
                                       /WCPMTperCellVertical));
