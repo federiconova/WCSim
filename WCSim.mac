@@ -25,6 +25,12 @@
 # diameter of 69m with 12" HPD and 14.59% photocoverage
 #/WCSim/WCgeom Cylinder_12inchHPD_15perCent # Note: the actual coverage is 14.59%
 
+# TITUS detector
+/WCSim/WCgeom TITUS_12inchPMT_40perCent #
+
+# NuPRISM detector
+#/WCSim/WCgeom NuPRISM_8inchPMT_40perCent #
+
 #/WCSim/WCgeom HyperK #default length is 49500 mm unless changed in /WCSim/HK/waterTankLength below.
 #/WCSim/WCgeom HyperK_withHPD #default length is 49500 mm unless changed in /WCSim/HK/waterTankLength below.
 
@@ -37,7 +43,7 @@
 #/WCSim/HyperK/waterTank_Length 247500. mm # Equivalent length for 1 partition
 
 
-#/WCSim/Construct # This must be uncommented in order to construct a new detector configuration. 
+/WCSim/Construct # This must be uncommented in order to construct a new detector configuration. 
 
 #Added for the PMT QE option 08/17/10 (XQ)
 # 1. Stacking only mean when the photon is generated
@@ -105,13 +111,29 @@
 #/control/execute visRayTracer.mac
 
 
-# Or you can use the G4 Particle Gun
+###### Or you can use the G4 Particle Gun
 /mygen/generator normal
 /gun/particle e-
 #/gun/particle pi0
 /gun/energy 500 MeV
 /gun/direction 1 0 0 
 /gun/position 0 0 0  
+
+
+# /mygen/generator CRY
+# /CRY/input returnNeutrons 0
+# /CRY/input returnProtons 0
+# /CRY/input returnGammas 0
+# /CRY/input returnElectrons 0
+# /CRY/input returnPions 0
+# /CRY/input returnMuons 1
+# /CRY/input date 5-1-2013
+# /CRY/input latitude 47.578
+# /CRY/input altitude 0
+# /CRY/input subboxLength 1
+# /CRY/input nParticlesMin 1
+# /CRY/input nParticlesMax 2
+# /CRY/update
 
 ## change the name of the output root file, default = wcsim.root
 

@@ -132,8 +132,11 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
 			"WCBarrel",
 			0,0,0);
 
+  G4RotationMatrix * rotm = new G4RotationMatrix();
+  rotm->rotateY(90*deg);
+  
     G4VPhysicalVolume* physiWCBarrel = 
-    new G4PVPlacement(0,
+    new G4PVPlacement(rotm,
 		      G4ThreeVector(0.,0.,0.),
 		      logicWCBarrel,
 		      "WCBarrel",
