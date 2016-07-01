@@ -67,6 +67,7 @@ public:
   void Cylinder_12inchHPD_15perCent();
   void TITUS_12inchPMT_40perCent();
   void NuPRISM_8inchPMT_40perCent();
+  void NuPRISM_big_8inchPMT_40perCent();
   void UpdateGeometry();
   
 

@@ -29,6 +29,7 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
                           "HyperK_withHPD\n"
 			  "TITUS_12inchPMT_40perCent\n"
 			  "NuPRISM_9inchPMT_40perCent\n"
+			  "NuPRISM_big_9inchPMT_40perCent\n"
                          );
   PMTConfig->SetParameterName("PMTConfig", false);
   PMTConfig->SetCandidates("SuperK "
@@ -43,6 +44,7 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
                            "HyperK_withHPD "
 			   "TITUS_12inchPMT_40perCent "
 			   "NuPRISM_8inchPMT_40perCent "
+			   "NuPRISM_big_8inchPMT_40perCent "
                            );
   PMTConfig->AvailableForStates(G4State_PreInit, G4State_Idle);
 
@@ -151,6 +153,8 @@ void WCSimDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
 		  WCSimDetector->TITUS_12inchPMT_40perCent();
 		} else if (newValue == "NuPRISM_8inchPMT_40perCent" ){
 		  WCSimDetector->NuPRISM_8inchPMT_40perCent();
+		} else if (newValue == "NuPRISM_big_8inchPMT_40perCent" ){
+		  WCSimDetector->NuPRISM_big_8inchPMT_40perCent();
 		} else
 		  G4cout << "That geometry choice not defined!" << G4endl;
 	}
