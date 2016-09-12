@@ -327,7 +327,7 @@ void WCSimDetectorConstruction::TITUS_12inchPMT_40perCent()
   WCCapPMTSpacing       = (pi*WCIDDiameter/WCBarrelNumPMTHorizontal); // distance between centers of top and bottom pmts
   WCCapEdgeLimit        = WCIDDiameter/2.0 - WCPMTRadius;
   WCBlackSheetThickness = 2.0*cm;
-  WCAddGd               = false;
+  WCAddGd               = true;
 }
 
 

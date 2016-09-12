@@ -133,8 +133,10 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
 			0,0,0);
 
   G4RotationMatrix * rotm = new G4RotationMatrix();
+#if 0
   if( GetDetectorName().contains("TITUS") )
 	rotm->rotateY(90*deg);
+#endif
   
     G4VPhysicalVolume* physiWCBarrel = 
     new G4PVPlacement(rotm,
