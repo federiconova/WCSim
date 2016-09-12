@@ -6,6 +6,7 @@
 #include "G4ParticleGun.hh"
 #include "G4GeneralParticleSource.hh"
 #include "G4ParticleTable.hh"
+#include "G4IonTable.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4ThreeVector.hh"
 #include "globals.hh"
@@ -55,7 +56,7 @@ WCSimPrimaryGeneratorAction::WCSimPrimaryGeneratorAction(
 
   G4int n_particle = 1;
   particleGun = new G4ParticleGun(n_particle);
-  particleGun->SetParticleEnergy(1.0*GeV);
+  particleGun->SetParticleEnergy(1.0*CLHEP::GeV);
   particleGun->SetParticleMomentumDirection(G4ThreeVector(0.,0.,1.0));
 
   G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
@@ -64,7 +65,7 @@ WCSimPrimaryGeneratorAction::WCSimPrimaryGeneratorAction(
     SetParticleDefinition(particleTable->FindParticle(particleName="mu+"));
 
   particleGun->
-    SetParticlePosition(G4ThreeVector(0.*m,0.*m,0.*m));
+    SetParticlePosition(G4ThreeVector(0.*CLHEP::m,0.*CLHEP::m,0.*CLHEP::m));
 
 
   // Read the cry input file
@@ -121,6 +122,7 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
   // We will need a particle table
   G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
+  G4IonTable* ionTable = G4IonTable::GetIonTable();
 
   // Temporary kludge to turn on/off vector text format 
 
@@ -171,9 +173,9 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
 	    // Read the Vertex line
 	    token = readInLine(inputFile, lineSize, inBuf);
-	    vtx = G4ThreeVector(atof(token[1])*cm,
-				atof(token[2])*cm,
-				atof(token[3])*cm);
+	    vtx = G4ThreeVector(atof(token[1])*CLHEP::cm,
+				atof(token[2])*CLHEP::cm,
+				atof(token[3])*CLHEP::cm);
 	    
             // true : Generate vertex in Rock , false : Generate vertex in WC tank
             SetGenerateVertexInRock(false);
@@ -184,7 +186,7 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
 	    token=readInLine(inputFile, lineSize, inBuf);
 	    beampdg = atoi(token[1]);
-	    beamenergy = atof(token[2])*MeV;
+	    beamenergy = atof(token[2])*CLHEP::MeV;
 	    beamdir = G4ThreeVector(atof(token[3]),
 				    atof(token[4]),
 				    atof(token[5]));
@@ -193,7 +195,7 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
 	    token=readInLine(inputFile, lineSize, inBuf);
 	    targetpdg = atoi(token[1]);
-	    targetenergy = atof(token[2])*MeV;
+	    targetenergy = atof(token[2])*CLHEP::MeV;
 	    targetdir = G4ThreeVector(atof(token[3]),
 				      atof(token[4]),
 				      atof(token[5]));
@@ -217,7 +219,7 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 		if ( token[6] == "0")
 		  {
 		    G4int pdgid = atoi(token[1]);
-		    G4double energy = atof(token[2])*MeV;
+		    G4double energy = atof(token[2])*CLHEP::MeV;
 		    G4ThreeVector dir = G4ThreeVector(atof(token[3]),
 						      atof(token[4]),
 						      atof(token[5]));
@@ -245,12 +247,12 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 	
 	G4double random_z = ((myDetector->GetWaterTubePosition())
 			     - .5*(myDetector->GetWaterTubeLength()) 
-			     + 1.*m + 15.0*m*G4UniformRand())/m;
+			     + 1.*CLHEP::m + 15.0*CLHEP::m*G4UniformRand())/CLHEP::m;
 	zPos = random_z;
 	G4ThreeVector vtx = G4ThreeVector(xPos, yPos, random_z);
 	G4ThreeVector dir = G4ThreeVector(xDir,yDir,zDir);
 
-	particleGun->SetParticleEnergy(energy*MeV);
+	particleGun->SetParticleEnergy(energy*CLHEP::MeV);
 	particleGun->SetParticlePosition(vtx);
 	particleGun->SetParticleMomentumDirection(dir);
 	particleGun->GeneratePrimaryVertex(anEvent);
@@ -321,7 +323,7 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       G4cout << "  "          << particleName << " "
              << "charge="      << (*vect)[j]->charge() << " "
              << std::setprecision(4) 
-             << "energy (MeV)=" << (*vect)[j]->ke()*MeV << " "
+             << "energy (MeV)=" << (*vect)[j]->ke()*CLHEP::MeV << " "
              << "pos (m)"
              << G4ThreeVector((*vect)[j]->x(), (*vect)[j]->y(), (*vect)[j]->z())
              << " " << "direction cosines "
@@ -335,7 +337,7 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       fcosmic << particleName << " "
               <<  (*vect)[j]->charge() << " "
 	      << std::setprecision(4)
-              << (*vect)[j]->ke()*MeV << " "
+              << (*vect)[j]->ke()*CLHEP::MeV << " "
               << (*vect)[j]->x() << " "
               << (*vect)[j]->y() << " "
               << (*vect)[j]->z() << " "
@@ -347,8 +349,8 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       */
 
       particleGun->SetParticleDefinition(particleTable->FindParticle((*vect)[j]->PDGid()));
-      particleGun->SetParticleEnergy((*vect)[j]->ke()*MeV);
-      particleGun->SetParticlePosition(G4ThreeVector((*vect)[j]->x()*m, (*vect)[j]->y()*m, (*vect)[j]->z()*m));
+      particleGun->SetParticleEnergy((*vect)[j]->ke()*CLHEP::MeV);
+      particleGun->SetParticlePosition(G4ThreeVector((*vect)[j]->x()*CLHEP::m, (*vect)[j]->y()*CLHEP::m, (*vect)[j]->z()*CLHEP::m));
       particleGun->SetParticleMomentumDirection(G4ThreeVector((*vect)[j]->u(), (*vect)[j]->v(), (*vect)[j]->w()));
       particleGun->SetParticleTime((*vect)[j]->t());
       particleGun->GeneratePrimaryVertex(anEvent);
