@@ -28,7 +28,7 @@
 #include "TLegend.h"
 
 //#include "/data/short/hk/software_new_geant4/WCSim/include/WCSimRootEvent.hh"
-#include "/opt/ppd/t2k/users/federico_nova/HyperK/HyperK_g410/WCSim-g410/WCSim/include/WCSimRootEvent.hh"
+#include "../include/WCSimRootEvent.hh"
 
 // Function to parse arguments from the command lind
 void ParseArgs(int argc, char **argv);
