@@ -19,6 +19,11 @@ WCSimTrackingAction::WCSimTrackingAction()
   ParticleList.insert(-321); // kaon-
   ParticleList.insert(311); // kaon0
   ParticleList.insert(-311); // kaon0 bar
+  
+  ParticleList.insert(11);
+  ParticleList.insert(-11);
+  ParticleList.insert(12);
+  ParticleList.insert(-12);
   // don't put gammas there or there'll be too many
 }
 
@@ -27,7 +32,7 @@ WCSimTrackingAction::~WCSimTrackingAction(){;}
 void WCSimTrackingAction::PreUserTrackingAction(const G4Track* aTrack)
 {
   G4float percentageOfCherenkovPhotonsToDraw = 0.0;
-
+  
   if ( aTrack->GetDefinition() != G4OpticalPhoton::OpticalPhotonDefinition()
        || G4UniformRand() < percentageOfCherenkovPhotonsToDraw )
     {
@@ -37,6 +42,22 @@ void WCSimTrackingAction::PreUserTrackingAction(const G4Track* aTrack)
     }
   else 
     fpTrackingManager->SetStoreTrajectory(false);
+
+#if 0
+  { // kill nucleus to prevent segmentation fault
+    G4ParticleDefinition* particle = aTrack->GetDefinition();
+    G4String name   = particle->GetParticleName();
+    G4String partType= particle->GetParticleType();
+    G4int ID = aTrack->GetTrackID();
+    G4double Ekin = aTrack->GetKineticEnergy();
+    G4int PID = aTrack->GetParentID();
+    if ( partType == "nucleus") {
+      G4Track* tr = (G4Track*) aTrack;
+      tr->SetTrackStatus(fStopButAlive);
+      //tr->SetTrackStatus(fStopAndKill);
+    }
+  }
+#endif
 }
 
 void WCSimTrackingAction::PostUserTrackingAction(const G4Track* aTrack)
@@ -52,6 +73,8 @@ void WCSimTrackingAction::PostUserTrackingAction(const G4Track* aTrack)
     anInfo = (WCSimTrackInformation*)(aTrack->GetUserInformation());
   else anInfo = new WCSimTrackInformation();
 
+  double gamma_min_energy = 50.*CLHEP::MeV;
+
   // is it a primary ?
   // is the process in the set ? 
   // is the particle in the set ?
@@ -60,7 +83,7 @@ void WCSimTrackingAction::PostUserTrackingAction(const G4Track* aTrack)
   if( aTrack->GetParentID()==0 || 
       ((creatorProcess!=0) && ProcessList.count(creatorProcess->GetProcessName()) ) || 
       (ParticleList.count(aTrack->GetDefinition()->GetPDGEncoding()) )
-      || (aTrack->GetDefinition()->GetPDGEncoding()==22 && aTrack->GetTotalEnergy() > 50.0*CLHEP::MeV)
+      || (aTrack->GetDefinition()->GetPDGEncoding()==22 && aTrack->GetTotalEnergy() > gamma_min_energy)
       )
   {
     // if so the track is worth saving
@@ -82,7 +105,7 @@ void WCSimTrackingAction::PostUserTrackingAction(const G4Track* aTrack)
 
   G4Track* theTrack = (G4Track*)aTrack;
   theTrack->SetUserInformation(anInfo);
-
+  
   // pass primary parent ID to children
   G4TrackVector* secondaries = fpTrackingManager->GimmeSecondaries();
   if(secondaries)
@@ -93,7 +116,7 @@ void WCSimTrackingAction::PostUserTrackingAction(const G4Track* aTrack)
       for(size_t i=0;i<nSeco;i++)
       { 
 	WCSimTrackInformation* infoSec = new WCSimTrackInformation(anInfo);
-                 infoSec->WillBeSaved(false); // ADDED BY MFECHNER, temporary, 30/8/06
+	infoSec->WillBeSaved(false); // ADDED BY MFECHNER, temporary, 30/8/06
 	(*secondaries)[i]->SetUserInformation(infoSec);
       }
     } 
@@ -110,6 +133,7 @@ void WCSimTrackingAction::PostUserTrackingAction(const G4Track* aTrack)
 
     currentTrajectory->SetStoppingPoint(currentPosition);
     currentTrajectory->SetStoppingVolume(currentVolume);
+
 
     if (anInfo->isSaved())
       currentTrajectory->SetSaveFlag(true);// mark it for WCSimEventAction ;

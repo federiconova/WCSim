@@ -50,6 +50,7 @@ std::string GetProcessName(WCSimRootTrigger* wcsimrootevent, int trackID);
 void MatchTracksInGivenTrajectory(WCSimRootTrigger* wcsimrootevent, 
 				  int curr_id, std::vector<int>& chain);
 std::vector< std::vector<int> > MatchTracks(WCSimRootTrigger* wcsimrootevent, bool neutrons_only, bool verbose);
+void Get_end_point(WCSimRootTrigger* wcsimrootevent, int trackID, double * capt_x, double * capt_y, double * capt_z);
 
 
 // Global variables
@@ -61,7 +62,7 @@ int main(int argc, char** argv){
   // load library
   load_library();
 
-  bool verbose = true;
+  bool verbose = false;
 
   char *filename="../wcsim.root";
 
@@ -532,16 +533,21 @@ int main(int argc, char** argv){
 	  // want to get ID 13 and see what the PDG of that ID is
 	  int nucleus_pdg = -999;
 	  int nucleus_id = -999;
+	  double cx = 0.;
+	  double cy = 0.;
+	  double cz = 0.;
 	  if(subset){
 	    if(compare_neutron_traj.size() < compare_traj.size()){
 	      int size = (int) compare_neutron_traj.size();
 	      nucleus_id = compare_traj[size]; // Don't need to add 1 to size because vector indexing begins at 0  
 	      nucleus_pdg = GetPDG(wcsimrootevent, nucleus_id);
+	      Get_end_point(wcsimrootevent, nucleus_id, &cx, &cy, &cz);
 	    }
 	    else{ // Shouldn't really enter this loop, based on my logic...
 	      int size = (int) compare_traj.size();
 	      nucleus_id = compare_neutron_traj[size]; 
 	      nucleus_pdg = GetPDG(wcsimrootevent, nucleus_id);
+	      Get_end_point(wcsimrootevent, nucleus_id, &cx, &cy, &cz);
 	    }
 	    
 	    // Check have a valid id. 
@@ -552,6 +558,9 @@ int main(int argc, char** argv){
 
 		capt_nucleus[nCaptures] = nucleus_pdg;
 		capt_pid[nCaptures] = nucleus_id;
+		capt_x[nCaptures] = cx;
+		capt_y[nCaptures] = cy;
+		capt_z[nCaptures] = cz;
 
 		nCaptures++; 
 		captureNucleus[nucleus_pdg]++;
@@ -1041,5 +1050,28 @@ std::vector< std::vector<int> > MatchTracks(WCSimRootTrigger* wcsimrootevent, bo
   }
 
   return non_repeating_tracks;
+}
+
+void Get_end_point(WCSimRootTrigger* wcsimrootevent, int trackID, double * capt_x, double * capt_y, double * capt_z){
+
+  *capt_x = 0.;
+  *capt_y = 0.;
+  *capt_z = 0.;
+
+  for(int track = 0; track < wcsimrootevent->GetNtrack(); track++){
+
+    WCSimRootTrack* wcsimroottrack = dynamic_cast<WCSimRootTrack*>((wcsimrootevent->GetTracks())->At(track));
+    int curr_id = wcsimroottrack->GetId();
+
+    if(curr_id == trackID){
+      *capt_x = wcsimroottrack->GetStart(0);
+      *capt_y = wcsimroottrack->GetStart(1);
+      *capt_z = wcsimroottrack->GetStart(2);
+      return;
+    }
+
+  }
+
+  return;
 }
 
