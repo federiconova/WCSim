@@ -310,9 +310,9 @@ int main(){
       ncapturecount = i_ncapturecount;
       neutroncount = i_neutroncount;
       for(int icap=0; icap<i_ncapturecount; icap++){
-	capt_x[icap] = i_capt_x[icap];
-	capt_y[icap] = i_capt_y[icap];
-	capt_z[icap] = i_capt_z[icap];
+	capt_x[icap] = i_capt_x[icap]*cmTOmm;
+	capt_y[icap] = i_capt_y[icap]*cmTOmm;
+	capt_z[icap] = i_capt_z[icap]*cmTOmm;
 	capt_t0[icap] = i_capt_t0[icap];
 	capt_E[icap] = i_capt_E[icap];
 	capt_num[icap] = i_capt_num[icap];

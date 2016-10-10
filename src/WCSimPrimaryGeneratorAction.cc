@@ -155,7 +155,7 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 	vector<string> token(1);
 	
 	token = readInLine(inputFile, lineSize, inBuf);
-	  
+         
         if (token.size() == 0) 
 	  {
 	    G4cout << "end of nuance vector file!" << G4endl;
@@ -201,8 +201,13 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 				      atof(token[5]));
 
 	    // Read the info line, basically a dummy
-	    token=readInLine(inputFile, lineSize, inBuf);
-	    G4cout << "Vector File Record Number " << token[2] << G4endl;
+	    while ( token=readInLine(inputFile, lineSize, inBuf),
+		    token[0] != "info" ){
+	      // skip additional target lines
+	      continue;
+	    }
+	    //	    token=readInLine(inputFile, lineSize, inBuf);
+	    G4cout << "Vector File Record Number " << token[3] << G4endl;
             vecRecNumber = atoi(token[2]);
 	    
 	    // Now read the outgoing particles

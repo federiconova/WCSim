@@ -73,7 +73,6 @@
 #/mygen/vecfile mu+.out
 /mygen/vecfile nuancewcsim_nu_cylinder_r551_z2200_Z_numu_1721827_1000.dat
 
-
 #choose the Trigger & Digitizer type (and options)
 /DAQ/Digitizer SKI
 #/DAQ/Trigger NDigits
@@ -103,7 +102,7 @@
 #/DarkRate/SetDarkMode 1 adds dark noise hits to a window of
 #width /DarkRate/SetDarkWindow [time in ns] around each hit
 #i.e. hit time ± (/DarkRate/SetDarkWindow) / 2
-/DarkRate/SetDarkMode 1
+/DarkRate/SetDarkMode 0
 /DarkRate/SetDarkHigh 100000
 /DarkRate/SetDarkLow 0
 /DarkRate/SetDarkWindow 4000
