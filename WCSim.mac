@@ -26,11 +26,14 @@
 #/WCSim/WCgeom Cylinder_12inchHPD_15perCent # Note: the actual coverage is 14.59%
 
 # TITUS detector
-/WCSim/WCgeom TITUS_12inchPMT_40perCent #
+#/WCSim/WCgeom TITUS_12inchPMT_40perCent #
 
 # NuPRISM detector
 #/WCSim/WCgeom NuPRISM_8inchPMT_40perCent #
 #/WCSim/WCgeom NuPRISM_big_8inchPMT_40perCent #
+
+# surface detector
+/WCSim/WCgeom surface_detector_12inchPMT_40perCent #
 
 #/WCSim/WCgeom HyperK #default length is 49500 mm unless changed in /WCSim/HK/waterTankLength below.
 #/WCSim/WCgeom HyperK_withHPD #default length is 49500 mm unless changed in /WCSim/HK/waterTankLength below.
@@ -71,7 +74,7 @@
 #/mygen/vecfile inputvectorfile
 #/mygen/vecfile h2o.2km.001-009x3_G4.kin
 #/mygen/vecfile mu+.out
-/mygen/vecfile nuancewcsim_nu_cylinder_r551_z2200_Z_numu_1721827_1000.dat
+#/mygen/vecfile nuancewcsim_fix.dat
 
 #choose the Trigger & Digitizer type (and options)
 /DAQ/Digitizer SKI
@@ -84,7 +87,7 @@
 
 # default dark noise frequency (and conversion factor) is PMT property (NEW), set in the code.
 # Below gives possibility to overwrite nominal values, eg. to switch OFF the Dark Noise.
-/DarkRate/SetDarkRate 0 kHz   #Turn dark noise off
+# /DarkRate/SetDarkRate 0 kHz   #Turn dark noise off
 #/DarkRate/SetDarkRate 4.2 kHz #This is the value for SKI set in SKDETSIM.
 #/DarkRate/SetDarkRate 8.4 kHz #For 20 inch HPDs and Box and Line PMTs, based on High QE 20" R3600 dark rate from EGADS nov 2014
 #/DarkRate/SetDarkRate 3.0 kHz #For 12 inch HPDs and Box and Line PMTs, based on High QE 20" R3600 dark rate from EGADS nov 2014
@@ -113,25 +116,25 @@
 
 
 ###### Or you can use the G4 Particle Gun
-# /mygen/generator normal
-# /gun/particle e-
+ /mygen/generator normal
+ /gun/particle e-
 # #/gun/particle pi0
-# /gun/energy 500 MeV
-# /gun/direction 1 0 0 
-# /gun/position 0 0 0  
+ /gun/energy 500 MeV
+ /gun/direction 1 0 0 
+ /gun/position 0 0 0  
 
 
 # /mygen/generator CRY
-# /CRY/input returnNeutrons 0
+# /CRY/input returnNeutrons 1
 # /CRY/input returnProtons 0
 # /CRY/input returnGammas 0
 # /CRY/input returnElectrons 0
 # /CRY/input returnPions 0
 # /CRY/input returnMuons 1
-# /CRY/input date 5-1-2013
-# /CRY/input latitude 47.578
+# /CRY/input date 1-1-2025
+# /CRY/input latitude 36.
 # /CRY/input altitude 0
-# /CRY/input subboxLength 1
+# /CRY/input subboxLength 50
 # /CRY/input nParticlesMin 1
 # /CRY/input nParticlesMax 2
 # /CRY/update

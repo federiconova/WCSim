@@ -96,19 +96,29 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
   //-----------------------------------------------------
 
   // The water barrel is placed in an tubs of air
+  double extra_R = 2.*m;
+  double extra_L = 4.2*m;
+
+  bool use_CRY = true;
+
+  if( use_CRY ){
+	extra_R = 50.*m;
+    extra_L = 50.*m;
+  }
   
   G4Tubs* solidWC = new G4Tubs("WC",
 			       0.0*m,
-			       WCRadius+2.*m, 
-			       .5*WCLength+4.2*m,	//jl145 - per blueprint
+			       WCRadius+extra_R, 
+			       .5*WCLength+extra_L,	//jl145 - per blueprint
 			       0.*deg,
 			       360.*deg);
   
   G4LogicalVolume* logicWC = 
     new G4LogicalVolume(solidWC,
-			G4Material::GetMaterial("Air"),
-			"WC",
-			0,0,0);
+						G4Material::GetMaterial("Air"),
+						//						G4Material::GetMaterial("Sand"),
+						"WC",
+						0,0,0);
  
  
    G4VisAttributes* showColor = new G4VisAttributes(G4Colour(0.0,1.0,0.0));
@@ -137,10 +147,16 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
   if( GetDetectorName().contains("TITUS") )
 	rotm->rotateY(90*deg);
 #endif
+
+  G4ThreeVector center_of_barrel = G4ThreeVector(0.,0.,0.);
+
+  if( use_CRY ){
+	center_of_barrel = G4ThreeVector(0.,0.,-extra_L/2.);
+  }
   
     G4VPhysicalVolume* physiWCBarrel = 
     new G4PVPlacement(rotm,
-		      G4ThreeVector(0.,0.,0.),
+					  center_of_barrel,
 		      logicWCBarrel,
 		      "WCBarrel",
 		      logicWC,
@@ -155,6 +171,33 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
    {//{if(!debugMode)
     //logicWCBarrel->SetVisAttributes(G4VisAttributes::Invisible);} 
    }
+
+  /*
+  //  extra overburden
+  double overburden_hx = 2.*WCRadius;
+  double overburden_hy = 2.*WCRadius;
+  double overburden_hz = 1.*m;
+  G4Box* overburden = new G4Box("overburden",overburden_hx, overburden_hy, overburden_hz);
+  G4ThreeVector center_of_overburden = G4ThreeVector(0.,0.,-3.*overburden_hz);
+  G4cout << " qqq barrel center: (" << center_of_barrel.x() << ", " << center_of_barrel.y() << ", " << center_of_barrel.z() << ") " << G4endl;
+  G4cout << " qqq creating overburden of size: (" << 2.*overburden_hx << ", " << 2.*overburden_hy << ", " << 2.*overburden_hz << "), center: (" << center_of_overburden.x() << ", " << center_of_overburden.y() << ", " << center_of_overburden.z() << ") " << G4endl;
+  G4LogicalVolume* logic_overburden =
+    new G4LogicalVolume(overburden,
+                        G4Material::GetMaterial("Steel"),
+                        "logic_overburden",
+                        0,0,0);
+  G4VPhysicalVolume* physic_overburden;
+  if( use_CRY ){
+	physic_overburden =
+	  new G4PVPlacement(0,
+						center_of_overburden,
+						logic_overburden,
+						"_overburden",
+						logicWC,
+						false, 0);
+  }
+  */
+
   //-----------------------------------------------------
   // Form annular section of barrel to hold PMTs 
   //----------------------------------------------------

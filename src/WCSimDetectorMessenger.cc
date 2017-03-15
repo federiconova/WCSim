@@ -45,6 +45,7 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
 			   "TITUS_12inchPMT_40perCent "
 			   "NuPRISM_8inchPMT_40perCent "
 			   "NuPRISM_big_8inchPMT_40perCent "
+			   "surface_detector_12inchPMT_40perCent "
                            );
   PMTConfig->AvailableForStates(G4State_PreInit, G4State_Idle);
 
@@ -155,6 +156,8 @@ void WCSimDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
 		  WCSimDetector->NuPRISM_8inchPMT_40perCent();
 		} else if (newValue == "NuPRISM_big_8inchPMT_40perCent" ){
 		  WCSimDetector->NuPRISM_big_8inchPMT_40perCent();
+		} else if (newValue == "surface_detector_12inchPMT_40perCent" ){
+		  WCSimDetector->surface_detector_12inchPMT_40perCent();
 		} else
 		  G4cout << "That geometry choice not defined!" << G4endl;
 	}

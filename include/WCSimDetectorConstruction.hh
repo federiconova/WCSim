@@ -68,6 +68,7 @@ public:
   void TITUS_12inchPMT_40perCent();
   void NuPRISM_8inchPMT_40perCent();
   void NuPRISM_big_8inchPMT_40perCent();
+  void surface_detector_12inchPMT_40perCent();
   void UpdateGeometry();
   
 
@@ -296,7 +297,6 @@ private:
   G4double innerAnnulusRadius;
   G4double outerAnnulusRadius;
   G4String water;
-
 
  //for 1kt
   G4double WCDiameter;

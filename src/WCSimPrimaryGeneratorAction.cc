@@ -353,12 +353,26 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       fcosmic.close();
       */
 
-      particleGun->SetParticleDefinition(particleTable->FindParticle((*vect)[j]->PDGid()));
-      particleGun->SetParticleEnergy((*vect)[j]->ke()*CLHEP::MeV);
-      particleGun->SetParticlePosition(G4ThreeVector((*vect)[j]->x()*CLHEP::m, (*vect)[j]->y()*CLHEP::m, (*vect)[j]->z()*CLHEP::m));
-      particleGun->SetParticleMomentumDirection(G4ThreeVector((*vect)[j]->u(), (*vect)[j]->v(), (*vect)[j]->w()));
+      G4ThreeVector vtx = G4ThreeVector((*vect)[j]->x()*CLHEP::m, (*vect)[j]->y()*CLHEP::m, (*vect)[j]->z()*CLHEP::m);
+      G4int pdg = (*vect)[j]->PDGid();
+
+      G4ThreeVector dir  = G4ThreeVector((*vect)[j]->u(), (*vect)[j]->v(), (*vect)[j]->w());
+      G4double K         = (*vect)[j]->ke()*CLHEP::MeV;
+
+      particleGun->SetParticleDefinition(particleTable->FindParticle(pdg));
+
+      G4double mass = particleGun->GetParticleDefinition()->GetPDGMass();
+      G4double E = K + mass;
+
+      particleGun->SetParticleEnergy(K);
+      particleGun->SetParticlePosition(vtx);
+      particleGun->SetParticleMomentumDirection(dir);
       particleGun->SetParticleTime((*vect)[j]->t());
       particleGun->GeneratePrimaryVertex(anEvent);
+      SetVtx(vtx);
+      SetBeamEnergy(E);
+      SetBeamDir(dir);
+      SetBeamPDG(pdg);
       delete (*vect)[j];
     }
   }

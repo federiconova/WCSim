@@ -122,6 +122,12 @@ void WCSimDetectorConstruction::ConstructMaterials()
   
   StainlessSteel->SetMaterialPropertiesTable(mpt);
 
+  //Sand
+ density=2.65*CLHEP::g/CLHEP::cm3;
+ G4Material* Sand = new G4Material("Sand",density,2);  
+ Sand->AddElement(elSi, 1);
+ Sand->AddElement(elO,  2);
+
   //---Solid Dry Ice
 
   density = 1.563*CLHEP::g/CLHEP::cm3;
