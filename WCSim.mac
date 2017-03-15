@@ -33,7 +33,8 @@
 #/WCSim/WCgeom NuPRISM_big_8inchPMT_40perCent #
 
 # surface detector
-/WCSim/WCgeom surface_detector_12inchPMT_40perCent #
+#/WCSim/WCgeom surface_detector_12inchPMT_40perCent #
+/WCSim/WCgeom surface_detector_3inchPMT_40perCent #
 
 #/WCSim/WCgeom HyperK #default length is 49500 mm unless changed in /WCSim/HK/waterTankLength below.
 #/WCSim/WCgeom HyperK_withHPD #default length is 49500 mm unless changed in /WCSim/HK/waterTankLength below.
