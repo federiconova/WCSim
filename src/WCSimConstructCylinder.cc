@@ -99,7 +99,7 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
   double extra_R = 2.*m;
   double extra_L = 4.2*m;
 
-  bool use_CRY = true;
+  bool use_CRY = false;
 
   if( use_CRY ){
 	extra_R = 50.*m;
