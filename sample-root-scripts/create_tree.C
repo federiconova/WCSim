@@ -13,7 +13,7 @@
 #include "TSystem.h"
 
 //  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$WCSIM_BASE_DIR 
-//  g++ -o create_tree.exe create_tree.C `root-config --cflags --glibs` -L${WCSIM_BASE_DIR} -I${WCSIM_BASE_DIR} -lWCSimRoot
+//  g++ -o create_tree create_tree.C `root-config --cflags --glibs` -L${WCSIM_BASE_DIR} -I${WCSIM_BASE_DIR} -lWCSimRoot
 
 // #if !defined(__CINT__) || defined(__MAKECINT__)
 // #include "WCSimRootEvent.hh"
@@ -268,6 +268,8 @@ int main(int argc, char** argv){
     wcsimT->GetEvent(ievent); 
 
     if(verbose){std::cout<<"\n***************** event "<<ievent<<" *****************"<<std::endl;}
+
+    number_of_raw_cherenkov_hits = 0;
 
     // init trigger variables
     event_number.clear();
@@ -711,6 +713,7 @@ int main(int argc, char** argv){
     
     }
 
+    //if( number_of_raw_cherenkov_hits == 0 ) continue; // qqq
     primary_events_tree.Fill();
   }
 
