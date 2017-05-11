@@ -12,6 +12,9 @@
 #include "TObject.h"
 #include "TSystem.h"
 
+#include "TROOT.h"
+#include "TRint.h"
+
 //  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$WCSIM_BASE_DIR 
 //  g++ -o create_tree create_tree.C `root-config --cflags --glibs` -L${WCSIM_BASE_DIR} -I${WCSIM_BASE_DIR} -lWCSimRoot
 
@@ -61,6 +64,8 @@ int main(int argc, char** argv){
 
   // load library
   load_library();
+
+  gROOT->ProcessLine("#include <vector>");
 
   bool verbose = false;
 
