@@ -116,7 +116,7 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
   G4LogicalVolume* logicWC = 
     new G4LogicalVolume(solidWC,
 						G4Material::GetMaterial("Air"),
-						//						G4Material::GetMaterial("Sand"),
+						//G4Material::GetMaterial("Sand"),
 						"WC",
 						0,0,0);
  
@@ -151,9 +151,9 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
   G4ThreeVector center_of_barrel = G4ThreeVector(0.,0.,0.);
 
   if( use_CRY ){
-	center_of_barrel = G4ThreeVector(0.,0.,-extra_L/2.);
+	center_of_barrel = G4ThreeVector(0.,0.,-WCLength);
   }
-  
+
     G4VPhysicalVolume* physiWCBarrel = 
     new G4PVPlacement(rotm,
 					  center_of_barrel,

@@ -76,6 +76,7 @@
 #/mygen/vecfile h2o.2km.001-009x3_G4.kin
 #/mygen/vecfile mu+.out
 #/mygen/vecfile nuancewcsim_fix.dat
+/mygen/vecfile melissa_cosmic_muons_test5.kin
 
 #choose the Trigger & Digitizer type (and options)
 /DAQ/Digitizer SKI
@@ -88,7 +89,7 @@
 
 # default dark noise frequency (and conversion factor) is PMT property (NEW), set in the code.
 # Below gives possibility to overwrite nominal values, eg. to switch OFF the Dark Noise.
-# /DarkRate/SetDarkRate 0 kHz   #Turn dark noise off
+ /DarkRate/SetDarkRate 0 kHz   #Turn dark noise off
 #/DarkRate/SetDarkRate 4.2 kHz #This is the value for SKI set in SKDETSIM.
 #/DarkRate/SetDarkRate 8.4 kHz #For 20 inch HPDs and Box and Line PMTs, based on High QE 20" R3600 dark rate from EGADS nov 2014
 #/DarkRate/SetDarkRate 3.0 kHz #For 12 inch HPDs and Box and Line PMTs, based on High QE 20" R3600 dark rate from EGADS nov 2014
@@ -117,12 +118,12 @@
 
 
 ###### Or you can use the G4 Particle Gun
- /mygen/generator normal
- /gun/particle e-
-# #/gun/particle pi0
- /gun/energy 500 MeV
- /gun/direction 1 0 0 
- /gun/position 0 0 0  
+#  /mygen/generator normal
+#  /gun/particle e-
+# # #/gun/particle pi0
+#  /gun/energy 500 MeV
+#  /gun/direction 1 0 0 
+#  /gun/position 0 0 0  
 
 
 # /mygen/generator CRY
@@ -144,5 +145,5 @@
 
 /WCSimIO/RootFile wcsim.root
 
-/run/beamOn 10
+/run/beamOn 1000
 #exit
