@@ -9,6 +9,9 @@
 #include <TTree.h>
 #include <TCanvas.h>
 
+bool track_goes_through_detector(Float_t detector_length, Float_t detector_radius,  Float_t detector_center_x, Float_t detector_center_y, Float_t detector_center_z, Float_t track_start_x, Float_t track_start_y, Float_t track_start_z, Float_t track_stop_x, Float_t track_stop_y, Float_t track_stop_z);
+
+
 int main(){
 
   // open input file
@@ -35,6 +38,10 @@ int main(){
   double zmin = -12000.;
   double zmax = 12000.;
 
+  Float_t detector_center_x = 0.;
+  Float_t detector_center_y = 0.;
+  Float_t detector_center_z = 0.;
+
   // all pmts tree
   TTree * all_pmts_tree = (TTree*)f->Get("all_pmts_tree");
   Int_t pmt_number, pmt_location;
@@ -50,7 +57,15 @@ int main(){
   for(int ipmt = 0; ipmt < all_pmts_tree->GetEntries(); ipmt++){
     all_pmts_tree->GetEntry(ipmt);
     // std::clog << " pmt_number " << pmt_number << " pmt_location " << pmt_location << " pmt dir: (" << pmt_ux << ", " << pmt_uy << ", " << pmt_uz << "), pos: (" << pmt_x << ", " << pmt_y << ", " << pmt_z << ")" << std::endl;
+    detector_center_x += pmt_x;
+    detector_center_y += pmt_y;
+    detector_center_z += pmt_z;
   }
+  detector_center_x /= (double)all_pmts_tree->GetEntries();
+  detector_center_y /= (double)all_pmts_tree->GetEntries();
+  detector_center_z /= (double)all_pmts_tree->GetEntries();
+
+  std::clog << " detector center: (" << detector_center_x << ", "<< detector_center_y << ", " << detector_center_z << ")" << std::endl;
 
 
   // primary events tree
@@ -148,7 +163,6 @@ int main(){
   double max_time = 2.e3;
 
 
-  int tube_id;
   int parent_id;
   int ipnu;
   double n_of_muons_that_make_hit = 0.;
@@ -165,6 +179,34 @@ int main(){
     for(size_t itrigger=0; itrigger<trigger_ntrack->size(); itrigger++){
       // loop on triggers in the event
 
+
+      for(int irawhit=0; irawhit<trigger_number_raw_hits->at(itrigger); irawhit++){
+	// loop on raw hits in the trigger
+
+	if( muon_makes_hit ) break;
+
+	for(size_t irawhittime=0; irawhittime<((raw_hit_times->at(itrigger)).at(irawhit)).size(); irawhittime++){
+	  // loop on times in raw hit in the trigger
+
+	  if( muon_makes_hit ) break;
+
+	  parent_id = ((raw_hit_parent_ids->at(itrigger)).at(irawhit)).at(irawhittime);
+
+	  while( parent_id >= 0 
+		 && parent_id < (track_ipnu->at(itrigger)).size()
+		 ){
+	    if( abs((track_ipnu->at(itrigger)).at(parent_id)) ){
+	      muon_makes_hit = true;
+	      break;
+	    }
+	    parent_id = (track_id->at(itrigger)).at(parent_id);
+	  }
+
+	}
+      }
+      
+
+#if 0
       for(int itrack=0; itrack<trigger_ntrack->at(itrigger); itrack++){
 	ipnu = (track_ipnu->at(itrigger)).at(itrack);
 	if( abs(ipnu) == 13 ){
@@ -172,6 +214,7 @@ int main(){
 	  break;
 	}
       }
+#endif
 
       if( muon_makes_hit )
 	n_of_muons_that_make_hit ++;
@@ -186,9 +229,9 @@ int main(){
     }
   }
 
-  std::clog << " n_of_muons_that_make_hit " << n_of_muons_that_make_hit << std::endl;
-  std::clog << " n_of_captured_neutrons " << n_of_captured_neutrons << std::endl;
-  std::clog << " n_of_captured_neutrons_without_muons_that_make_hit " << n_of_captured_neutrons_without_muons_that_make_hit << " ( = " << n_of_captured_neutrons_without_muons_that_make_hit/n_of_captured_neutrons << " )" << std::endl;
+  std::cout << " n_of_muons_that_make_hit " << n_of_muons_that_make_hit << std::endl;
+  std::cout << " n_of_captured_neutrons " << n_of_captured_neutrons <<" ( = " << n_of_captured_neutrons_without_muons_that_make_hit/n_of_muons_that_make_hit << " of muons )" <<  std::endl;
+  std::cout << " n_of_captured_neutrons_without_muons_that_make_hit " << n_of_captured_neutrons_without_muons_that_make_hit << " ( = " << n_of_captured_neutrons_without_muons_that_make_hit/n_of_muons_that_make_hit << " of muons )" << " ( = " << n_of_captured_neutrons_without_muons_that_make_hit/n_of_captured_neutrons << " of neutrons )" << std::endl;
 
   of->cd();
 
@@ -212,4 +255,9 @@ int main(){
 
 }
 
+
+bool track_goes_through_detector(Float_t detector_length, Float_t detector_radius,  Float_t detector_center_x, Float_t detector_center_y, Float_t detector_center_z, Float_t track_start_x, Float_t track_start_y, Float_t track_start_z, Float_t track_stop_x, Float_t track_stop_y, Float_t track_stop_z){
+
+  return true;
+}
 
