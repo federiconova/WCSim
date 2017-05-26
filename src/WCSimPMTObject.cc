@@ -568,7 +568,7 @@ G4float  PMT3inch::GetmaxQE(){
 }
 
 G4float PMT3inch::GetDarkRate(){
-  const G4float rate = 0.1*CLHEP::kilohertz;   
+  const G4float rate = 1*CLHEP::kilohertz;   
   return rate;
 }
 
