@@ -444,7 +444,7 @@ void WCSimDetectorConstruction::e61_detector()
   WCBarrelPMTOffset     = 0.0715*m; //offset from vertical
   WCPMTperCellHorizontal= 4;
   WCPMTperCellVertical  = 3; 
-  WCPMTPercentCoverage  = 17.1;
+  WCPMTPercentCoverage  = 24.7;
   WCBarrelNumPMTHorizontal = round(WCIDDiameter*sqrt(pi*WCPMTPercentCoverage)/(10.0*WCPMTRadius));
   WCBarrelNRings           = round(((WCBarrelNumPMTHorizontal*((WCIDHeight-2*WCBarrelPMTOffset)/(pi*WCIDDiameter)))
                                       /WCPMTperCellVertical));
