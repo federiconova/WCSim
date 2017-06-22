@@ -70,6 +70,7 @@ public:
   void NuPRISM_big_8inchPMT_40perCent();
   void surface_detector_12inchPMT_40perCent();
   void surface_detector_3inchPMT_40perCent();
+  void e61_detector();
   void UpdateGeometry();
   
 
