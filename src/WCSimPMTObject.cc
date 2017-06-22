@@ -563,12 +563,12 @@ G4float* PMT3inch::GetQEWavelength(){static G4float wavelength[20] = { 280., 300
   return wavelength;}
 
 G4float  PMT3inch::GetmaxQE(){
-  const G4float maxQE = 0.2978;
+  const G4float maxQE = 0.35;
   return maxQE;
 }
 
 G4float PMT3inch::GetDarkRate(){
-  const G4float rate = 1*CLHEP::kilohertz;   
+  const G4float rate = 0.1*CLHEP::kilohertz;   
   return rate;
 }
 
