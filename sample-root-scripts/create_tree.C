@@ -718,7 +718,7 @@ int main(int argc, char** argv){
     
     }
 
-    //if( number_of_raw_cherenkov_hits == 0 ) continue; // qqq
+    if( number_of_raw_cherenkov_hits == 0 ) continue; // qqq
     primary_events_tree.Fill();
   }
 

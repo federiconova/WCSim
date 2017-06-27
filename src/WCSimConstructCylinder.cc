@@ -99,11 +99,26 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
   double extra_R = 2.*m;
   double extra_L = 4.2*m;
 
-  bool use_CRY = false;
+
+  bool use_CRY = false; // qqq set to true for CRY simulation
+  double center_of_barrel_z = 0.;
+  double overburden_on_top = 0.;
+  double center_of_overburden_z = 0.;
 
   if( use_CRY ){
 	extra_R = 50.*m;
     extra_L = 50.*m;
+
+	overburden_on_top = -2.*m; // qqq set to overburden value for CRY simulation
+	// positive value to add sand on top of the detector
+	// negative value to have the detector stick out of sand
+	// o = 0 --> pmts from z = -6m to z = 0
+	// o = 4 --> pmts from z = -10m to z = -4
+	// o = -2 --> pmts from z = -6m to z = 0
+
+	center_of_barrel_z = std::min(-0.5*WCIDHeight, -0.5*WCIDHeight - overburden_on_top);
+	center_of_overburden_z = -0.5*(WCIDHeight + fabs(overburden_on_top));
+
   }
   
   G4Tubs* solidWC = new G4Tubs("WC",
@@ -116,7 +131,6 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
   G4LogicalVolume* logicWC = 
     new G4LogicalVolume(solidWC,
 						G4Material::GetMaterial("Air"),
-						//G4Material::GetMaterial("Sand"),
 						"WC",
 						0,0,0);
  
@@ -125,6 +139,35 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
    logicWC->SetVisAttributes(showColor);
 
    logicWC->SetVisAttributes(G4VisAttributes::Invisible); //amb79
+
+   if( use_CRY ){
+	 double sand_inner_radius = WCRadius + 2.*m;
+	 double sand_outer_radius = WCRadius+extra_R - 2.*m;
+	 double sand_half_height = 0.5*(WCIDHeight + overburden_on_top);
+	 double sand_start_angle = 0.*deg;
+	 double sand_end_angle = 360.*deg;
+	 G4Tubs* sand_tube
+	   = new G4Tubs("sand_tube",
+					sand_inner_radius,
+					sand_outer_radius,
+					sand_half_height,
+					sand_start_angle, 
+					sand_end_angle);
+	 
+	 G4ThreeVector center_of_overburden = G4ThreeVector(0.,0.,center_of_overburden_z);
+	 G4LogicalVolume* logic_sand =
+	   new G4LogicalVolume(sand_tube,
+						   G4Material::GetMaterial("Sand"),
+						   "logic_sand",
+						  0,0,0);
+	 G4VPhysicalVolume* physic_sand =
+	   new G4PVPlacement(0,
+						 center_of_overburden,
+						 logic_sand,
+						 "_sand",
+						 logicWC,
+						 false, 0);
+   }
   
   //-----------------------------------------------------
   // everything else is contained in this water tubs
@@ -148,21 +191,17 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
 	rotm->rotateY(90*deg);
 #endif
 
-  G4ThreeVector center_of_barrel = G4ThreeVector(0.,0.,0.);
+  G4ThreeVector center_of_barrel = G4ThreeVector(0.,0.,center_of_barrel_z);
 
-  if( use_CRY ){
-	center_of_barrel = G4ThreeVector(0.,0.,-WCLength);
-  }
-
-    G4VPhysicalVolume* physiWCBarrel = 
+  G4VPhysicalVolume* physiWCBarrel = 
     new G4PVPlacement(rotm,
 					  center_of_barrel,
-		      logicWCBarrel,
-		      "WCBarrel",
-		      logicWC,
-		      false,
-	 	      0); 
-
+					  logicWCBarrel,
+					  "WCBarrel",
+					  logicWC,
+					  false,
+					  0); 
+  
 // This volume needs to made invisible to view the blacksheet and PMTs with RayTracer
   if (Vis_Choice == "RayTracer")
    {logicWCBarrel->SetVisAttributes(G4VisAttributes::Invisible);} 
@@ -171,32 +210,6 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
    {//{if(!debugMode)
     //logicWCBarrel->SetVisAttributes(G4VisAttributes::Invisible);} 
    }
-
-  /*
-  //  extra overburden
-  double overburden_hx = 2.*WCRadius;
-  double overburden_hy = 2.*WCRadius;
-  double overburden_hz = 1.*m;
-  G4Box* overburden = new G4Box("overburden",overburden_hx, overburden_hy, overburden_hz);
-  G4ThreeVector center_of_overburden = G4ThreeVector(0.,0.,-3.*overburden_hz);
-  G4cout << " qqq barrel center: (" << center_of_barrel.x() << ", " << center_of_barrel.y() << ", " << center_of_barrel.z() << ") " << G4endl;
-  G4cout << " qqq creating overburden of size: (" << 2.*overburden_hx << ", " << 2.*overburden_hy << ", " << 2.*overburden_hz << "), center: (" << center_of_overburden.x() << ", " << center_of_overburden.y() << ", " << center_of_overburden.z() << ") " << G4endl;
-  G4LogicalVolume* logic_overburden =
-    new G4LogicalVolume(overburden,
-                        G4Material::GetMaterial("Steel"),
-                        "logic_overburden",
-                        0,0,0);
-  G4VPhysicalVolume* physic_overburden;
-  if( use_CRY ){
-	physic_overburden =
-	  new G4PVPlacement(0,
-						center_of_overburden,
-						logic_overburden,
-						"_overburden",
-						logicWC,
-						false, 0);
-  }
-  */
 
   //-----------------------------------------------------
   // Form annular section of barrel to hold PMTs 
