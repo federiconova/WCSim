@@ -170,6 +170,7 @@ int main(){
   double n_of_captured_neutrons_without_muons_that_make_hit = 0.;
   bool muon_makes_hit;
 
+  TH1F *h_z_neutron_capture = new TH1F("h_z_neutron_capture","h_z_neutron_capture; z of neutron capture [cm]",nbins,1,-1);
 
   for(int ievent=0; ievent<primary_events_tree->GetEntries(); ievent++){
     // loop on primary events
@@ -220,9 +221,11 @@ int main(){
 	n_of_muons_that_make_hit ++;
       
       if( ncapturecount ){
-	n_of_captured_neutrons ++;
+	n_of_captured_neutrons += ncapturecount;
+	for(int ic=0; ic<ncapturecount; ic++)
+	  h_z_neutron_capture->Fill(capt_z[ic]);
 	if( !muon_makes_hit ){
-	  n_of_captured_neutrons_without_muons_that_make_hit ++;
+	  n_of_captured_neutrons_without_muons_that_make_hit += ncapturecount;
 	}
       }
 
@@ -230,7 +233,7 @@ int main(){
   }
 
   std::cout << " n_of_muons_that_make_hit " << n_of_muons_that_make_hit << std::endl;
-  std::cout << " n_of_captured_neutrons " << n_of_captured_neutrons <<" ( = " << n_of_captured_neutrons_without_muons_that_make_hit/n_of_muons_that_make_hit << " of muons )" <<  std::endl;
+  std::cout << " n_of_captured_neutrons " << n_of_captured_neutrons <<" ( = " << n_of_captured_neutrons/n_of_muons_that_make_hit << " of muons )" <<  std::endl;
   std::cout << " n_of_captured_neutrons_without_muons_that_make_hit " << n_of_captured_neutrons_without_muons_that_make_hit << " ( = " << n_of_captured_neutrons_without_muons_that_make_hit/n_of_muons_that_make_hit << " of muons )" << " ( = " << n_of_captured_neutrons_without_muons_that_make_hit/n_of_captured_neutrons << " of neutrons )" << std::endl;
 
   of->cd();

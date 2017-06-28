@@ -109,7 +109,7 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
 	extra_R = 50.*m;
     extra_L = 50.*m;
 
-	overburden_on_top = -2.*m; // qqq set to overburden value for CRY simulation
+	overburden_on_top = 0.*m; // qqq set to overburden value for CRY simulation
 	// positive value to add sand on top of the detector
 	// negative value to have the detector stick out of sand
 	// o = 0 --> pmts from z = -6m to z = 0
@@ -127,7 +127,7 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
 			       .5*WCLength+extra_L,	//jl145 - per blueprint
 			       0.*deg,
 			       360.*deg);
-  
+
   G4LogicalVolume* logicWC = 
     new G4LogicalVolume(solidWC,
 						G4Material::GetMaterial("Air"),
@@ -147,26 +147,26 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
 	 double sand_start_angle = 0.*deg;
 	 double sand_end_angle = 360.*deg;
 	 G4Tubs* sand_tube
-	   = new G4Tubs("sand_tube",
-					sand_inner_radius,
-					sand_outer_radius,
-					sand_half_height,
-					sand_start_angle, 
-					sand_end_angle);
+	   = new G4Tubs("sand",
+	 				sand_inner_radius,
+	 				sand_outer_radius,
+	 				sand_half_height,
+	 				sand_start_angle, 
+	 				sand_end_angle);
 	 
 	 G4ThreeVector center_of_overburden = G4ThreeVector(0.,0.,center_of_overburden_z);
 	 G4LogicalVolume* logic_sand =
 	   new G4LogicalVolume(sand_tube,
-						   G4Material::GetMaterial("Sand"),
-						   "logic_sand",
-						  0,0,0);
+	 					   G4Material::GetMaterial("Sand"),
+	 					   "sand",
+	 					  0,0,0);
 	 G4VPhysicalVolume* physic_sand =
 	   new G4PVPlacement(0,
-						 center_of_overburden,
-						 logic_sand,
-						 "_sand",
-						 logicWC,
-						 false, 0);
+	 					 center_of_overburden,
+	 					 logic_sand,
+	 					 "sand",
+	 					 logicWC,
+	 					 false, 0);
    }
   
   //-----------------------------------------------------

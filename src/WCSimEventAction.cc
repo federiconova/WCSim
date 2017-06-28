@@ -412,7 +412,6 @@ G4int WCSimEventAction::WCSimEventFindStartingVolume(G4ThreeVector vtx)
   G4String       vtxVolumeName = tmpVolume->GetName();
 
 
-
   if ( vtxVolumeName == "outerTube" ||
 	    vtxVolumeName == "innerTube" ||
 	    vtxVolumeName == "rearEndCap"|| 
