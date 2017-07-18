@@ -100,10 +100,22 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
   double extra_L = 4.2*m;
 
 
-  bool use_CRY = false; // qqq set to true for CRY simulation
+  bool use_CRY = true; // qqq set to true for CRY simulation
+  bool use_Melissa = false; // set to true for running over Melissa input
   double center_of_barrel_z = 0.;
   double overburden_on_top = 0.;
   double center_of_overburden_z = 0.;
+
+  if( use_Melissa && use_CRY ){
+	G4cout << " problem! use_Melissa " << use_Melissa << " use_CRY " << use_CRY << " only one should be enabled! switching to CRY " << G4endl;
+	use_Melissa = false;
+  }
+
+  if( use_Melissa ){
+	extra_R = 5.*m;
+    extra_L = 5.*m;
+	center_of_barrel_z = 0.*m;
+  }
 
   if( use_CRY ){
 	extra_R = 50.*m;
@@ -120,7 +132,7 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
 	center_of_overburden_z = -0.5*(WCIDHeight + fabs(overburden_on_top));
 
   }
-  
+
   G4Tubs* solidWC = new G4Tubs("WC",
 			       0.0*m,
 			       WCRadius+extra_R, 
@@ -133,7 +145,6 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
 						G4Material::GetMaterial("Air"),
 						"WC",
 						0,0,0);
- 
  
    G4VisAttributes* showColor = new G4VisAttributes(G4Colour(0.0,1.0,0.0));
    logicWC->SetVisAttributes(showColor);

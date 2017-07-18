@@ -167,8 +167,13 @@ int main(){
   int ipnu;
   double n_of_muons_that_make_hit = 0.;
   double n_of_captured_neutrons = 0.;
+  double n_of_captured_neutrons_in_ID = 0.;
   double n_of_captured_neutrons_without_muons_that_make_hit = 0.;
   bool muon_makes_hit;
+
+  double ID_zmax = -400.-100.;
+  double ID_zmin = -400.-800.+100.;
+  double ID_rmax = 400.;
 
   TH1F *h_z_neutron_capture = new TH1F("h_z_neutron_capture","h_z_neutron_capture; z of neutron capture [cm]",nbins,1,-1);
 
@@ -222,8 +227,15 @@ int main(){
       
       if( ncapturecount ){
 	n_of_captured_neutrons += ncapturecount;
-	for(int ic=0; ic<ncapturecount; ic++)
+	for(int ic=0; ic<ncapturecount; ic++){
 	  h_z_neutron_capture->Fill(capt_z[ic]);
+
+	  if( capt_z[ic] > ID_zmin &&
+	      capt_z[ic] < ID_zmax &&
+	      sqrt(pow(capt_x[ic],2) + pow(capt_y[ic],2)) > ID_rmax )
+	    n_of_captured_neutrons_in_ID ++;
+	  
+	}
 	if( !muon_makes_hit ){
 	  n_of_captured_neutrons_without_muons_that_make_hit += ncapturecount;
 	}
@@ -234,6 +246,7 @@ int main(){
 
   std::cout << " n_of_muons_that_make_hit " << n_of_muons_that_make_hit << std::endl;
   std::cout << " n_of_captured_neutrons " << n_of_captured_neutrons <<" ( = " << n_of_captured_neutrons/n_of_muons_that_make_hit << " of muons )" <<  std::endl;
+  std::cout << " n_of_captured_neutrons_in_ID " << n_of_captured_neutrons_in_ID <<" ( = " << n_of_captured_neutrons_in_ID/n_of_muons_that_make_hit << " of muons )" <<  std::endl;
   std::cout << " n_of_captured_neutrons_without_muons_that_make_hit " << n_of_captured_neutrons_without_muons_that_make_hit << " ( = " << n_of_captured_neutrons_without_muons_that_make_hit/n_of_muons_that_make_hit << " of muons )" << " ( = " << n_of_captured_neutrons_without_muons_that_make_hit/n_of_captured_neutrons << " of neutrons )" << std::endl;
 
   of->cd();
