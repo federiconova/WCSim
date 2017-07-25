@@ -129,16 +129,16 @@ public:
   // Geometry options
   void   SetIsUpright(G4bool choice) {isUpright = choice;}
 
-  // *** Begin HyperK Geometry ***
+  // *** Begin EggShapedHyperK Geometry ***
 
-  void   SetIsHyperK(G4bool choice) {isHyperK = choice;}
-  G4bool GetIsHyperK() {return isHyperK;}
+  void   SetIsEggShapedHyperK(G4bool choice) {isEggShapedHyperK = choice;}
+  G4bool GetIsEggShapedHyperK() {return isEggShapedHyperK;}
 
-  void SetHyperKGeometry();
-  void SetHyperKGeometry_withHPD();
+  void SetEggShapedHyperKGeometry();
+  void SetEggShapedHyperKGeometry_withHPD();
 
 
-  // *** End HyperK Geometry ***
+  // *** End EggShapedHyperK Geometry ***
 
   std::vector<WCSimPmtInfo*>* Get_Pmts() {return &fpmts;}
 
@@ -312,10 +312,10 @@ private:
   // amb79: to universally make changes in structure and geometry
   bool isUpright;
 
-  // *** Begin HyperK Geometry ***
+  // *** Begin EggShapedHyperK Geometry ***
 
-    void MatchWCSimAndHyperK();
-    G4LogicalVolume* ConstructHyperK();
+    void MatchWCSimAndEggShapedHyperK();
+    G4LogicalVolume* ConstructEggShapedHyperK();
 
     G4Material* FindMaterial(G4String);
 
@@ -332,7 +332,7 @@ private:
                                          G4double, G4double,
                                          G4double, G4double);
 
-    G4bool isHyperK;
+    G4bool isEggShapedHyperK;
   
   G4double waterTank_TopR;
   G4double waterTank_BotR;
@@ -374,7 +374,7 @@ private:
     G4int PMTCopyNo;
     G4int wallSlabCopyNo;
 
-  // *** End HyperK Geometry ***
+  // *** End EggShapedHyperK Geometry ***
 
   // amb79: debug to display all parts
   bool debugMode;

@@ -25,8 +25,8 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
 			  "Cylinder_60x74_20inchBandL_14perCent\n"
       			  "Cylinder_60x74_20inchBandL_40perCent\n"
 			  "Cylinder_12inchHPD_15perCent\n"
-                          "HyperK\n"
-                          "HyperK_withHPD\n"
+                          "EggShapedHyperK\n"
+                          "EggShapedHyperK_withHPD\n"
 			  "TITUS_12inchPMT_40perCent\n"
 			  "NuPRISM_9inchPMT_40perCent\n"
 			  "NuPRISM_big_9inchPMT_40perCent\n"
@@ -40,8 +40,8 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
 			   "Cylinder_60x74_20inchBandL_14perCent\n"
       			   "Cylinder_60x74_20inchBandL_40perCent\n"
 			   "Cylinder_12inchHPD_15perCent "
-			   "HyperK "
-                           "HyperK_withHPD "
+			   "EggShapedHyperK "
+                           "EggShapedHyperK_withHPD "
 			   "TITUS_12inchPMT_40perCent "
 			   "NuPRISM_8inchPMT_40perCent "
 			   "NuPRISM_big_8inchPMT_40perCent "
@@ -100,7 +100,7 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
 			    "off ");
   PMTCollEff->AvailableForStates(G4State_PreInit, G4State_Idle);
 
-  waterTank_Length = new G4UIcmdWithADoubleAndUnit("/WCSim/HyperK/waterTank_Length", this);
+  waterTank_Length = new G4UIcmdWithADoubleAndUnit("/WCSim/EggShapedHyperK/waterTank_Length", this);
   waterTank_Length->SetGuidance("Set the Length of Hyper-K detector (unit: mm cm m).");
   waterTank_Length->SetParameterName("waterTank_length", true);
   waterTank_Length->SetDefaultValue(49500.);
@@ -129,7 +129,7 @@ void WCSimDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
 {    
 	if( command == PMTConfig ) { 
 		WCSimDetector->SetIsUpright(false);
-                WCSimDetector->SetIsHyperK(false);
+                WCSimDetector->SetIsEggShapedHyperK(false);
                 if ( newValue == "SuperK") {
 		  WCSimDetector->SetSuperKGeometry();
 		} else if (newValue == "SuperK_20inchPMT_20perCent" ){
@@ -146,12 +146,12 @@ void WCSimDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
 		  WCSimDetector->Cylinder_60x74_20inchBandL_40perCent();
 		} else if (newValue == "Cylinder_12inchHPD_15perCent" ){
 		  WCSimDetector->Cylinder_12inchHPD_15perCent();
-                } else if ( newValue == "HyperK") {
-                        WCSimDetector->SetIsHyperK(true);
-			WCSimDetector->SetHyperKGeometry();
-                } else if ( newValue == "HyperK_withHPD") {
-                        WCSimDetector->SetIsHyperK(true);
-			WCSimDetector->SetHyperKGeometry_withHPD();
+                } else if ( newValue == "EggShapedHyperK") {
+                        WCSimDetector->SetIsEggShapedHyperK(true);
+			WCSimDetector->SetEggShapedHyperKGeometry();
+                } else if ( newValue == "EggShapedHyperK_withHPD") {
+                        WCSimDetector->SetIsEggShapedHyperK(true);
+			WCSimDetector->SetEggShapedHyperKGeometry_withHPD();
 		} else if (newValue == "TITUS_12inchPMT_40perCent" ){
 		  WCSimDetector->TITUS_12inchPMT_40perCent();
 		} else if (newValue == "NuPRISM_8inchPMT_40perCent" ){
@@ -219,15 +219,15 @@ void WCSimDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
 	}
 
 	if (command == waterTank_Length){
-	bool isHyperK = WCSimDetector->GetIsHyperK();
-	  if(isHyperK==true){
+	bool isEggShapedHyperK = WCSimDetector->GetIsEggShapedHyperK();
+	  if(isEggShapedHyperK==true){
 	    G4cout << "Set Partition Length in a cylinder " << newValue << " " << G4endl;
 	    WCSimDetector->SetwaterTank_Length(waterTank_Length->GetNewDoubleValue(newValue));
 	    WCSimDetector->SetWaterTubeLength(waterTank_Length->GetNewDoubleValue(newValue));
-	    //	    WCSimDetector->SetIsHyperK(true);
+	    //	    WCSimDetector->SetIsEggShapedHyperK(true);
 	  }
 	  else {
-	    G4cout << "Not HyperK Geometry. Detector length unchanged." << G4endl;
+	    G4cout << "Not EggShapedHyperK Geometry. Detector length unchanged." << G4endl;
 	  }
 	}
 

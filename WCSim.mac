@@ -35,18 +35,21 @@
 # surface detector
 #/WCSim/WCgeom surface_detector_12inchPMT_40perCent #
 #/WCSim/WCgeom surface_detector_3inchPMT_40perCent #
-/WCSim/WCgeom e61_detector #
+ /WCSim/WCgeom e61_detector #
 
-#/WCSim/WCgeom HyperK #default length is 49500 mm unless changed in /WCSim/HK/waterTankLength below.
-#/WCSim/WCgeom HyperK_withHPD #default length is 49500 mm unless changed in /WCSim/HK/waterTankLength below.
+# HyperK (one cylindrical tank with a height of 54.8 m, a diameter of 70.8 m and 40% coverage with 20" B&L PMTs)
+#/WCSim/WCgeom HyperK
 
-#Changes the length of the simulated volume. Is currently only set up for HyperK. 
-#/WCSim/HyperK/waterTank_Length 24750. mm # Equivalent length for 10 partitions
-#/WCSim/HyperK/waterTank_Length 49500. mm # Equivalent length for 5 partitions
-#/WCSim/HyperK/waterTank_Length 61875. mm # Equivalent length for 4 partitions
-#/WCSim/HyperK/waterTank_Length 82500. mm # Equivalent length for 3 partitions
-#/WCSim/HyperK/waterTank_Length 123750. mm # Equivalent length for 2 partitions
-#/WCSim/HyperK/waterTank_Length 247500. mm # Equivalent length for 1 partition
+#/WCSim/WCgeom EggShapedHyperK #default length is 49500 mm unless changed in /WCSim/HK/waterTankLength below.
+#/WCSim/WCgeom EggShapedHyperK_withHPD #default length is 49500 mm unless changed in /WCSim/HK/waterTankLength below.
+
+#Changes the length of the simulated volume. Is currently only set up for EggShapedHyperK. 
+#/WCSim/EggShapedHyperK/waterTank_Length 24750. mm # Equivalent length for 10 partitions
+#/WCSim/EggShapedHyperK/waterTank_Length 49500. mm # Equivalent length for 5 partitions
+#/WCSim/EggShapedHyperK/waterTank_Length 61875. mm # Equivalent length for 4 partitions
+#/WCSim/EggShapedHyperK/waterTank_Length 82500. mm # Equivalent length for 3 partitions
+#/WCSim/EggShapedHyperK/waterTank_Length 123750. mm # Equivalent length for 2 partitions
+#/WCSim/EggShapedHyperK/waterTank_Length 247500. mm # Equivalent length for 1 partition
 
 
 /WCSim/Construct # This must be uncommented in order to construct a new detector configuration. 

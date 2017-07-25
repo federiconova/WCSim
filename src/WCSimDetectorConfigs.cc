@@ -212,9 +212,9 @@ void WCSimDetectorConstruction::Cylinder_12inchHPD_15perCent()
 }
 
 
-void WCSimDetectorConstruction::SetHyperKGeometry()
+void WCSimDetectorConstruction::SetEggShapedHyperKGeometry()
 {
-  WCDetectorName = "HyperK";
+  WCDetectorName = "EggShapedHyperK";
   WCIDCollectionName = WCDetectorName +"-glassFaceWCPMT";
   WCODCollectionName = WCDetectorName + "-glassFaceWCPMT_OD"; 
   WCSimPMTObject * PMT = CreatePMTObject("PMT20inch", WCIDCollectionName);
@@ -254,14 +254,14 @@ void WCSimDetectorConstruction::SetHyperKGeometry()
   innerPMT_TopN = 0;
   innerPMT_BotN = 0;
 
-  isHyperK = true; // Tell DetectorConstruction to build HK geometry
+  isEggShapedHyperK = true; // Tell DetectorConstruction to build HK geometry
 
-  MatchWCSimAndHyperK();
+  MatchWCSimAndEggShapedHyperK();
 }
 
-void WCSimDetectorConstruction::SetHyperKGeometry_withHPD()
+void WCSimDetectorConstruction::SetEggShapedHyperKGeometry_withHPD()
 {
-  WCDetectorName = "HyperK_withHPD";
+  WCDetectorName = "EggShapedHyperK_withHPD";
   WCIDCollectionName = WCDetectorName +"-glassFaceWCPMT";
   WCODCollectionName = WCDetectorName + "-glassFaceWCPMT_OD"; 
   WCSimPMTObject * PMT = CreatePMTObject("HPD20inchHQE", WCIDCollectionName);
@@ -301,9 +301,9 @@ void WCSimDetectorConstruction::SetHyperKGeometry_withHPD()
    innerPMT_TopN = 0;
    innerPMT_BotN = 0;
    
-   isHyperK = true; // Tell DetectorConstruction to build HK geometry
+   isEggShapedHyperK = true; // Tell DetectorConstruction to build HK geometry
    
-   MatchWCSimAndHyperK();
+   MatchWCSimAndEggShapedHyperK();
 }
 
 void WCSimDetectorConstruction::TITUS_12inchPMT_40perCent()
@@ -461,7 +461,7 @@ void WCSimDetectorConstruction::e61_detector()
  * to their generic WC equivalents.
  * This should be included in all HK configurations.
  */
-void WCSimDetectorConstruction::MatchWCSimAndHyperK()
+void WCSimDetectorConstruction::MatchWCSimAndEggShapedHyperK()
 {
   WCLength = waterTank_Length;
   WCPosition = 0.;

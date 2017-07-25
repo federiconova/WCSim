@@ -32,7 +32,7 @@
 /***********************************************************
  *
  * This file containts the functions which construct a the
- * HyperK detector.  It used by the HK detector 
+ * EggShapedHyperK detector.  It used by the HK detector 
  * configuration modes.  It is called in the Construct()
  * method in WCSimDetectorConstruction.cc.
  *
@@ -41,9 +41,9 @@
  ***********************************************************/
 
 
-G4LogicalVolume* WCSimDetectorConstruction::ConstructHyperK()
+G4LogicalVolume* WCSimDetectorConstruction::ConstructEggShapedHyperK()
 {
-  G4cout << "**** Construct HyperK Detector ****" << G4endl;
+  G4cout << "**** Construct EggShapedHyperK Detector ****" << G4endl;
 
   PMTCopyNo = 0;
   wallSlabCopyNo = 0;
@@ -55,19 +55,19 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructHyperK()
   // HyperK Volume
 
   G4LogicalVolume* hyperKLV
-    = new G4LogicalVolume(new G4Box("HyperKBox",
+    = new G4LogicalVolume(new G4Box("EggShapedHyperKBox",
                                     waterTank_Height/2.,
                                     waterTank_Height/2.,
                                     waterTank_Length/2.+blackSheetThickness),
                                     FindMaterial("G4_AIR"),
-                                    "HyperK");
+                                    "EggShapedHyperK");
   hyperKLV->SetVisAttributes(G4VisAttributes::Invisible);
 
   new G4LogicalSkinSurface("WaterBSSurface",hyperKLV,OpWaterBSSurface);
 
 //  G4VPhysicalVolume* hyperKPV
 //    = new G4PVPlacement(0,G4ThreeVector(),hyperKLV,
-//                        "HyperK",0,false,0,checkOverlaps);
+//                        "EggShapedHyperK",0,false,0,checkOverlaps);
 
   // +/- Z Black Sheets
 
