@@ -77,7 +77,7 @@
 #/mygen/vecfile h2o.2km.001-009x3_G4.kin
 #/mygen/vecfile mu+.out
 #/mygen/vecfile nuancewcsim_fix.dat
-/mygen/vecfile melissa_cosmic_muons_test5.kin
+#/mygen/vecfile melissa_cosmic_muons_test5.kin
 
 #choose the Trigger & Digitizer type (and options)
 /DAQ/Digitizer SKI
@@ -119,12 +119,12 @@
 
 
 ###### Or you can use the G4 Particle Gun
-#  /mygen/generator normal
-#  /gun/particle e-
-# # #/gun/particle pi0
-#  /gun/energy 500 MeV
-#  /gun/direction 1 0 0 
-#  /gun/position 0 0 0  
+ /mygen/generator normal
+ /gun/particle e-
+# #/gun/particle pi0
+ /gun/energy 500 MeV
+ /gun/direction 1 0 0 
+ /gun/position 0 0 0  
 
 
 # /mygen/generator CRY
@@ -146,5 +146,5 @@
 
 /WCSimIO/RootFile wcsim.root
 
-/run/beamOn 1
+/run/beamOn 10
 #exit
