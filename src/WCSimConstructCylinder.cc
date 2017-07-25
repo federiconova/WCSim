@@ -112,8 +112,8 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
   }
 
   if( use_Melissa ){
-	extra_R = 5.*m;
-    extra_L = 5.*m;
+	extra_R = 50.*m;
+    extra_L = 50.*m;
 	center_of_barrel_z = 0.*m;
   }
 

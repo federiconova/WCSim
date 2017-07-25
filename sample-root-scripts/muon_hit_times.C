@@ -137,6 +137,17 @@ int main(){
 
   TH1F h_times("h_times","h_times; hit time [ns]",100,1.,-1.);
   TH1F h_n_hits("h_n_hits","h_n_hits; number of digitized hits",100,1.,-1.);
+  TH1F h_tube_id("h_tube_id","h_tube_id; tube id of hit",100,1.,-1.);
+
+  TH1F h_charge_max_hit("h_charge_max_hit","maximum charge per hit",100,1.,-1.);
+  h_charge_max_hit.SetLineColor(kBlack);
+  h_charge_max_hit.SetLineStyle(1);
+  h_charge_max_hit.SetLineWidth(2);
+  h_charge_max_hit.GetXaxis()->SetTitle("maximum charge per hit");
+  double maxQ;
+
+
+
 
 
   for(int ievent=0; ievent<primary_events_tree->GetEntries(); ievent++){
@@ -151,6 +162,14 @@ int main(){
 	h_n_hits.Fill(n_digitized_hits);
       time0 = time_max;
       
+      maxQ = 0.;
+
+      for(int ihit=0; ihit<n_digitized_hits; ihit++){
+	h_tube_id.Fill(digitized_hit_tube_id->at(itrigger).at(ihit));
+        if( (digitized_hit_Q->at(itrigger)).at(ihit) > maxQ ) maxQ = (digitized_hit_Q->at(itrigger)).at(ihit);
+      }
+      h_charge_max_hit.Fill(maxQ);
+
       for(int itime=0; itime<digitized_hit_time->at(itrigger).size(); itime++){
 
 	time = digitized_hit_time->at(itrigger).at(itime);
@@ -167,10 +186,10 @@ int main(){
 
       }
 
+
     }
 
   }
-
 
   of->cd();
 
