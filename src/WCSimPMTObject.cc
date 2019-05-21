@@ -1453,42 +1453,28 @@ G4float BoxandLine20inchHQE::GetDarkRateConversionFactor(){
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // 3 inch Triangular Tile
 
-//////////////////////////////////////////////////////////////
-// TriangularTile3inch Parameter Source                     //
-//                                                          //
-// 1pe resolution: Measured data in dark box (20" B&L)      //
-// Timing Resolution: Measured data in dark box (20" B&L)   //
-// QE: HQE R3600 PMT data from Hamamatsu                    //
-// CE: Simulation result of Hamamatsu (<460mm phi area)     //
-//////////////////////////////////////////////////////////////
-
- 
+// 3 inch (transit time spread of 4ns FWHM @1p.e.)
+// Adapted from ET Enterprise http://pprc.qmul.ac.uk/~zsoldos/9302B.pdf
 
 TriangularTile3inch::TriangularTile3inch(){}
 TriangularTile3inch::~TriangularTile3inch(){}
 
 G4String TriangularTile3inch::GetPMTName() {G4String PMTName = "TriangularTile3inch"; return PMTName;}
-G4double TriangularTile3inch::GetExposeHeight() {return .18*m;}
-G4double TriangularTile3inch::GetRadius() {return .254*m;}
+G4double TriangularTile3inch::GetExposeHeight() {return 29.*mm;}
+G4double TriangularTile3inch::GetRadius() {return 39.*mm;}
 G4double TriangularTile3inch::GetPMTGlassThickness() {return 0.4*cm;}
 
 float TriangularTile3inch::HitTimeSmearing(float Q) {
-  G4float sig_param[4]={0.6314,0.06260,0.5711,23.96};
-  G4float lambda_param[2]={0.4113,0.07827};
-  G4float sigma_lowcharge = sig_param[0]*(exp(-sig_param[1]*Q)+sig_param[2]);
 
-  G4float highcharge_param[2];
-  highcharge_param[0]=2*sig_param[0]*sig_param[1]*sig_param[3]*sqrt(sig_param[3])*exp(-sig_param[1]*sig_param[3]);
-  highcharge_param[1]=sig_param[0]*((1-2*sig_param[1]*sig_param[3])*exp(-sig_param[1]*sig_param[3])+sig_param[2]);
-  G4float sigma_highcharge = highcharge_param[0]/sqrt(Q)+highcharge_param[1];
-
-  G4float sigma = sigma_lowcharge*(Q<sig_param[3])+sigma_highcharge*(Q>sig_param[3]);
-  G4float lambda = lambda_param[0]+lambda_param[1]*Q;
-  G4float Smearing_factor = G4RandGauss::shoot(-0.2,sigma)-1/lambda*log(1-G4UniformRand());
+  float timingConstant = 1.890; // 4ns FWHM when Q=1.0
+  float timingResolution = 0.33 + sqrt(timingConstant/Q);
+  // looking at SK's jitter function for 20" tubes
+  if (timingResolution < 0.58) timingResolution=0.58;
+  float Smearing_factor = G4RandGauss::shoot(0.0,timingResolution);
   return Smearing_factor;
 }
 
-G4float* TriangularTile3inch::Getqpe()
+G4float* TriangularTile3inch::Getqpe()//currently uses the same as 20inch
 {
   static G4float qpe0[501]= {
     // 1
@@ -1605,43 +1591,42 @@ G4float* TriangularTile3inch::Getqpe()
     0.0  };
   return qpe0;
 }
-G4float* TriangularTile3inch::GetQEWavelength(){
-  static G4float wavelength_value[20] = { 280., 300., 320., 340., 360., 380., 400., 420., 440., 460., 480., 500., 520., 540., 560., 580., 600., 620., 640., 660.};
-  return wavelength_value;
-}
 
+
+//PMT QE Info extrapolated from ETEL datasheet
 G4float* TriangularTile3inch::GetQE(){
-  G4float correctionFactor = 1./0.73;//Correction factor added in July 2015 to scale the output of B&L PDs to 2.27 times the 20" PMTS based on Hamamatsu simulation. This was done in Pull Request #98 and will be removed once a more permanent solution is found.
-  static G4float QE[20] =
-    { 0.00*correctionFactor, .0008*correctionFactor, .1255*correctionFactor, .254962*correctionFactor, .2930*correctionFactor, .3127*correctionFactor, .3130*correctionFactor, .2994*correctionFactor, .2791*correctionFactor, .2491*correctionFactor,
-      .2070*correctionFactor,  .1758*correctionFactor, .1384*correctionFactor, .0779*correctionFactor, .0473*correctionFactor, .0288*correctionFactor, .0149*correctionFactor, .0062*correctionFactor, .0002*correctionFactor, .0001*correctionFactor};  
-
+  static G4float QE[20] = { 0.00, .005, .09, .21, .28, .30, .29, .28, .26, .24, .22, .18, .13, .075, .04, .02, .008, 0.00, 0.00, 0.00};
   return QE;
 }
-G4float TriangularTile3inch::GetmaxQE(){
-  G4float correctionFactor = 1./0.73;//Correction factor added in July 2015 to scale the output of B&L PDs to 2.27 times the 20" PMTS based on Hamamatsu simulation. This was done in Pull Request #98 and will be removed once a more permanent solution is found.
-  const G4float maxQE = 0.315*correctionFactor;
+G4float* TriangularTile3inch::GetQEWavelength(){static G4float wavelength[20] = { 260., 280., 300., 320., 340., 360., 380., 400., 420., 440., 460., 480., 500., 520., 540., 560., 580., 600., 620., 640.};
+  return wavelength;}
+
+G4float  TriangularTile3inch::GetmaxQE(){
+  const G4float maxQE = 0.30;
   return maxQE;
 }
-G4float* TriangularTile3inch::GetCollectionEfficiencyArray(){  
-  static G4float CE[10] = { 95., 95., 95., 95., 95., 95., 95., 95., 95., 95.};
+
+
+// Should be actual PMT Dark Rate, not effective dark rate in detector including other LE noise
+G4float TriangularTile3inch::GetDarkRate(){
+  const G4float rate = 200*CLHEP::hertz;   //SKI value set in SKDETSim.
+  return rate;
+}
+// Convert dark noise frequency to one before applying threshold of 0.25 pe, as that is what
+// will be simulated (WCSimWCDigitizer::AddPMTDarkRate)
+G4float TriangularTile3inch::GetDarkRateConversionFactor(){
+  const G4float factor = 1.367;
+  return factor;
+}
+
+// By default, each PMT has 100% collection efficiency at all angles
+// This can be overridden by setting GetCE in the derived class
+G4float* TriangularTile3inch::GetCollectionEfficiencyArray(){
+  static G4float CE[10] = { 100., 100., 100., 100., 100., 100., 100., 100., 100., 100.};
   return CE;
 }
 
-G4float TriangularTile3inch::GetDarkRate(){
-  /* 
-   * 10.*CLHEP::kilohertz;   //from presentation 1st HyperK Collab meeting, July 2015.
-   * 8.4kHz comes from average of HQE R3600-02's in EGADS (ref. Nakayama-san)
-   * Actual values of latest version of B&L PMT still being studied. ToDo: update when ready.
-   */
-  const G4float rate = 8.4*CLHEP::kilohertz;
-  return rate;
-}
 
-G4float TriangularTile3inch::GetDarkRateConversionFactor(){
-  const G4float factor = 1.126;
-  return factor;
-}
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////

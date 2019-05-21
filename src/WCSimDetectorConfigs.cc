@@ -200,8 +200,13 @@ void WCSimDetectorConstruction::Cylinder_60x74_TriangularTiles_40perCent()
   WCPMTperCellHorizontal= 4;
   WCPMTperCellVertical  = 3;
   WCPMTPercentCoverage  = 40.0;
-  WCBarrelNumPMTHorizontal = round(WCIDDiameter*sqrt(pi*WCPMTPercentCoverage)/(10.0*WCPMTRadius));
-  WCBarrelNRings           = round(((WCBarrelNumPMTHorizontal*((WCIDHeight-2*WCBarrelPMTOffset)/(pi*WCIDDiameter)))
+
+
+  double WCPMTRadius_for_coverage = .254*m; // value from 20'' PMT
+  double WCBarrelPMTOffset_for_coverage = WCPMTRadius_for_coverage;
+
+  WCBarrelNumPMTHorizontal = round(WCIDDiameter*sqrt(pi*WCPMTPercentCoverage)/(10.0*WCPMTRadius_for_coverage));
+  WCBarrelNRings           = round(((WCBarrelNumPMTHorizontal*((WCIDHeight-2*WCBarrelPMTOffset_for_coverage)/(pi*WCIDDiameter)))
                                       /WCPMTperCellVertical));
   WCCapPMTSpacing       = (pi*WCIDDiameter/WCBarrelNumPMTHorizontal); // distance between centers of top and bottom pmts
   WCCapEdgeLimit        = WCIDDiameter/2.0 - WCPMTRadius;
