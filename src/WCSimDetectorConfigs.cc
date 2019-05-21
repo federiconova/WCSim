@@ -190,7 +190,7 @@ void WCSimDetectorConstruction::Cylinder_60x74_TriangularTiles_40perCent()
 { 
   WCDetectorName = "Cylinder_60x74_TriangularTiles_40perCent";
   WCIDCollectionName = WCDetectorName +"-glassFaceWCPMT";
-  WCSimPMTObject * PMT = CreatePMTObject("BoxandLine20inchHQE", WCIDCollectionName);
+  WCSimPMTObject * PMT = CreatePMTObject("TriangularTile3inch", WCIDCollectionName);
   WCPMTName           = PMT->GetPMTName();
   WCPMTExposeHeight   = PMT->GetExposeHeight();
   WCPMTRadius         = PMT->GetRadius();
