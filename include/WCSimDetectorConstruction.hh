@@ -10,6 +10,8 @@
 #include "G4VPhysicalVolume.hh"
 #include "G4OpticalSurface.hh"
 #include "globals.hh"
+#include "G4Trd.hh"
+#include "G4UnionSolid.hh"
 
 #include <fstream>
 #include <map>
@@ -204,6 +206,8 @@ private:
 				  const G4Transform3D&);
   void GetWCGeom(G4VPhysicalVolume*, int, int, 
 			      const G4Transform3D&);
+
+  void BuildWLSplate(double PMT_radius, double PMT_height, double sphereRadius, double PMTOffset, G4Box* solidCutOffTubs, G4LogicalVolume* logicWCPMT);
 
   //---Volume lengths
 

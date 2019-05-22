@@ -30,6 +30,7 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructPMT(G4String PMTName, G4Str
       return it->second;
   }
 
+
   //G4cout << "Create PMT" << G4endl;
 
 
@@ -62,25 +63,40 @@ else
   //All components of the PMT are now contained in a single logical volume logicWCPMT.
   //Origin is on the blacksheet, faces positive z-direction.
   
-  G4double PMTHolderZ[2] = {0, expose};
-  G4double PMTHolderR[2] = {radius, radius};
-  G4double PMTHolderr[2] = {0,0};
+  //Need a volume to cut away excess behind blacksheet
+  G4Box* solidCutOffTubs =
+      new G4Box(    "cutOffTubs",
+            sphereRadius+1.*cm,
+            sphereRadius+1.*cm,
+            PMTOffset);
 
-  G4Polycone* solidWCPMT = 
-   new G4Polycone("WCPMT",                    
-                  0.0*deg,
-                  360.0*deg,
-                  2,
-                  PMTHolderZ,
-                  PMTHolderr, // R Inner
-                  PMTHolderR);// R Outer
+  G4LogicalVolume* logicWCPMT;
 
+   if( PMTName == "TriangularTile3inch" ){
+     G4cout << " qqq building PMT " << PMTName << G4endl;
 
-  G4LogicalVolume* logicWCPMT =
-    new G4LogicalVolume(    solidWCPMT,
-                            G4Material::GetMaterial("Water"),
-                            "WCPMT",
-                            0,0,0);
+     logicWCPMT = new G4LogicalVolume(NULL, NULL, "WCPMT", 0, 0, 0);
+     BuildWLSplate(radius, expose, sphereRadius, PMTOffset, solidCutOffTubs, logicWCPMT);
+
+     }else{
+
+    G4double PMTHolderZ[2] = {0, expose};
+    G4double PMTHolderR[2] = {radius, radius};
+    G4double PMTHolderr[2] = {0,0};
+    G4Polycone* solidWCPMT = 
+      new G4Polycone("WCPMT",                    
+		     0.0*deg,
+		     360.0*deg,
+		     2,
+		     PMTHolderZ,
+		     PMTHolderr, // R Inner
+		     PMTHolderR);// R Outer
+    logicWCPMT =
+      new G4LogicalVolume(    solidWCPMT,
+			      G4Material::GetMaterial("Water"),
+			      "WCPMT",
+			      0,0,0);
+     }
 
 if (Vis_Choice == "RayTracer"){
 // Makes the volume containing the PMT visible, solid, and forces the auxiliary edges to be viewed.
@@ -93,13 +109,6 @@ if (Vis_Choice == "RayTracer"){
 else{
 // Makes the volume containg the PMT invisible for normal visualization
     logicWCPMT->SetVisAttributes(G4VisAttributes::Invisible);}
-
-  //Need a volume to cut away excess behind blacksheet
-  G4Box* solidCutOffTubs =
-      new G4Box(    "cutOffTubs",
-            sphereRadius+1.*cm,
-            sphereRadius+1.*cm,
-            PMTOffset);
 
 
   //Create PMT Interior
@@ -227,4 +236,75 @@ else {
                              OpGlassCathodeSurface);
 
   return logicWCPMT;
+}
+
+void WCSimDetectorConstruction::BuildWLSplate(double PMT_radius, double PMT_height, double sphereRadius, double PMTOffset, G4Box* solidCutOffTubs, G4LogicalVolume* logicWCPMT){
+
+  G4double PetalLength = 35.*cm;
+  G4double PetalHalfThickness = 1.2*cm;
+  G4double PetalHalfWidth = PMT_radius;
+  G4double CladdingThickness = 1.*mm;
+  
+  G4cout << " qqq PetalHalfWidth " << PetalHalfWidth/m << " m, PetalLength " << PetalLength/m << " m, PetalHalfThickness " << PetalHalfThickness/m  << " m " << G4endl;
+  
+  G4double Trapezoid_dx1 = PetalHalfWidth; //  half-length along x at z = - dz
+  G4double Trapezoid_dx2 = 0.; //  half-length along x at z = + dz
+  G4double Trapezoid_dy1 = PetalHalfThickness; //  half-length along y at z = - dz
+  G4double Trapezoid_dy2 = PetalHalfThickness; //  half-length along y at z = + dz
+  G4double Trapezoid_dz = PetalLength/2.; //  half-length along z
+  G4cout << " qqq Trapezoid: dx1 " << Trapezoid_dx1/m << " m, dx2 " << Trapezoid_dx2/m << " m, dy1 " << Trapezoid_dy1/m << " m, dy2 " << Trapezoid_dy2/m << " m, dz " << Trapezoid_dz/m << " m " << G4endl;
+  
+  
+  G4RotationMatrix* TrapezoidRotation = new G4RotationMatrix();
+  TrapezoidRotation->rotateY(180.*deg);
+  G4Transform3D TrapezoidTransform(*TrapezoidRotation, G4ThreeVector(0,0,-2.*Trapezoid_dz));
+  G4Trd *OuterPetal_half = new G4Trd("Outer Petal Half", Trapezoid_dx1, Trapezoid_dx2, Trapezoid_dy1, Trapezoid_dy2, Trapezoid_dz);
+  G4UnionSolid *OuterPetal = new G4UnionSolid("Outer Petal", OuterPetal_half, OuterPetal_half, TrapezoidTransform);
+  
+  
+  G4Trd *OuterCladding_half = new G4Trd("Outer Cladding Half", Trapezoid_dx1+CladdingThickness, Trapezoid_dx2+CladdingThickness, Trapezoid_dy1, Trapezoid_dy2, Trapezoid_dz);
+  G4UnionSolid *OuterCladding = new G4UnionSolid("Outer Cladding", OuterCladding_half, OuterCladding_half, TrapezoidTransform);
+  
+  
+  G4Sphere* tmp_glass_outer_surface =
+    new G4Sphere(    "tmp_glass_outer_surface",
+		     0.0*m,sphereRadius,
+		     0.0*deg,360.0*deg,
+		     0.0*deg,90.0*deg);
+  
+  G4SubtractionSolid* glass_outer_surface =
+    new G4SubtractionSolid(    "glass_outer_surface",
+			       tmp_glass_outer_surface,
+			       solidCutOffTubs);
+
+
+    G4RotationMatrix* PmtRotation = new G4RotationMatrix();
+    PmtRotation->rotateX(90.*deg);
+    G4Transform3D PmtTransform(*PmtRotation, G4ThreeVector(0,PetalHalfThickness + PMTOffset,-Trapezoid_dz));
+    G4SubtractionSolid * WLSplate = new G4SubtractionSolid("wls_plate", OuterPetal, glass_outer_surface, PmtTransform);
+
+    G4SubtractionSolid * CladdingWithoutPetal = new G4SubtractionSolid("Cladding With Floor",OuterCladding,OuterPetal,0,G4ThreeVector(0,0,0));
+
+    G4SubtractionSolid * cladding = new G4SubtractionSolid("cladding",CladdingWithoutPetal, glass_outer_surface,PmtTransform);
+
+
+
+    G4LogicalVolume * WLSplate_log = new G4LogicalVolume(WLSplate,G4Material::GetMaterial("WlsGlass"),"wls_plate_log");
+
+    G4LogicalVolume * cladding_log = new G4LogicalVolume(cladding,G4Material::GetMaterial("Pethylene1"),"cladding",0,0,0);
+
+    G4double PMTHolderZ[2] = {0, PMT_height};
+    G4double PMTHolderR[2] = {PMT_radius, PMT_radius};
+    G4double PMTHolderr[2] = {0,0};
+    G4Polycone* solidWCPMT = 
+      new G4Polycone("WCPMT",                    
+		     0.0*deg,
+		     360.0*deg,
+		     2,
+		     PMTHolderZ,
+		     PMTHolderr, // R Inner
+		     PMTHolderR);// R Outer
+    logicWCPMT->SetSolid(solidWCPMT);
+    logicWCPMT->SetMaterial(G4Material::GetMaterial("Water"));
+
 }
