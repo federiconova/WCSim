@@ -315,6 +315,17 @@ void WCSimDetectorConstruction::ConstructMaterials()
   claddingMPT->AddProperty("RINDEX",wls_Energy,RefractiveIndexClad,wlsnum);
   claddingMPT->AddProperty("ABSLENGTH",wls_Energy,AbsCladding,wlsnum);
   fPethylene->SetMaterialPropertiesTable(claddingMPT);
+  //**cladding properties
+  const G4int cladding_num = 2;
+  G4double cladding_ephoton[cladding_num] = { 1.*eV, 10*eV };
+  G4double claddingReflectivity[cladding_num] = {0.95, 0.95};
+  G4double claddingEfficiency[cladding_num] = {0., 0.};
+  G4MaterialPropertiesTable* claddingPT = new G4MaterialPropertiesTable();
+  claddingPT->AddProperty("REFLECTIVITY", cladding_ephoton, claddingReflectivity, cladding_num);
+  claddingPT->AddProperty("EFFICIENCY", cladding_ephoton, claddingEfficiency, cladding_num);
+  OpCladdingSurface =
+    new G4OpticalSurface("CladdingSurface",unified,polished,dielectric_metal);
+  OpCladdingSurface->SetMaterialPropertiesTable(claddingPT);
 
 
 

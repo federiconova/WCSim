@@ -9,6 +9,7 @@
 #include "G4Polycone.hh"
 #include "G4PVPlacement.hh"
 #include "G4LogicalBorderSurface.hh"
+#include "G4LogicalSkinSurface.hh"
 
 #include "G4SDManager.hh"
 #include "WCSimWCSD.hh"
@@ -296,11 +297,13 @@ void WCSimDetectorConstruction::BuildWLSplate(double PMT_radius, double PMT_heig
 
 
 
-    //    new G4PVPlacement(PmtRotation, G4ThreeVector(0, 0 + Trapezoid_dz, 0 + PetalHalfThickness), WLSplate_log, "wlsplate", logicWCPMT , false, 0); 
+    new G4PVPlacement(PmtRotation, G4ThreeVector(0, 0 + Trapezoid_dz, 0 + PetalHalfThickness), WLSplate_log, "wlsplate", logicWCPMT , false, 0); 
     
-    //    new G4PVPlacement(PmtRotation,G4ThreeVector(0, 0 + Trapezoid_dz, 0 + PetalHalfThickness), cladding_log,"cladding",logicWCPMT,false,0);
+    new G4PVPlacement(PmtRotation,G4ThreeVector(0, 0 + Trapezoid_dz, 0 + PetalHalfThickness), cladding_log,"cladding",logicWCPMT,false,0);
 
 
+  //**Create logical skin surfaces
+  new G4LogicalSkinSurface("cladding_surf",   cladding_log,   OpCladdingSurface);
 
 
     G4double PMTHolderZ[2] = {0, PMT_height};
