@@ -261,6 +261,60 @@ void WCSimDetectorConstruction::ConstructMaterials()
 
 
 
+  //---PVT - WLS plates eljen EJ-286
+  // linear formula [CH2CH(C6H4CH3)]n
+  density = 1.023*g/cm3;
+  G4Material* WLS_PVT
+    = new G4Material("WLS_PVT",density,2);
+  WLS_PVT->AddElement(elC, 9); // PVT
+  WLS_PVT->AddElement(elH, 10);
+
+  const G4int nEntries_WLS_PVT = 4;
+
+  //  steve playfer
+  // absorption: 280-400 nm i.e. 3.1 - 4.4 eV
+  // emission: 410-460 nm i.e. 2.7 - 3.0 eV
+  G4double PhotonEnergy_WLS_PVT[nEntries_WLS_PVT] = { 2.7*eV, 3.0*eV, 3.1*eV, 4.4*eV };
+  
+  // eljen index: 1.58, but pmt glass has 1.600
+  G4double RIndex_WLS_PVT[nEntries_WLS_PVT] =
+    { 1.60, 1.60, 1.60, 1.60 };
+  G4double Abs_WLS_PVT[nEntries_WLS_PVT] =
+    {1*m,1*m, 3*mm,3*mm};
+  G4double Emission_WLS_PVT[nEntries_WLS_PVT] =
+    {1.0, 1.0, 0., 0. };
+  
+  G4MaterialPropertiesTable* WLS_PVT_MPT = new G4MaterialPropertiesTable();
+  
+  WLS_PVT_MPT->AddProperty("RINDEX",PhotonEnergy_WLS_PVT,RIndex_WLS_PVT,nEntries_WLS_PVT);
+  WLS_PVT_MPT->AddProperty("WLSABSLENGTH",PhotonEnergy_WLS_PVT,Abs_WLS_PVT,nEntries_WLS_PVT);
+  WLS_PVT_MPT->AddProperty("WLSCOMPONENT",PhotonEnergy_WLS_PVT,Emission_WLS_PVT,nEntries_WLS_PVT);
+  WLS_PVT_MPT->AddConstProperty("WLSTIMECONSTANT", 1.2*ns);
+  
+  WLS_PVT->SetMaterialPropertiesTable(WLS_PVT_MPT);
+
+
+
+  //Cladding(polyethylene)
+  density=1200*kg/m3;
+  G4int polyeth = 1;
+  G4int nC_eth = 2*polyeth;
+  G4int nH_eth = 4*polyeth;
+  G4double z;  // atomic number
+  G4Element * fH = new G4Element("H", "H", z=1., a=1.01*g/mole);
+  G4Element * fC = new G4Element("C", "C", z=6., a=12.01*g/mole);
+  G4Material* fPethylene = new G4Material("Pethylene", density,2);
+  fPethylene->AddElement(fH,nH_eth);
+  fPethylene->AddElement(fC,nC_eth);
+
+  const G4int wlsnum = 4;
+  G4double wls_Energy[] = {2.00*eV,2.87*eV,2.90*eV,3.47*eV};
+  G4double RefractiveIndexClad[wlsnum]={ 1.49, 1.49, 1.49, 1.49};
+  G4double AbsCladding[wlsnum]={9.00*m,9.00*m,0.1*mm,0.1*mm};
+  G4MaterialPropertiesTable* claddingMPT = new G4MaterialPropertiesTable();
+  claddingMPT->AddProperty("RINDEX",wls_Energy,RefractiveIndexClad,wlsnum);
+  claddingMPT->AddProperty("ABSLENGTH",wls_Energy,AbsCladding,wlsnum);
+  fPethylene->SetMaterialPropertiesTable(claddingMPT);
 
 
 

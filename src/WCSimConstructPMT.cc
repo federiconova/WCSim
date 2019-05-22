@@ -289,9 +289,9 @@ void WCSimDetectorConstruction::BuildWLSplate(double PMT_radius, double PMT_heig
 
 
 
-    G4LogicalVolume * WLSplate_log = new G4LogicalVolume(WLSplate,G4Material::GetMaterial("WlsGlass"),"wls_plate_log");
+    G4LogicalVolume * WLSplate_log = new G4LogicalVolume(WLSplate,G4Material::GetMaterial("WLS_PVT"),"wls_plate_log");
 
-    G4LogicalVolume * cladding_log = new G4LogicalVolume(cladding,G4Material::GetMaterial("Pethylene1"),"cladding",0,0,0);
+    G4LogicalVolume * cladding_log = new G4LogicalVolume(cladding,G4Material::GetMaterial("Pethylene"),"cladding",0,0,0);
 
     G4double PMTHolderZ[2] = {0, PMT_height};
     G4double PMTHolderR[2] = {PMT_radius, PMT_radius};
