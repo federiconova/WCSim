@@ -269,26 +269,116 @@ void WCSimDetectorConstruction::ConstructMaterials()
   WLS_PVT->AddElement(elC, 9); // PVT
   WLS_PVT->AddElement(elH, 10);
 
-  const G4int nEntries_WLS_PVT = 4;
+
+
+
+
+  const G4int nEntries_WLS_PVT = 60;
+  const G4int nEntries_WLS_PVT_ABS = 50;
+  const G4int nEntries_WLS_PVT_EM = 60;
 
   //  steve playfer
   // absorption: 280-400 nm i.e. 3.1 - 4.4 eV
   // emission: 410-460 nm i.e. 2.7 - 3.0 eV
-  G4double PhotonEnergy_WLS_PVT[nEntries_WLS_PVT] = { 2.7*eV, 3.0*eV, 3.1*eV, 4.4*eV };
-  
+  G4double PhotonEnergy_WLS_PVT[nEntries_WLS_PVT] = 
+    {1.56943*eV, 1.58955*eV, 1.6102*eV, 1.63138*eV, 1.65314*eV,
+       1.67548*eV, 1.69843*eV, 1.72202*eV, 1.74627*eV, 1.77122*eV,
+       1.79689*eV, 1.82331*eV, 1.85052*eV, 1.87856*eV, 1.90746*eV,
+       1.93727*eV, 1.96802*eV, 1.99976*eV, 2.03254*eV, 2.06642*eV,
+       2.10144*eV, 2.13768*eV, 2.17518*eV, 2.21402*eV, 2.25428*eV,
+       2.29602*eV, 2.33934*eV, 2.38433*eV, 2.43108*eV, 2.4797*eV,
+       2.53031*eV, 2.58302*eV, 2.63798*eV, 2.69533*eV, 2.75523*eV,
+       2.81784*eV, 2.88338*eV, 2.95203*eV, 3.02403*eV, 3.09963*eV,
+       3.17911*eV, 3.26277*eV, 3.35095*eV, 3.44403*eV, 3.54243*eV,
+       3.64662*eV, 3.75713*eV, 3.87454*eV, 3.99952*eV, 4.13284*eV,
+       4.27535*eV, 4.42804*eV, 4.59204*eV, 4.76866*eV, 4.95941*eV,
+       5.16605*eV, 5.39066*eV, 5.63569*eV, 5.90406*eV, 6.19926*eV};
+
+  G4double PhotonEnergy_WLS_PVT_ABS[nEntries_WLS_PVT_ABS] = 
+    {1.79689*eV, 1.82331*eV, 1.85052*eV, 1.87856*eV, 1.90746*eV,
+       1.93727*eV, 1.96802*eV, 1.99976*eV, 2.03254*eV, 2.06642*eV,
+       2.10144*eV, 2.13768*eV, 2.17518*eV, 2.21402*eV, 2.25428*eV,
+       2.29602*eV, 2.33934*eV, 2.38433*eV, 2.43108*eV, 2.4797*eV,
+       2.53031*eV, 2.58302*eV, 2.63798*eV, 2.69533*eV, 2.75523*eV,
+       2.81784*eV, 2.88338*eV, 2.95203*eV, 3.02403*eV, 3.09963*eV,
+       3.17911*eV, 3.26277*eV, 3.35095*eV, 3.44403*eV, 3.54243*eV,
+       3.64662*eV, 3.75713*eV, 3.87454*eV, 3.99952*eV, 4.13284*eV,
+       4.27535*eV, 4.42804*eV, 4.59204*eV, 4.76866*eV, 4.95941*eV,
+       5.16605*eV, 5.39066*eV, 5.63569*eV, 5.90406*eV, 6.19926*eV};
+
+  G4double PhotonEnergy_WLS_PVT_EM[nEntries_WLS_PVT_EM] = 
+    {1.56943*eV, 1.58955*eV, 1.6102*eV, 1.63138*eV, 1.65314*eV,
+       1.67548*eV, 1.69843*eV, 1.72202*eV, 1.74627*eV, 1.77122*eV,
+       1.79689*eV, 1.82331*eV, 1.85052*eV, 1.87856*eV, 1.90746*eV,
+       1.93727*eV, 1.96802*eV, 1.99976*eV, 2.03254*eV, 2.06642*eV,
+       2.10144*eV, 2.13768*eV, 2.17518*eV, 2.21402*eV, 2.25428*eV,
+       2.29602*eV, 2.33934*eV, 2.38433*eV, 2.43108*eV, 2.4797*eV,
+       2.53031*eV, 2.58302*eV, 2.63798*eV, 2.69533*eV, 2.75523*eV,
+       2.81784*eV, 2.88338*eV, 2.95203*eV, 3.02403*eV, 3.09963*eV,
+       3.17911*eV, 3.26277*eV, 3.35095*eV, 3.44403*eV, 3.54243*eV,
+       3.64662*eV, 3.75713*eV, 3.87454*eV, 3.99952*eV, 4.13284*eV,
+       4.27535*eV, 4.42804*eV, 4.59204*eV, 4.76866*eV, 4.95941*eV,
+       5.16605*eV, 5.39066*eV, 5.63569*eV, 5.90406*eV, 6.19926*eV};
+
   // eljen index: 1.58, but pmt glass has 1.600
-  G4double RIndex_WLS_PVT[nEntries_WLS_PVT] =
-    { 1.60, 1.60, 1.60, 1.60 };
-  G4double Abs_WLS_PVT[nEntries_WLS_PVT] =
-    {1*m,1*m, 3*mm,3*mm};
-  G4double Emission_WLS_PVT[nEntries_WLS_PVT] =
-    {1.0, 1.0, 0., 0. };
+  G4double RIndex_WLS_PVT[nEntries_WLS_PVT] = 
+    {1.88417, 1.82311, 1.77462, 1.73568, 1.70409,
+       1.67822, 1.65685, 1.63905, 1.62413, 1.61152,
+       1.60081, 1.59164, 1.58376, 1.57694, 1.57102,
+       1.56585, 1.56132, 1.55733, 1.5538, 1.55067,
+       1.54789, 1.5454, 1.54317, 1.54116, 1.53935,
+       1.53772, 1.53624, 1.53489, 1.53366, 1.53254,
+       1.53152, 1.53058, 1.52971, 1.52892, 1.52818,
+       1.5275, 1.52687, 1.52629, 1.52575, 1.52525,
+       1.52478, 1.52434, 1.52393, 1.52355, 1.52319,
+       1.52285, 1.52254, 1.52224, 1.52196, 1.5217,
+       1.52145, 1.52121, 1.52099, 1.52078, 1.52058,
+     1.52039, 1.52021, 1.52004, 1.51988, 1.51973 };
+
+  G4double Abs_WLS_PVT[nEntries_WLS_PVT_ABS] =
+    { 19.6429*cm, 19.5783*cm, 19.4179*cm, 19.2909*cm, 19.4348*cm, // 700 --- 650
+        19.4447*cm, 19.4035*cm, 18.9912*cm, 19.1066*cm, 19.0923*cm, // 650 --- 600
+        19.1714*cm, 18.9591*cm, 18.997*cm, 18.9408*cm, 18.7645*cm, // 600 --- 550
+        18.5919*cm, 18.6909*cm, 18.5189*cm, 18.3881*cm, 18.1821*cm, // 550 --- 500
+        18.0372*cm, 18.0747*cm, 17.8693*cm, 17.6159*cm, 17.5833*cm, // 500 --- 450
+        17.3554*cm, 16.8257*cm, 15.4036*cm, 9.17667*cm, 1.21309*cm, // 450 --- 400
+        0.32882*cm, 0.293643*cm, 0.284121*cm, 0.282219*cm, 0.284037*cm, // 400 --- 350
+        0.278603*cm, 0.278088*cm, 0.279076*cm, 0.279771*cm, 0.280512*cm, // 350 --- 300
+        0.281305*cm, 0.282154*cm, 0.278283*cm, 0.278459*cm, 0.272505*cm, // 300 --- 250
+        100*cm, 100*cm, 100*cm, 100*cm, 100*cm}; // 250 --- 200
+
+
+  G4double Emission_WLS_PVT[nEntries_WLS_PVT_EM] =
+    { 0., 0., 0., 0., 0.,  // 800 --- 750
+        0., 0., 0., 0., 0., // 750 --- 700
+        0., 0., 0., 0., 0.,  // 700 --- 650
+        0., 0., 0., 0., 0., // 650 --- 600
+        0., 0., 0., 0., 0., // 600 --- 550
+        0., 0.01, 0.02, 0.05, 0.08,  // 550 --- 500
+        0.1, 0.12, 0.17, 0.38, 0.55, // 500 --- 450
+        0.70, 1., 0.9, 0.3, 0.05,    // 450 --- 400
+        0., 0., 0., 0., 0., // 400 --- 350
+        0., 0., 0., 0., 0., // 350 --- 300
+        0., 0., 0., 0., 0., // 300 --- 250
+        0., 0., 0., 0., 0.}; // 250 --- 200
   
+  // Define normal reflectivity from Fresnel equations
+  const G4int NUMENTRIES_WLS = 33;
+  G4double TransWaterWLS[NUMENTRIES_WLS] =
+      { 1-0.020836, 1-0.0207796, 1-0.0207198, 1-0.0206584, 1-0.0205953,
+        1-0.0205288, 1-0.0204589, 1-0.0203874, 1-0.0203125, 1-0.0202344,
+        1-0.0201512, 1-0.0200647, 1-0.019975, 1-0.0198787, 1-0.0197774,
+        1-0.0196696, 1-0.0195553, 1-0.0194329, 1-0.0193041, 1-0.0191639,
+        1-0.019016, 1-0.0188553, 1-0.0186803, 1-0.0184931, 1-0.0182871,
+        1-0.0180644, 1-0.0178189, 1-0.0175494, 1-0.0172519, 1-0.0169209,
+        1-0.0165512, 1-0.0161367, 1-0.0156689};
+
   G4MaterialPropertiesTable* WLS_PVT_MPT = new G4MaterialPropertiesTable();
   
   WLS_PVT_MPT->AddProperty("RINDEX",PhotonEnergy_WLS_PVT,RIndex_WLS_PVT,nEntries_WLS_PVT);
-  WLS_PVT_MPT->AddProperty("WLSABSLENGTH",PhotonEnergy_WLS_PVT,Abs_WLS_PVT,nEntries_WLS_PVT);
-  WLS_PVT_MPT->AddProperty("WLSCOMPONENT",PhotonEnergy_WLS_PVT,Emission_WLS_PVT,nEntries_WLS_PVT);
+  WLS_PVT_MPT->AddProperty("WLSABSLENGTH",PhotonEnergy_WLS_PVT_ABS,Abs_WLS_PVT,nEntries_WLS_PVT_ABS);
+  WLS_PVT_MPT->AddProperty("WLSCOMPONENT",PhotonEnergy_WLS_PVT_EM,Emission_WLS_PVT,nEntries_WLS_PVT_EM);
+  WLS_PVT_MPT->AddProperty("TRANSMITTANCE", PhotonEnergy_WLS_PVT, TransWaterWLS, NUMENTRIES_WLS);
   WLS_PVT_MPT->AddConstProperty("WLSTIMECONSTANT", 1.2*ns);
   
   WLS_PVT->SetMaterialPropertiesTable(WLS_PVT_MPT);
@@ -315,6 +405,7 @@ void WCSimDetectorConstruction::ConstructMaterials()
   claddingMPT->AddProperty("RINDEX",wls_Energy,RefractiveIndexClad,wlsnum);
   claddingMPT->AddProperty("ABSLENGTH",wls_Energy,AbsCladding,wlsnum);
   fPethylene->SetMaterialPropertiesTable(claddingMPT);
+
   //**cladding properties
   const G4int cladding_num = 2;
   G4double cladding_ephoton[cladding_num] = { 1.*eV, 10*eV };
@@ -878,10 +969,86 @@ void WCSimDetectorConstruction::ConstructMaterials()
      { 0.0, 0.0 };
    // Lambertian prob is therefore 0.25
 
-   G4double TyREFLECTIVITY[NUM] =
-     { 0.94, 0.94 }; //cf. DuPont
-   //
-   // ----
+#define NUMENTRIES_TY 33 // Number of bins of wavelength to be used for the Tyvek reflectivity
+
+  G4double PP_TyREFLECTIVITY[NUMENTRIES_TY] = //Tyvek reflectivity wavelength bins
+      { 2.06642*eV,
+        2.10144*eV, 2.13768*eV, 2.17518*eV, 2.21402*eV, 2.25428*eV,
+        2.29602*eV, 2.33934*eV, 2.38433*eV, 2.43108*eV, 2.4797*eV,
+        2.53031*eV, 2.58302*eV, 2.63798*eV, 2.69533*eV, 2.75523*eV,
+        2.81784*eV, 2.88338*eV, 2.95203*eV, 3.02403*eV, 3.09963*eV,
+        3.17911*eV, 3.26277*eV, 3.35095*eV, 3.44403*eV, 3.54243*eV,
+        3.64662*eV, 3.75713*eV, 3.87454*eV, 3.99952*eV, 4.13284*eV,
+        4.27535*eV, 4.42804*eV};
+
+  G4double TyREFLECTIVITY[NUMENTRIES_TY] = // Tyvek refelctivity
+      { 0.97,
+        0.97, 0.97, 0.97, 0.97, 0.97,
+        0.97, 0.97, 0.97, 0.97, 0.97,
+        0.97, 0.97, 0.97, 0.97, 0.97,
+        0.97, 0.97, 0.97, 0.97, 0.97,
+        0.96, 0.96, 0.95, 0.95, 0.95,
+        0.94, 0.93, 0.92, 0.91, 0.90,
+        0.89, 0.86};
+
+  G4MaterialPropertiesTable *MPT_Tyvek = new G4MaterialPropertiesTable();
+  // MPT_Tyvek->AddProperty("RINDEX", PP, RINDEX_tyvek, NUM);
+  // MPT_Tyvek->AddProperty("ABSLENGTH", ENERGY_water, BLACKABS_blacksheet, NUMENTRIES_water);
+  Tyvek->SetMaterialPropertiesTable(MPT_Tyvek);
+
+  G4MaterialPropertiesTable *MPTWater_Ty = new G4MaterialPropertiesTable();
+  MPTWater_Ty->AddProperty("RINDEX", PP, RINDEX_tyvek, NUM);
+  MPTWater_Ty->AddProperty("SPECULARLOBECONSTANT", PP, TySPECULARLOBECONSTANT, NUM);
+  MPTWater_Ty->AddProperty("SPECULARSPIKECONSTANT", PP, TySPECULARSPIKECONSTANT, NUM);
+  MPTWater_Ty->AddProperty("BACKSCATTERCONSTANT", PP, TyBACKSCATTERCONSTANT, NUM);
+  MPTWater_Ty->AddProperty("REFLECTIVITY",  PP_TyREFLECTIVITY, TyREFLECTIVITY, NUMENTRIES_TY);
+  OpWaterTySurface->SetMaterialPropertiesTable(MPTWater_Ty);
+  //
+  // ----
+
+  ///////////////////////
+  // ###### WLS ###### //
+  ///////////////////////
+
+  // Water -> WLS surface properties
+  OpWaterWLSSurface =
+      new G4OpticalSurface("WaterWLSSurface");
+
+  OpWaterWLSSurface->SetType(dielectric_dielectric);
+  OpWaterWLSSurface->SetModel(unified);
+  OpWaterWLSSurface->SetFinish(ground); // surface WLS/Water
+  OpWaterWLSSurface->SetSigmaAlpha(0.1); // TODO: What's this?
+
+
+
+  // Water -> WLS surface properties
+  OpWLSTySurface =
+      new G4OpticalSurface("WLSTySurface");
+
+  OpWLSTySurface->SetType(dielectric_metal); // Only absorption and reflection
+  OpWLSTySurface->SetModel(unified);
+  OpWLSTySurface->SetFinish(ground); // ground surface with tyvek
+  OpWLSTySurface->SetSigmaAlpha(0.2);
+
+  // Define normal reflectivity from Fresnel equations
+  G4double TransWLSTy[NUM] =
+      {1.-0.00207792,1.-0.00207792};
+
+  // MATERIAL properties
+
+  G4MaterialPropertiesTable *MPTWLS_Water = new G4MaterialPropertiesTable();
+  MPTWLS_Water->AddProperty("RINDEX",PhotonEnergy_WLS_PVT,RIndex_WLS_PVT,nEntries_WLS_PVT);
+  MPTWLS_Water->AddProperty("TRANSMITTANCE", PhotonEnergy_WLS_PVT, TransWaterWLS, NUMENTRIES_WLS);
+  OpWaterWLSSurface->SetMaterialPropertiesTable(MPTWLS_Water);
+
+  G4MaterialPropertiesTable *MPTWLS_Tyvek = new G4MaterialPropertiesTable();
+  MPTWLS_Tyvek->AddProperty("RINDEX",PhotonEnergy_WLS_PVT,RIndex_WLS_PVT,nEntries_WLS_PVT);
+  MPTWLS_Tyvek->AddProperty("TRANSMITTANCE", PP, TransWLSTy, NUM);
+  OpWLSTySurface->SetMaterialPropertiesTable(MPTWLS_Tyvek);
+
+  ///////////////////////
+  // ###### END ###### //
+  ///////////////////////
 
 
    G4MaterialPropertiesTable *myMPT1 = new G4MaterialPropertiesTable();
@@ -961,15 +1128,5 @@ void WCSimDetectorConstruction::ConstructMaterials()
    //myST2->AddProperty("ABSLENGTH", PP, abslength_paint , NUM);
    OpGlassCathodeSurface->SetMaterialPropertiesTable(myST2);
 
-   //Tyvek - jl145
-   G4MaterialPropertiesTable *myST3 = new G4MaterialPropertiesTable();
-   myST3->AddProperty("RINDEX", PP, RINDEX_tyvek, NUM);
-   myST3->AddProperty("SPECULARLOBECONSTANT", PP, TySPECULARLOBECONSTANT, NUM);
-   myST3->AddProperty("SPECULARSPIKECONSTANT", PP, TySPECULARSPIKECONSTANT, NUM);
-   myST3->AddProperty("BACKSCATTERCONSTANT", PP, TyBACKSCATTERCONSTANT, NUM);
-   myST3->AddProperty("REFLECTIVITY", PP, TyREFLECTIVITY, NUM);
-   myST3->AddProperty("EFFICIENCY", PP, EFFICIENCY_blacksheet, NUM);
-   //use same efficiency as blacksheet, which is 0
-   OpWaterTySurface->SetMaterialPropertiesTable(myST3);
 
 }

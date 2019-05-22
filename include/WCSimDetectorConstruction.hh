@@ -159,11 +159,13 @@ private:
 
   G4OpticalSurface * OpGlassCathodeSurface;
 
-  // WLS plate surface
-  G4OpticalSurface * OpCladdingSurface;
-
   //Tyvek surface - jl145
   G4OpticalSurface * OpWaterTySurface;
+
+  // WLS plate surface
+  G4OpticalSurface * OpCladdingSurface;
+  G4OpticalSurface * OpWaterWLSSurface;
+  G4OpticalSurface * OpWLSTySurface;
 
   // The messenger we use to change the geometry.
 

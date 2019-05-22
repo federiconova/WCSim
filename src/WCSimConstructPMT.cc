@@ -292,7 +292,8 @@ void WCSimDetectorConstruction::BuildWLSplate(double PMT_radius, double PMT_heig
 
     G4LogicalVolume * WLSplate_log = new G4LogicalVolume(WLSplate,G4Material::GetMaterial("WLS_PVT"),"wls_plate_log");
 
-    G4LogicalVolume * cladding_log = new G4LogicalVolume(cladding,G4Material::GetMaterial("Pethylene"),"cladding",0,0,0);
+    //    G4LogicalVolume * cladding_log = new G4LogicalVolume(cladding,G4Material::GetMaterial("Pethylene"),"cladding",0,0,0);
+    G4LogicalVolume * cladding_log = new G4LogicalVolume(cladding,G4Material::GetMaterial("Tyvek"),"cladding",0,0,0);
 
 
 
@@ -303,7 +304,7 @@ void WCSimDetectorConstruction::BuildWLSplate(double PMT_radius, double PMT_heig
 
 
   //**Create logical skin surfaces
-  new G4LogicalSkinSurface("cladding_surf",   cladding_log,   OpCladdingSurface);
+    //  new G4LogicalSkinSurface("cladding_surf",   cladding_log,   OpCladdingSurface);
 
 
     G4double PMTHolderZ[2] = {0, PMT_height};
