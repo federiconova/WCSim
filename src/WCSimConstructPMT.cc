@@ -293,8 +293,19 @@ void WCSimDetectorConstruction::BuildWLSplate(double PMT_radius, double PMT_heig
 
     G4LogicalVolume * cladding_log = new G4LogicalVolume(cladding,G4Material::GetMaterial("Pethylene"),"cladding",0,0,0);
 
+
+
+
+    //    new G4PVPlacement(PmtRotation, G4ThreeVector(0, 0 + Trapezoid_dz, 0 + PetalHalfThickness), WLSplate_log, "wlsplate", logicWCPMT , false, 0); 
+    
+    //    new G4PVPlacement(PmtRotation,G4ThreeVector(0, 0 + Trapezoid_dz, 0 + PetalHalfThickness), cladding_log,"cladding",logicWCPMT,false,0);
+
+
+
+
     G4double PMTHolderZ[2] = {0, PMT_height};
-    G4double PMTHolderR[2] = {PMT_radius, PMT_radius};
+    //G4double PMTHolderR[2] = {PMT_radius, PMT_radius};
+    G4double PMTHolderR[2] = {PetalLength, PetalLength};
     G4double PMTHolderr[2] = {0,0};
     G4Polycone* solidWCPMT = 
       new G4Polycone("WCPMT",                    
