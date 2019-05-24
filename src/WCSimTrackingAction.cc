@@ -52,6 +52,9 @@ void WCSimTrackingAction::PostUserTrackingAction(const G4Track* aTrack)
     anInfo = (WCSimTrackInformation*)(aTrack->GetUserInformation());
   else anInfo = new WCSimTrackInformation();
 
+  // F. Nova One can check here if the photon comes from WLS
+  // if(creatorProcess && creatorProcess->GetProcessName()== "OpWLS")
+
   // is it a primary ?
   // is the process in the set ? 
   // is the particle in the set ?

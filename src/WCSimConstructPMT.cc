@@ -246,8 +246,6 @@ void WCSimDetectorConstruction::BuildWLSplate(double PMT_radius, double PMT_heig
   G4double PetalHalfWidth = PMT_radius;
   G4double CladdingThickness = 1.*mm;
   
-  G4cout << " qqq PetalHalfWidth " << PetalHalfWidth/m << " m, PetalLength " << PetalLength/m << " m, PetalHalfThickness " << PetalHalfThickness/m  << " m " << G4endl;
-  
   G4double Trapezoid_dx1 = PetalHalfWidth; //  half-length along x at z = - dz
   G4double Trapezoid_dx2 = 0.; //  half-length along x at z = + dz
   G4double Trapezoid_dy1 = PetalHalfThickness; //  half-length along y at z = - dz
@@ -263,7 +261,7 @@ void WCSimDetectorConstruction::BuildWLSplate(double PMT_radius, double PMT_heig
   G4UnionSolid *OuterPetal = new G4UnionSolid("Outer Petal", OuterPetal_half, OuterPetal_half, TrapezoidTransform);
   
   
-  G4Trd *OuterCladding_half = new G4Trd("Outer Cladding Half", Trapezoid_dx1+CladdingThickness, Trapezoid_dx2+CladdingThickness, Trapezoid_dy1, Trapezoid_dy2, Trapezoid_dz);
+  G4Trd *OuterCladding_half = new G4Trd("Outer Cladding Half", Trapezoid_dx1+CladdingThickness, Trapezoid_dx2+CladdingThickness, Trapezoid_dy1 + CladdingThickness/2., Trapezoid_dy2 + CladdingThickness/2., Trapezoid_dz);
   G4UnionSolid *OuterCladding = new G4UnionSolid("Outer Cladding", OuterCladding_half, OuterCladding_half, TrapezoidTransform);
   
   
@@ -281,12 +279,13 @@ void WCSimDetectorConstruction::BuildWLSplate(double PMT_radius, double PMT_heig
 
     G4RotationMatrix* PmtRotation = new G4RotationMatrix();
     PmtRotation->rotateX(90.*deg);
-    G4Transform3D PmtTransform(*PmtRotation, G4ThreeVector(0,PetalHalfThickness + PMTOffset,-Trapezoid_dz));
-    G4SubtractionSolid * WLSplate = new G4SubtractionSolid("wls_plate", OuterPetal, glass_outer_surface, PmtTransform);
+    G4Transform3D PmtTransform_for_WLSplate(*PmtRotation, G4ThreeVector(0,PetalHalfThickness + PMTOffset + CladdingThickness,-Trapezoid_dz));
+    G4Transform3D PmtTransform_for_cladding(*PmtRotation, G4ThreeVector(0,PetalHalfThickness + PMTOffset + CladdingThickness/2.,-Trapezoid_dz));
+    G4SubtractionSolid * WLSplate = new G4SubtractionSolid("wls_plate", OuterPetal, glass_outer_surface, PmtTransform_for_WLSplate);
 
-    G4SubtractionSolid * CladdingWithoutPetal = new G4SubtractionSolid("Cladding With Floor",OuterCladding,OuterPetal,0,G4ThreeVector(0,0,0));
+    G4SubtractionSolid * CladdingWithoutPetal = new G4SubtractionSolid("Cladding With Floor",OuterCladding,OuterPetal,0,G4ThreeVector(0,-CladdingThickness/2.,0));
 
-    G4SubtractionSolid * cladding = new G4SubtractionSolid("cladding",CladdingWithoutPetal, glass_outer_surface,PmtTransform);
+    G4SubtractionSolid * cladding = new G4SubtractionSolid("cladding",CladdingWithoutPetal, glass_outer_surface,PmtTransform_for_cladding);
 
 
 
@@ -298,13 +297,16 @@ void WCSimDetectorConstruction::BuildWLSplate(double PMT_radius, double PMT_heig
 
 
 
-    new G4PVPlacement(PmtRotation, G4ThreeVector(0, 0 + Trapezoid_dz, 0 + PetalHalfThickness), WLSplate_log, "wlsplate", logicWCPMT , false, 0); 
+#if 1 //  F. Nova Comment this block to avoid building WLS plate and its cladding
+       new G4PVPlacement(PmtRotation, G4ThreeVector(0, 0 + Trapezoid_dz, 0 + PetalHalfThickness + CladdingThickness), WLSplate_log, "wlsplate", logicWCPMT , false, 0); 
     
-    new G4PVPlacement(PmtRotation,G4ThreeVector(0, 0 + Trapezoid_dz, 0 + PetalHalfThickness), cladding_log,"cladding",logicWCPMT,false,0);
+       new G4PVPlacement(PmtRotation,G4ThreeVector(0, 0 + Trapezoid_dz, 0 + PetalHalfThickness + CladdingThickness/2.), cladding_log,"cladding",logicWCPMT,false,0);
+#endif
 
 
   //**Create logical skin surfaces
-    //  new G4LogicalSkinSurface("cladding_surf",   cladding_log,   OpCladdingSurface);
+  // F. Nova Need this step to enforce cladding reflectivity
+  new G4LogicalSkinSurface("cladding_surf",   cladding_log,   OpCladdingSurface);
 
 
     G4double PMTHolderZ[2] = {0, PMT_height};

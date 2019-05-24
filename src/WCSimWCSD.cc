@@ -104,8 +104,11 @@ G4bool WCSimWCSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
   if ( particleDefinition != G4OpticalPhoton::OpticalPhotonDefinition())
     return false;
   G4String WCIDCollectionName = fdet->GetIDCollectionName();
+
   // M Fechner : too verbose
   //  if (aStep->GetTrack()->GetTrackStatus() == fAlive) cout << "status is fAlive\n";
+
+  // F. Nova: commenting out this return will increase the number of digitized hits (both with and without WLS)
   if ((aStep->GetTrack()->GetTrackStatus() == fAlive )
       &&(particleDefinition == G4OpticalPhoton::OpticalPhotonDefinition()))
     return false;

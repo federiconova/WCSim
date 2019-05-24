@@ -23,7 +23,9 @@ G4ClassificationOfNewTrack WCSimStackingAction::ClassifyNewTrack
   G4String WCIDCollectionName = DetConstruct->GetIDCollectionName();
   G4ClassificationOfNewTrack classification    = fWaiting;
   G4ParticleDefinition*      particleType      = aTrack->GetDefinition();
-  
+
+  // F. Nova The effect of this cut (returning fKill) si to reduce the number of digitized hits (with and without WLS)
+
 
   // Make sure it is an optical photon
   if( particleType == G4OpticalPhoton::OpticalPhotonDefinition() )

@@ -72,7 +72,7 @@
 /DAQ/Trigger NDigits
 
 #grab the other DAQ options (thresholds, timing windows, etc.)
-/control/execute daq.mac
+/control/execute daq_notrigger.mac
 
 
 # default dark noise frequency (and conversion factor) is PMT property (NEW), set in the code.
