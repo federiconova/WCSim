@@ -74,7 +74,6 @@ else
   G4LogicalVolume* logicWCPMT;
 
    if( PMTName == "TriangularTile3inch" ){
-     G4cout << " qqq building PMT " << PMTName << G4endl;
 
      logicWCPMT = new G4LogicalVolume(NULL, NULL, "WCPMT", 0, 0, 0);
      BuildWLSplate(radius, expose, sphereRadius, PMTOffset, solidCutOffTubs, logicWCPMT);
@@ -251,7 +250,6 @@ void WCSimDetectorConstruction::BuildWLSplate(double PMT_radius, double PMT_heig
   G4double Trapezoid_dy1 = PetalHalfThickness; //  half-length along y at z = - dz
   G4double Trapezoid_dy2 = PetalHalfThickness; //  half-length along y at z = + dz
   G4double Trapezoid_dz = PetalLength/2.; //  half-length along z
-  G4cout << " qqq Trapezoid: dx1 " << Trapezoid_dx1/m << " m, dx2 " << Trapezoid_dx2/m << " m, dy1 " << Trapezoid_dy1/m << " m, dy2 " << Trapezoid_dy2/m << " m, dz " << Trapezoid_dz/m << " m " << G4endl;
   
   
   G4RotationMatrix* TrapezoidRotation = new G4RotationMatrix();
