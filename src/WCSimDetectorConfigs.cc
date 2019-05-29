@@ -186,11 +186,11 @@ void WCSimDetectorConstruction::Cylinder_60x74_20inchBandL_40perCent()
   WCAddGd               = false;
 }
 
-void WCSimDetectorConstruction::Cylinder_60x74_TriangularTiles_40perCent()
+void WCSimDetectorConstruction::Cylinder_60x74_x1TriangularTiles_40perCent()
 { 
-  WCDetectorName = "Cylinder_60x74_TriangularTiles_40perCent";
+  WCDetectorName = "Cylinder_60x74_x1TriangularTiles_40perCent";
   WCIDCollectionName = WCDetectorName +"-glassFaceWCPMT";
-  WCSimPMTObject * PMT = CreatePMTObject("TriangularTile3inch", WCIDCollectionName);
+  WCSimPMTObject * PMT = CreatePMTObject("x1TriangularTile3inch", WCIDCollectionName);
   WCPMTName           = PMT->GetPMTName();
   WCPMTExposeHeight   = PMT->GetExposeHeight();
   WCPMTRadius         = PMT->GetRadius();

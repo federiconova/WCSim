@@ -1456,15 +1456,15 @@ G4float BoxandLine20inchHQE::GetDarkRateConversionFactor(){
 // 3 inch (transit time spread of 4ns FWHM @1p.e.)
 // Adapted from ET Enterprise http://pprc.qmul.ac.uk/~zsoldos/9302B.pdf
 
-TriangularTile3inch::TriangularTile3inch(){}
-TriangularTile3inch::~TriangularTile3inch(){}
+x1TriangularTile3inch::x1TriangularTile3inch(){}
+x1TriangularTile3inch::~x1TriangularTile3inch(){}
 
-G4String TriangularTile3inch::GetPMTName() {G4String PMTName = "TriangularTile3inch"; return PMTName;}
-G4double TriangularTile3inch::GetExposeHeight() {return 29.*mm;}
-G4double TriangularTile3inch::GetRadius() {return 39.*mm;}
-G4double TriangularTile3inch::GetPMTGlassThickness() {return 0.4*cm;}
+G4String x1TriangularTile3inch::GetPMTName() {G4String PMTName = "x1TriangularTile3inch"; return PMTName;}
+G4double x1TriangularTile3inch::GetExposeHeight() {return 29.*mm;}
+G4double x1TriangularTile3inch::GetRadius() {return 39.*mm;}
+G4double x1TriangularTile3inch::GetPMTGlassThickness() {return 0.4*cm;}
 
-float TriangularTile3inch::HitTimeSmearing(float Q) {
+float x1TriangularTile3inch::HitTimeSmearing(float Q) {
 
   float timingConstant = 1.890; // 4ns FWHM when Q=1.0
   float timingResolution = 0.33 + sqrt(timingConstant/Q);
@@ -1474,7 +1474,7 @@ float TriangularTile3inch::HitTimeSmearing(float Q) {
   return Smearing_factor;
 }
 
-G4float* TriangularTile3inch::Getqpe()//currently uses the same as 20inch
+G4float* x1TriangularTile3inch::Getqpe()//currently uses the same as 20inch
 {
   static G4float qpe0[501]= {
     // 1
@@ -1594,34 +1594,34 @@ G4float* TriangularTile3inch::Getqpe()//currently uses the same as 20inch
 
 
 //PMT QE Info extrapolated from ETEL datasheet
-G4float* TriangularTile3inch::GetQE(){
+G4float* x1TriangularTile3inch::GetQE(){
   static G4float QE[20] = { 0.00, .005, .09, .21, .28, .30, .29, .28, .26, .24, .22, .18, .13, .075, .04, .02, .008, 0.00, 0.00, 0.00};
   return QE;
 }
-G4float* TriangularTile3inch::GetQEWavelength(){static G4float wavelength[20] = { 260., 280., 300., 320., 340., 360., 380., 400., 420., 440., 460., 480., 500., 520., 540., 560., 580., 600., 620., 640.};
+G4float* x1TriangularTile3inch::GetQEWavelength(){static G4float wavelength[20] = { 260., 280., 300., 320., 340., 360., 380., 400., 420., 440., 460., 480., 500., 520., 540., 560., 580., 600., 620., 640.};
   return wavelength;}
 
-G4float  TriangularTile3inch::GetmaxQE(){
+G4float  x1TriangularTile3inch::GetmaxQE(){
   const G4float maxQE = 0.30;
   return maxQE;
 }
 
 
 // Should be actual PMT Dark Rate, not effective dark rate in detector including other LE noise
-G4float TriangularTile3inch::GetDarkRate(){
+G4float x1TriangularTile3inch::GetDarkRate(){
   const G4float rate = 200*CLHEP::hertz;   //SKI value set in SKDETSim.
   return rate;
 }
 // Convert dark noise frequency to one before applying threshold of 0.25 pe, as that is what
 // will be simulated (WCSimWCDigitizer::AddPMTDarkRate)
-G4float TriangularTile3inch::GetDarkRateConversionFactor(){
+G4float x1TriangularTile3inch::GetDarkRateConversionFactor(){
   const G4float factor = 1.367;
   return factor;
 }
 
 // By default, each PMT has 100% collection efficiency at all angles
 // This can be overridden by setting GetCE in the derived class
-G4float* TriangularTile3inch::GetCollectionEfficiencyArray(){
+G4float* x1TriangularTile3inch::GetCollectionEfficiencyArray(){
   static G4float CE[10] = { 100., 100., 100., 100., 100., 100., 100., 100., 100., 100.};
   return CE;
 }

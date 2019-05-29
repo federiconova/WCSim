@@ -249,8 +249,8 @@ WCSimPMTObject *WCSimDetectorConstruction::CreatePMTObject(G4String PMTType, G4S
     WCSimDetectorConstruction::SetPMTPointer(PMT, CollectionName);
     return PMT;
   }
-  else if (PMTType == "TriangularTile3inch"){
-    WCSimPMTObject* PMT = new TriangularTile3inch;
+  else if (PMTType == "x1TriangularTile3inch"){
+    WCSimPMTObject* PMT = new x1TriangularTile3inch;
     WCSimDetectorConstruction::SetPMTPointer(PMT, CollectionName);
     return PMT;
   }

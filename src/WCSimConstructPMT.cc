@@ -73,10 +73,10 @@ else
 
   G4LogicalVolume* logicWCPMT;
 
-   if( PMTName == "TriangularTile3inch" ){
+   if( PMTName == "x1TriangularTile3inch" ){
 
      logicWCPMT = new G4LogicalVolume(NULL, NULL, "WCPMT", 0, 0, 0);
-     BuildWLSplateTriangularTile(radius, expose, sphereRadius, PMTOffset, solidCutOffTubs, logicWCPMT);
+     BuildWLSplatex1TriangularTile(radius, expose, sphereRadius, PMTOffset, solidCutOffTubs, logicWCPMT);
 
    }else if( PMTName == "FastStar3inch" ){
 
@@ -243,7 +243,7 @@ else {
   return logicWCPMT;
 }
 
-void WCSimDetectorConstruction::BuildWLSplateTriangularTile(double PMT_radius, double PMT_height, double sphereRadius, double PMTOffset, G4Box* solidCutOffTubs, G4LogicalVolume* logicWCPMT){
+void WCSimDetectorConstruction::BuildWLSplatex1TriangularTile(double PMT_radius, double PMT_height, double sphereRadius, double PMTOffset, G4Box* solidCutOffTubs, G4LogicalVolume* logicWCPMT){
 
   G4double PetalLength = 35.*cm;
   G4double PetalHalfThickness = 1.2*cm;

@@ -20,7 +20,7 @@
 # Cylindrical detector with a height of 60 m and a diameter of 74 m
 #/WCSim/WCgeom Cylinder_60x74_20inchBandL_14perCent # Note: the actual coverage is 13.51%
 #/WCSim/WCgeom Cylinder_60x74_20inchBandL_40perCent
-/WCSim/WCgeom Cylinder_60x74_TriangularTiles_40perCent
+/WCSim/WCgeom Cylinder_60x74_x1TriangularTiles_40perCent
 
 # Generic cylindrical detector with a height of 100m and a 
 # diameter of 69m with 12" HPD and 14.59% photocoverage
@@ -77,7 +77,7 @@
 
 # default dark noise frequency (and conversion factor) is PMT property (NEW), set in the code.
 # Below gives possibility to overwrite nominal values, eg. to switch OFF the Dark Noise.
-/DarkRate/SetDarkRate 0 kHz   #Turn dark noise off
+#/DarkRate/SetDarkRate 0 kHz   #Turn dark noise off
 #/DarkRate/SetDarkRate 4.2 kHz #This is the value for SKI set in SKDETSIM.
 #/DarkRate/SetDarkRate 8.4 kHz #For 20 inch HPDs and Box and Line PMTs, based on High QE 20" R3600 dark rate from EGADS nov 2014
 #/DarkRate/SetDarkRate 3.0 kHz #For 12 inch HPDs and Box and Line PMTs, based on High QE 20" R3600 dark rate from EGADS nov 2014
@@ -96,7 +96,7 @@
 #width /DarkRate/SetDarkWindow [time in ns] around each hit
 #i.e. hit time ± (/DarkRate/SetDarkWindow) / 2
 /DarkRate/SetDarkMode 0
-/DarkRate/SetDarkHigh 100000
+/DarkRate/SetDarkHigh 10000
 /DarkRate/SetDarkLow 0
 /DarkRate/SetDarkWindow 4000
 
@@ -115,7 +115,7 @@
 
 ## change the name of the output root file, default = wcsim.root
 
-/WCSimIO/RootFile wcsim_TriangularTiles_600MeVmuon.root
+/WCSimIO/RootFile wcsim_x1TriangularTiles_600MeVmuon_darknoise.root
 
 /run/beamOn 10
 #exit

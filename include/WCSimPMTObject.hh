@@ -211,13 +211,13 @@ protected:
   G4float* GetCollectionEfficiencyArray();
 };
 
-class TriangularTile3inch : public WCSimPMTObject
+class x1TriangularTile3inch : public WCSimPMTObject
 {
 
 public:
   
-  TriangularTile3inch();
-  ~TriangularTile3inch();
+  x1TriangularTile3inch();
+  ~x1TriangularTile3inch();
  
 public:
   G4String GetPMTName() ;

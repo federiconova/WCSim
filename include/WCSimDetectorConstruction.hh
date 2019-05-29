@@ -66,7 +66,7 @@ public:
   void SuperK_20inchBandL_14perCent();
   void Cylinder_60x74_20inchBandL_14perCent();
   void Cylinder_60x74_20inchBandL_40perCent();
-  void Cylinder_60x74_TriangularTiles_40perCent();
+  void Cylinder_60x74_x1TriangularTiles_40perCent();
   void Cylinder_60x74_FastStars_40perCent();
   void Cylinder_12inchHPD_15perCent();
   void UpdateGeometry();
@@ -213,7 +213,7 @@ private:
   void GetWCGeom(G4VPhysicalVolume*, int, int, 
 			      const G4Transform3D&);
 
-  void BuildWLSplateTriangularTile(double PMT_radius, double PMT_height, double sphereRadius, double PMTOffset, G4Box* solidCutOffTubs, G4LogicalVolume* logicWCPMT);
+  void BuildWLSplatex1TriangularTile(double PMT_radius, double PMT_height, double sphereRadius, double PMTOffset, G4Box* solidCutOffTubs, G4LogicalVolume* logicWCPMT);
 
   void BuildWLSplateFastStar(double PMT_radius, double PMT_height, double sphereRadius, double PMTOffset, G4Box* solidCutOffTubs, G4LogicalVolume* logicWCPMT);
 
