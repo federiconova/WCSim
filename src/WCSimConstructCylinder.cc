@@ -695,26 +695,61 @@ If used here, uncomment the SetVisAttributes(WClogic) line, and comment out the 
   G4double horizontalSpacing   = barrelCellWidth/WCPMTperCellHorizontal;
   G4double verticalSpacing     = barrelCellHeight/WCPMTperCellVertical;
 
-  for(G4double i = 0; i < WCPMTperCellHorizontal; i++){
-    for(G4double j = 0; j < WCPMTperCellVertical; j++){
-      G4ThreeVector PMTPosition =  G4ThreeVector(WCIDRadius,
-						 -barrelCellWidth/2.+(i+0.5)*horizontalSpacing,
-						 -barrelCellHeight/2.+(j+0.5)*verticalSpacing);
+  if( WCPMTName == "x16TriangularTile3inch" ){
+	G4double zStep = verticalSpacing/8.;
+	G4double yStep = horizontalSpacing/2.;
+	G4cout << " qqq WCLength " << WCLength << " WCRadius " << WCRadius << " horizontalSpacing " << horizontalSpacing << " WCPMTperCellHorizontal " << WCPMTperCellHorizontal << " barrelCellWidth " << barrelCellWidth << " verticalSpacing " << verticalSpacing << " WCPMTperCellVertical " << WCPMTperCellVertical << " barrelCellHeight " << barrelCellHeight << " yStep " << yStep << " zStep " << zStep << G4endl;
 
-      G4VPhysicalVolume* physiWCBarrelPMT =
-	new G4PVPlacement(WCPMTRotation,              // its rotation
-			  PMTPosition, 
-			  logicWCPMT,                // its logical volume
-			  "WCPMT",             // its name
-			  logicWCBarrelCell,         // its mother volume
-			  false,                     // no boolean operations
-			  (int)(i*WCPMTperCellVertical+j),
-			  true);                       
-      
-   // logicWCPMT->GetDaughter(0),physiCapPMT is the glass face. If you add more 
-     // daugter volumes to the PMTs (e.g. a acryl cover) you have to check, if
+	for(G4double i = 0; i < WCPMTperCellHorizontal; i++){
+	  for(G4double j = 0; j < WCPMTperCellVertical; j++){
+		for(G4double k = 0; k < 8; k++){
+		  for(G4double l = 0; l < 2; l++){
+			G4ThreeVector PMTPosition =  G4ThreeVector(WCIDRadius,
+													   -barrelCellWidth/2.+(i+0.5)*horizontalSpacing + (l - 0.5)*yStep,
+													   -barrelCellHeight/2.+(j+0.5)*verticalSpacing + (k - 3.5 + l*0.5)*zStep);
+			
+			G4VPhysicalVolume* physiWCBarrelPMT =
+			  new G4PVPlacement(WCPMTRotation,              // its rotation
+								PMTPosition, 
+								logicWCPMT,                // its logical volume
+								"WCPMT",             // its name
+							  logicWCBarrelCell,         // its mother volume
+								false,                     // no boolean operations
+								(int)(((i*WCPMTperCellVertical+j)*8 + k)*2 + l),
+								true);                       
+			
+			// logicWCPMT->GetDaughter(0),physiCapPMT is the glass face. If you add more 
+			// daugter volumes to the PMTs (e.g. a acryl cover) you have to check, if
+			// this is still the case.
+		  }
+		}
+	  }
+	}
+
+  }else{
+
+	for(G4double i = 0; i < WCPMTperCellHorizontal; i++){
+	  for(G4double j = 0; j < WCPMTperCellVertical; j++){
+		G4ThreeVector PMTPosition =  G4ThreeVector(WCIDRadius,
+												   -barrelCellWidth/2.+(i+0.5)*horizontalSpacing,
+												   -barrelCellHeight/2.+(j+0.5)*verticalSpacing);
+		
+		G4VPhysicalVolume* physiWCBarrelPMT =
+		  new G4PVPlacement(WCPMTRotation,              // its rotation
+							PMTPosition, 
+							logicWCPMT,                // its logical volume
+							"WCPMT",             // its name
+							logicWCBarrelCell,         // its mother volume
+							false,                     // no boolean operations
+							(int)(i*WCPMTperCellVertical+j),
+							true);                       
+		
+		// logicWCPMT->GetDaughter(0),physiCapPMT is the glass face. If you add more 
+		// daugter volumes to the PMTs (e.g. a acryl cover) you have to check, if
 		// this is still the case.
-    }
+	  }
+	}
+
   }
   //-------------------------------------------------------------
   // Add PMTs in extra Tower if necessary

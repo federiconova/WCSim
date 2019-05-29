@@ -404,20 +404,38 @@ void WCSimDetectorConstruction::BuildWLSplatex16TriangularTile(double PMT_radius
   new G4LogicalSkinSurface("cladding_surf",   cladding_log,   OpCladdingSurface);
 
 
-    G4double PMTHolderZ[2] = {0, PMT_height};
-    //G4double PMTHolderR[2] = {PMT_radius, PMT_radius};
-    G4double PMTHolderR[2] = {PetalLength, PetalLength};
-    G4double PMTHolderr[2] = {0,0};
-    G4Polycone* solidWCPMT = 
-      new G4Polycone("WCPMT",                    
-		     0.0*deg,
-		     360.0*deg,
-		     2,
-		     PMTHolderZ,
-		     PMTHolderr, // R Inner
-		     PMTHolderR);// R Outer
-    logicWCPMT->SetSolid(solidWCPMT);
-    logicWCPMT->SetMaterial(G4Material::GetMaterial("Water"));
+
+
+  G4double WCPMT_Trapezoid_dx1 = PMT_radius; //  half-length along x at z = - dz
+  G4double WCPMT_Trapezoid_dx2 = 0.; //  half-length along x at z = + dz
+  G4double WCPMT_Trapezoid_dy1 = PMT_height; //  half-length along y at z = - dz
+  G4double WCPMT_Trapezoid_dy2 = PMT_height; //  half-length along y at z = + dz
+  G4double WCPMT_Trapezoid_dz = PetalLength/2.; //  half-length along z
+
+  G4Transform3D WCPMT_TrapezoidTransform(*TrapezoidRotation, G4ThreeVector(0,0,-2.*WCPMT_Trapezoid_dz));
+  G4Trd *WCPMT_container_half = new G4Trd("WCPMT_container_half", WCPMT_Trapezoid_dx1+CladdingThickness, WCPMT_Trapezoid_dx2+CladdingThickness, WCPMT_Trapezoid_dy1, WCPMT_Trapezoid_dy2, WCPMT_Trapezoid_dz);
+  G4UnionSolid *WCPMT_container = new G4UnionSolid("WCPMT_container", WCPMT_container_half, WCPMT_container_half, WCPMT_TrapezoidTransform);
+
+  G4double PMTHolderZ[2] = {0, PMT_height};
+  G4double PMTHolderR[2] = {PMT_radius, PMT_radius};
+  G4double PMTHolderr[2] = {0,0};
+  G4Polycone* PMT_envelope = 
+    new G4Polycone("WCPMT",                    
+		   0.0*deg,
+		   360.0*deg,
+		   2,
+		   PMTHolderZ,
+		   PMTHolderr, // R Inner
+		   PMTHolderR);// R Outer
+
+  G4RotationMatrix* ContainerRotation = new G4RotationMatrix();
+  ContainerRotation->rotateX(-90.*deg);
+  G4Transform3D ContainerTransform_for_PMT(*ContainerRotation, G4ThreeVector(0,Trapezoid_dz,PMT_height/2.));
+  G4UnionSolid* solidWCPMT = new G4UnionSolid("WCPMT", PMT_envelope, WCPMT_container, ContainerTransform_for_PMT);
+
+
+  logicWCPMT->SetSolid(solidWCPMT);
+  logicWCPMT->SetMaterial(G4Material::GetMaterial("Water"));
 
 }
 
