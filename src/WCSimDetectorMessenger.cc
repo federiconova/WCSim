@@ -25,6 +25,7 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
 			  "Cylinder_60x74_20inchBandL_14perCent\n"
       			  "Cylinder_60x74_20inchBandL_40perCent\n"
       			  "Cylinder_60x74_x1TriangularTiles_40perCent\n"
+      			  "Cylinder_60x74_x16TriangularTiles_40perCent\n"
       			  "Cylinder_60x74_FastStars_40perCent\n"
 			  "Cylinder_12inchHPD_15perCent\n"
                           "HyperK\n"
@@ -39,6 +40,7 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
 			   "Cylinder_60x74_20inchBandL_14perCent\n"
       			   "Cylinder_60x74_20inchBandL_40perCent\n"
       			   "Cylinder_60x74_x1TriangularTiles_40perCent\n"
+      			   "Cylinder_60x74_x16TriangularTiles_40perCent\n"
       			   "Cylinder_60x74_FastStars_40perCent\n"
 			   "Cylinder_12inchHPD_15perCent "
 			   "HyperK "
@@ -141,6 +143,8 @@ void WCSimDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
 		  WCSimDetector->Cylinder_60x74_20inchBandL_40perCent();
 		} else if ( newValue == "Cylinder_60x74_x1TriangularTiles_40perCent" ) {
 		  WCSimDetector->Cylinder_60x74_x1TriangularTiles_40perCent();
+		} else if ( newValue == "Cylinder_60x74_x16TriangularTiles_40perCent" ) {
+		  WCSimDetector->Cylinder_60x74_x16TriangularTiles_40perCent();
 		} else if ( newValue == "Cylinder_60x74_FastStars_40perCent" ) {
 		  WCSimDetector->Cylinder_60x74_FastStars_40perCent();
 		} else if (newValue == "Cylinder_12inchHPD_15perCent" ){

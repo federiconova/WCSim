@@ -235,6 +235,30 @@ protected:
   G4float* GetCollectionEfficiencyArray();
 };
 
+class x16TriangularTile3inch : public WCSimPMTObject
+{
+
+public:
+  
+  x16TriangularTile3inch();
+  ~x16TriangularTile3inch();
+ 
+public:
+  G4String GetPMTName() ;
+  G4double GetExposeHeight();
+  G4double GetRadius();
+  G4float* Getqpe();
+  G4float* GetQE();
+  G4float* GetQEWavelength();
+  G4float  GetmaxQE();
+  float    HitTimeSmearing(float);
+  G4double GetPMTGlassThickness();
+  G4float  GetDarkRate();
+  G4float  GetDarkRateConversionFactor();
+protected:
+  G4float* GetCollectionEfficiencyArray();
+};
+
 class FastStar3inch : public WCSimPMTObject
 {
 
