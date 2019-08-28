@@ -213,6 +213,33 @@ void WCSimDetectorConstruction::Cylinder_60x74_x1TriangularTiles_40perCent()
   WCAddGd               = false;
 }
 
+void WCSimDetectorConstruction::Cylinder_60x74_x1SquarePlate_40perCent()
+{ 
+  WCDetectorName = "Cylinder_60x74_x1SquarePlate_40perCent";
+  WCIDCollectionName = WCDetectorName +"-glassFaceWCPMT";
+  WCSimPMTObject * PMT = CreatePMTObject("x1SquarePlate3inch", WCIDCollectionName);
+  WCPMTName           = PMT->GetPMTName();
+  WCPMTExposeHeight   = PMT->GetExposeHeight();
+  WCPMTRadius         = PMT->GetRadius();
+  WCIDDiameter          = 74.0*m;
+  WCIDHeight            = 60.0*m;
+  WCBarrelPMTOffset     = WCPMTRadius; //offset from vertical
+  WCPMTperCellHorizontal= 4;
+  WCPMTperCellVertical  = 3;
+  // build as many 3 inch as 20 inch in 40% coverage
+  WCPMTPercentCoverage  = 40.0;
+  double WCPMTRadius_for_coverage = .254*m; // value from 20'' PMT
+  double WCBarrelPMTOffset_for_coverage = WCPMTRadius_for_coverage;
+
+  WCBarrelNumPMTHorizontal = round(WCIDDiameter*sqrt(pi*WCPMTPercentCoverage)/(10.0*WCPMTRadius_for_coverage));
+  WCBarrelNRings           = round(((WCBarrelNumPMTHorizontal*((WCIDHeight-2*WCBarrelPMTOffset_for_coverage)/(pi*WCIDDiameter)))
+                                      /WCPMTperCellVertical));
+  WCCapPMTSpacing       = (pi*WCIDDiameter/WCBarrelNumPMTHorizontal); // distance between centers of top and bottom pmts
+  WCCapEdgeLimit        = WCIDDiameter/2.0 - WCPMTRadius;
+  WCBlackSheetThickness = 2.0*cm;
+  WCAddGd               = false;
+}
+
 void WCSimDetectorConstruction::Cylinder_60x74_x16TriangularTiles_40perCent()
 { 
   WCDetectorName = "Cylinder_60x74_x16TriangularTiles_40perCent";

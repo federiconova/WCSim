@@ -67,6 +67,7 @@ public:
   void Cylinder_60x74_20inchBandL_14perCent();
   void Cylinder_60x74_20inchBandL_40perCent();
   void Cylinder_60x74_x1TriangularTiles_40perCent();
+  void Cylinder_60x74_x1SquarePlate_40perCent();
   void Cylinder_60x74_x16TriangularTiles_40perCent();
   void Cylinder_60x74_FastStars_40perCent();
   void Cylinder_12inchHPD_15perCent();
@@ -215,6 +216,8 @@ private:
 			      const G4Transform3D&);
 
   void BuildWLSplatex1TriangularTile(double PMT_radius, double PMT_height, double sphereRadius, double PMTOffset, G4Box* solidCutOffTubs, G4LogicalVolume* logicWCPMT);
+
+  void BuildWLSplatex1SquarePlate(double PMT_radius, double PMT_height, double sphereRadius, double PMTOffset, G4Box* solidCutOffTubs, G4LogicalVolume* logicWCPMT);
 
   void BuildWLSplatex16TriangularTile(double PMT_radius, double PMT_height, double sphereRadius, double PMTOffset, G4Box* solidCutOffTubs, G4LogicalVolume* logicWCPMT);
 

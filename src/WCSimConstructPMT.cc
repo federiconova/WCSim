@@ -78,6 +78,11 @@ else
      logicWCPMT = new G4LogicalVolume(NULL, NULL, "WCPMT", 0, 0, 0);
      BuildWLSplatex1TriangularTile(radius, expose, sphereRadius, PMTOffset, solidCutOffTubs, logicWCPMT);
 
+   } else if( PMTName == "x1SquarePlate3inch" ){
+
+     logicWCPMT = new G4LogicalVolume(NULL, NULL, "WCPMT", 0, 0, 0);
+     BuildWLSplatex1SquarePlate(radius, expose, sphereRadius, PMTOffset, solidCutOffTubs, logicWCPMT);
+
    }else if( PMTName == "x16TriangularTile3inch" ){
 
      logicWCPMT = new G4LogicalVolume(NULL, NULL, "WCPMT", 0, 0, 0);
@@ -320,6 +325,70 @@ void WCSimDetectorConstruction::BuildWLSplatex1TriangularTile(double PMT_radius,
     G4double PMTHolderZ[2] = {0, PMT_height};
     //G4double PMTHolderR[2] = {PMT_radius, PMT_radius};
     G4double PMTHolderR[2] = {PetalLength, PetalLength};
+    G4double PMTHolderr[2] = {0,0};
+    G4Polycone* solidWCPMT = 
+      new G4Polycone("WCPMT",                    
+		     0.0*deg,
+		     360.0*deg,
+		     2,
+		     PMTHolderZ,
+		     PMTHolderr, // R Inner
+		     PMTHolderR);// R Outer
+    logicWCPMT->SetSolid(solidWCPMT);
+    logicWCPMT->SetMaterial(G4Material::GetMaterial("Water"));
+
+}
+
+
+void WCSimDetectorConstruction::BuildWLSplatex1SquarePlate(double PMT_radius, double PMT_height, double sphereRadius, double PMTOffset, G4Box* solidCutOffTubs, G4LogicalVolume* logicWCPMT){
+
+  G4double PlateHalfThickness = 1.2*cm;
+  G4double PlateHalfSide = 25.*cm;
+  G4double CladdingThickness = 1.*mm;
+
+  G4cout << " qqq create WlsSquarePlate with inner radius " << PMT_radius/m << " m, half side " << PlateHalfSide/m << " m, half PlateHalfThickness " << PlateHalfThickness/m << " m " << G4endl;
+
+  G4Box *outerBox = new G4Box("Outer Box",PlateHalfSide,PlateHalfSide,PlateHalfThickness);
+
+  G4Sphere* tmp_glass_outer_surface =
+    new G4Sphere(    "tmp_glass_outer_surface",
+		     0.0*m,sphereRadius,
+		     0.0*deg,360.0*deg,
+		     0.0*deg,90.0*deg);
+  
+  G4SubtractionSolid* glass_outer_surface =
+    new G4SubtractionSolid(    "glass_outer_surface",
+			       tmp_glass_outer_surface,
+			       solidCutOffTubs);
+
+  G4RotationMatrix* NullRotation = new G4RotationMatrix();
+  G4Transform3D WLSplateTransform(*NullRotation, G4ThreeVector(0, 0, -PlateHalfThickness - PMTOffset)); // center of glass outer surface in outerBox coordinates
+
+  G4SubtractionSolid * WLSplate = new G4SubtractionSolid("wls_plate", outerBox, glass_outer_surface, WLSplateTransform);
+  
+  G4LogicalVolume * WLSplate_log = new G4LogicalVolume(WLSplate,G4Material::GetMaterial("WLS_PVT"),"wls_plate_log");
+
+  
+  G4Box *outerBoxCladding = new G4Box("Outer Box Cladding",PlateHalfSide+CladdingThickness,PlateHalfSide+CladdingThickness,PlateHalfThickness);
+  G4SubtractionSolid * cladding = new G4SubtractionSolid("cladding_square_plate",outerBoxCladding,outerBox);
+  
+  G4LogicalVolume * cladding_log = new G4LogicalVolume(cladding,G4Material::GetMaterial("Tyvek"),"cladding",0,0,0);
+
+#if 1 //  F. Nova Comment this block to avoid building WLS plate and its cladding
+       new G4PVPlacement(0, G4ThreeVector(0, 0, 0 + PlateHalfThickness), WLSplate_log, "wlsplate", logicWCPMT , false, 0); 
+    
+       new G4PVPlacement(0,G4ThreeVector(0, 0, 0 + PlateHalfThickness), cladding_log,"cladding",logicWCPMT,false,0);
+#endif
+
+
+  //**Create logical skin surfaces
+  // F. Nova Need this step to enforce cladding reflectivity
+  new G4LogicalSkinSurface("cladding_surf",   cladding_log,   OpCladdingSurface);
+
+
+    G4double PMTHolderZ[2] = {0, PMT_height};
+    // ensure to contain plate diagonal sqrt(2) = 1.4
+    G4double PMTHolderR[2] = {1.5*PlateHalfSide, 1.5*PlateHalfSide}; 
     G4double PMTHolderr[2] = {0,0};
     G4Polycone* solidWCPMT = 
       new G4Polycone("WCPMT",                    
