@@ -9,6 +9,7 @@
 #include "G4Polycone.hh"
 #include "G4PVPlacement.hh"
 #include "G4LogicalBorderSurface.hh"
+#include "G4LogicalSkinSurface.hh"
 
 #include "G4SDManager.hh"
 #include "WCSimWCSD.hh"
@@ -20,7 +21,7 @@
 
 WCSimDetectorConstruction::PMTMap_t WCSimDetectorConstruction::PMTLogicalVolumes;
 
-G4LogicalVolume* WCSimDetectorConstruction::ConstructPMT(G4String PMTName, G4String CollectionName)
+G4LogicalVolume* WCSimDetectorConstruction::ConstructPMT(G4String PMTName, G4String CollectionName, G4String detectorElement)
 {
   PMTKey_t key(PMTName,CollectionName);
 
@@ -29,6 +30,7 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructPMT(G4String PMTName, G4Str
       //G4cout << "Restore PMT" << G4endl;
       return it->second;
   }
+
 
   //G4cout << "Create PMT" << G4endl;
 
@@ -44,7 +46,9 @@ if (Vis_Choice == "RayTracer"){
 else
    { // Gray wireframe visual style
     // used in OGLSX visualizer
-  G4VisAttributes* WCPMTVisAtt = new G4VisAttributes(G4Colour(0.2,0.2,0.2));
+  G4VisAttributes* WCPMTVisAtt;
+  if(detectorElement == "OD") WCPMTVisAtt = new G4VisAttributes(G4Colour(1.0, 0.0, 0.0));
+  else WCPMTVisAtt = new G4VisAttributes(G4Colour(0.2,0.2,0.2));
   WCPMTVisAtt->SetForceWireframe(true);}
 
   G4double expose;
@@ -62,25 +66,61 @@ else
   //All components of the PMT are now contained in a single logical volume logicWCPMT.
   //Origin is on the blacksheet, faces positive z-direction.
   
-  G4double PMTHolderZ[2] = {0, expose};
-  G4double PMTHolderR[2] = {radius, radius};
-  G4double PMTHolderr[2] = {0,0};
+  //Need a volume to cut away excess behind blacksheet
+  G4Box* solidCutOffTubs =
+      new G4Box(    "cutOffTubs",
+            sphereRadius+1.*cm,
+            sphereRadius+1.*cm,
+            PMTOffset);
 
-  G4Polycone* solidWCPMT = 
-   new G4Polycone("WCPMT",                    
-                  0.0*deg,
-                  360.0*deg,
-                  2,
-                  PMTHolderZ,
-                  PMTHolderr, // R Inner
-                  PMTHolderR);// R Outer
+  G4LogicalVolume* logicWCPMT;
 
+   if( PMTName == "x1TriangularTile3inch" ){
 
-  G4LogicalVolume* logicWCPMT =
-    new G4LogicalVolume(    solidWCPMT,
-                            G4Material::GetMaterial("Water"),
-                            "WCPMT",
-                            0,0,0);
+     logicWCPMT = new G4LogicalVolume(NULL, NULL, "WCPMT", 0, 0, 0);
+     BuildWLSplatex1TriangularTile(radius, expose, sphereRadius, PMTOffset, solidCutOffTubs, logicWCPMT);
+
+   } else if( PMTName == "x1SquarePlate3inch" ){
+
+     logicWCPMT = new G4LogicalVolume(NULL, NULL, "WCPMT", 0, 0, 0);
+     BuildWLSplatex1SquarePlate(radius, expose, sphereRadius, PMTOffset, solidCutOffTubs, logicWCPMT);
+
+   }else if( PMTName == "x16TriangularTile3inch" ){
+
+     logicWCPMT = new G4LogicalVolume(NULL, NULL, "WCPMT", 0, 0, 0);
+     BuildWLSplatex16TriangularTile(radius, expose, sphereRadius, PMTOffset, solidCutOffTubs, logicWCPMT);
+
+   }else if( PMTName == "FastStar3inch" ){
+
+     logicWCPMT = new G4LogicalVolume(NULL, NULL, "WCPMT", 0, 0, 0);
+     BuildWLSplateFastStar(radius, expose, sphereRadius, PMTOffset, solidCutOffTubs, logicWCPMT);
+
+   } else if( detectorElement == "OD" && PMTName == "8inch_SquarePlate" ){
+
+     G4cout << "  qqq build OD wls square plate " << G4endl;
+
+     logicWCPMT = new G4LogicalVolume(NULL, NULL, "WCPMT", 0, 0, 0);
+     BuildWLSplatex1SquarePlate(radius, expose, sphereRadius, PMTOffset, solidCutOffTubs, logicWCPMT);
+
+   }else{
+
+    G4double PMTHolderZ[2] = {0, expose};
+    G4double PMTHolderR[2] = {radius, radius};
+    G4double PMTHolderr[2] = {0,0};
+    G4Polycone* solidWCPMT = 
+      new G4Polycone("WCPMT",                    
+		     0.0*deg,
+		     360.0*deg,
+		     2,
+		     PMTHolderZ,
+		     PMTHolderr, // R Inner
+		     PMTHolderR);// R Outer
+    logicWCPMT =
+      new G4LogicalVolume(    solidWCPMT,
+			      G4Material::GetMaterial("Water"),
+			      "WCPMT",
+			      0,0,0);
+     }
 
 if (Vis_Choice == "RayTracer"){
 // Makes the volume containing the PMT visible, solid, and forces the auxiliary edges to be viewed.
@@ -93,13 +133,6 @@ if (Vis_Choice == "RayTracer"){
 else{
 // Makes the volume containg the PMT invisible for normal visualization
     logicWCPMT->SetVisAttributes(G4VisAttributes::Invisible);}
-
-  //Need a volume to cut away excess behind blacksheet
-  G4Box* solidCutOffTubs =
-      new G4Box(    "cutOffTubs",
-            sphereRadius+1.*cm,
-            sphereRadius+1.*cm,
-            PMTOffset);
 
 
   //Create PMT Interior
@@ -179,7 +212,9 @@ else {
   if (Vis_Choice == "OGLSX")
    { // Gray wireframe visual style
     // used in OGLSX visualizer
-  G4VisAttributes* WCPMTVisAtt = new G4VisAttributes(G4Colour(0.2,0.2,0.2));
+  G4VisAttributes* WCPMTVisAtt;
+  if(detectorElement == "OD") WCPMTVisAtt = new G4VisAttributes(G4Colour(1.0, 0.0, 0.0));
+  else WCPMTVisAtt = new G4VisAttributes(G4Colour(0.2,0.2,0.2));
   WCPMTVisAtt->SetForceWireframe(true);
   //logicGlassFaceWCPMT->SetVisAttributes(G4VisAttributes::Invisible);
   logicGlassFaceWCPMT->SetVisAttributes(WCPMTVisAtt);}
@@ -197,7 +232,9 @@ else {
   else
    { // Gray wireframe visual style
     // used in OGLSX visualizer
-  G4VisAttributes* WCPMTVisAtt = new G4VisAttributes(G4Colour(0.2,0.2,0.2));
+  G4VisAttributes* WCPMTVisAtt;
+  if(detectorElement == "OD") WCPMTVisAtt = new G4VisAttributes(G4Colour(1.0, 0.0, 0.0));
+  else WCPMTVisAtt = new G4VisAttributes(G4Colour(0.2,0.2,0.2));
   WCPMTVisAtt->SetForceWireframe(true);
   //logicGlassFaceWCPMT->SetVisAttributes(G4VisAttributes::Invisible);
   logicGlassFaceWCPMT->SetVisAttributes(WCPMTVisAtt);}
@@ -212,7 +249,7 @@ else {
   // make a new one
   if( ! SDman->FindSensitiveDetector(SDName, false) ) {
     
-    aWCPMT = new WCSimWCSD(CollectionName,SDName,this );
+    aWCPMT = new WCSimWCSD(CollectionName,SDName,this,detectorElement );
     SDman->AddNewDetector( aWCPMT );
   }
 
@@ -227,4 +264,408 @@ else {
                              OpGlassCathodeSurface);
 
   return logicWCPMT;
+}
+
+void WCSimDetectorConstruction::BuildWLSplatex1TriangularTile(double PMT_radius, double PMT_height, double sphereRadius, double PMTOffset, G4Box* solidCutOffTubs, G4LogicalVolume* logicWCPMT){
+
+  G4double PetalLength = 35.*cm;
+  G4double PetalHalfThickness = 1.2*cm;
+  G4double PetalHalfWidth = PMT_radius;
+  G4double CladdingThickness = 1.*mm;
+
+  G4cout << " qqq PetalLength " << PetalLength << " PetalHalfThickness " << PetalHalfThickness << " PetalHalfWidth " << PetalHalfWidth << " CladdingThickness " << CladdingThickness << G4endl;
+  
+  G4double Trapezoid_dx1 = PetalHalfWidth; //  half-length along x at z = - dz
+  G4double Trapezoid_dx2 = 0.; //  half-length along x at z = + dz
+  G4double Trapezoid_dy1 = PetalHalfThickness; //  half-length along y at z = - dz
+  G4double Trapezoid_dy2 = PetalHalfThickness; //  half-length along y at z = + dz
+  G4double Trapezoid_dz = PetalLength/2.; //  half-length along z
+  
+  
+  G4RotationMatrix* TrapezoidRotation = new G4RotationMatrix();
+  TrapezoidRotation->rotateY(180.*deg);
+  G4Transform3D TrapezoidTransform(*TrapezoidRotation, G4ThreeVector(0,0,-2.*Trapezoid_dz));
+  G4Trd *OuterPetal_half = new G4Trd("Outer Petal Half", Trapezoid_dx1, Trapezoid_dx2, Trapezoid_dy1, Trapezoid_dy2, Trapezoid_dz);
+  G4UnionSolid *OuterPetal = new G4UnionSolid("Outer Petal", OuterPetal_half, OuterPetal_half, TrapezoidTransform);
+  
+  
+  G4Trd *OuterCladding_half = new G4Trd("Outer Cladding Half", Trapezoid_dx1+CladdingThickness, Trapezoid_dx2+CladdingThickness, Trapezoid_dy1 + CladdingThickness/2., Trapezoid_dy2 + CladdingThickness/2., Trapezoid_dz);
+  G4UnionSolid *OuterCladding = new G4UnionSolid("Outer Cladding", OuterCladding_half, OuterCladding_half, TrapezoidTransform);
+  
+  
+  G4Sphere* tmp_glass_outer_surface =
+    new G4Sphere(    "tmp_glass_outer_surface",
+		     0.0*m,sphereRadius,
+		     0.0*deg,360.0*deg,
+		     0.0*deg,90.0*deg);
+  
+  G4SubtractionSolid* glass_outer_surface =
+    new G4SubtractionSolid(    "glass_outer_surface",
+			       tmp_glass_outer_surface,
+			       solidCutOffTubs);
+
+
+    G4RotationMatrix* PmtRotation = new G4RotationMatrix();
+    PmtRotation->rotateX(90.*deg);
+    G4Transform3D PmtTransform_for_WLSplate(*PmtRotation, G4ThreeVector(0,PetalHalfThickness + PMTOffset + CladdingThickness,-Trapezoid_dz));
+    G4Transform3D PmtTransform_for_cladding(*PmtRotation, G4ThreeVector(0,PetalHalfThickness + PMTOffset + CladdingThickness/2.,-Trapezoid_dz));
+    G4SubtractionSolid * WLSplate = new G4SubtractionSolid("wls_plate", OuterPetal, glass_outer_surface, PmtTransform_for_WLSplate);
+
+    G4SubtractionSolid * CladdingWithoutPetal = new G4SubtractionSolid("Cladding With Floor",OuterCladding,OuterPetal,0,G4ThreeVector(0,-CladdingThickness/2.,0));
+
+    G4SubtractionSolid * cladding = new G4SubtractionSolid("cladding",CladdingWithoutPetal, glass_outer_surface,PmtTransform_for_cladding);
+
+
+
+    G4LogicalVolume * WLSplate_log = new G4LogicalVolume(WLSplate,G4Material::GetMaterial("WLS_PVT"),"wls_plate_log");
+
+    //    G4LogicalVolume * cladding_log = new G4LogicalVolume(cladding,G4Material::GetMaterial("Pethylene"),"cladding",0,0,0);
+    G4LogicalVolume * cladding_log = new G4LogicalVolume(cladding,G4Material::GetMaterial("Tyvek"),"cladding",0,0,0);
+
+
+
+
+#if 1 //  F. Nova Comment this block to avoid building WLS plate and its cladding
+       new G4PVPlacement(PmtRotation, G4ThreeVector(0, 0 + Trapezoid_dz, 0 + PetalHalfThickness + CladdingThickness), WLSplate_log, "wlsplate", logicWCPMT , false, 0); 
+    
+       new G4PVPlacement(PmtRotation,G4ThreeVector(0, 0 + Trapezoid_dz, 0 + PetalHalfThickness + CladdingThickness/2.), cladding_log,"cladding",logicWCPMT,false,0);
+#endif
+
+
+  //**Create logical skin surfaces
+  // F. Nova Need this step to enforce cladding reflectivity
+  new G4LogicalSkinSurface("cladding_surf",   cladding_log,   OpCladdingSurface);
+
+
+    G4double PMTHolderZ[2] = {0, PMT_height};
+    //G4double PMTHolderR[2] = {PMT_radius, PMT_radius};
+    G4double PMTHolderR[2] = {PetalLength, PetalLength};
+    G4double PMTHolderr[2] = {0,0};
+    G4Polycone* solidWCPMT = 
+      new G4Polycone("WCPMT",                    
+		     0.0*deg,
+		     360.0*deg,
+		     2,
+		     PMTHolderZ,
+		     PMTHolderr, // R Inner
+		     PMTHolderR);// R Outer
+    logicWCPMT->SetSolid(solidWCPMT);
+    logicWCPMT->SetMaterial(G4Material::GetMaterial("Water"));
+
+}
+
+
+void WCSimDetectorConstruction::BuildWLSplatex1SquarePlate(double PMT_radius, double PMT_height, double sphereRadius, double PMTOffset, G4Box* solidCutOffTubs, G4LogicalVolume* logicWCPMT){
+
+  G4double PlateHalfThickness = 1.2*cm;
+  G4double PlateHalfSide = 25.*cm;
+  G4double CladdingThickness = 1.*mm;
+
+  G4cout << " qqq create WlsSquarePlate with inner radius " << PMT_radius/m << " m, half side " << PlateHalfSide/m << " m, half PlateHalfThickness " << PlateHalfThickness/m << " m " << G4endl;
+
+  G4Box *outerBox = new G4Box("Outer Box",PlateHalfSide,PlateHalfSide,PlateHalfThickness);
+
+  G4Sphere* tmp_glass_outer_surface =
+    new G4Sphere(    "tmp_glass_outer_surface",
+		     0.0*m,sphereRadius,
+		     0.0*deg,360.0*deg,
+		     0.0*deg,90.0*deg);
+  
+  G4SubtractionSolid* glass_outer_surface =
+    new G4SubtractionSolid(    "glass_outer_surface",
+			       tmp_glass_outer_surface,
+			       solidCutOffTubs);
+
+  G4RotationMatrix* NullRotation = new G4RotationMatrix();
+  G4Transform3D WLSplateTransform(*NullRotation, G4ThreeVector(0, 0, -PlateHalfThickness - PMTOffset)); // center of glass outer surface in outerBox coordinates
+
+  G4SubtractionSolid * WLSplate = new G4SubtractionSolid("wls_plate", outerBox, glass_outer_surface, WLSplateTransform);
+  
+  G4LogicalVolume * WLSplate_log = new G4LogicalVolume(WLSplate,G4Material::GetMaterial("WLS_PVT"),"wls_plate_log");
+
+  
+  G4Box *outerBoxCladding = new G4Box("Outer Box Cladding",PlateHalfSide+CladdingThickness,PlateHalfSide+CladdingThickness,PlateHalfThickness);
+  G4SubtractionSolid * cladding = new G4SubtractionSolid("cladding_square_plate",outerBoxCladding,outerBox);
+  
+  G4LogicalVolume * cladding_log = new G4LogicalVolume(cladding,G4Material::GetMaterial("Tyvek"),"cladding",0,0,0);
+
+#if 1 //  F. Nova Comment this block to avoid building WLS plate and its cladding
+       new G4PVPlacement(0, G4ThreeVector(0, 0, 0 + PlateHalfThickness), WLSplate_log, "wlsplate", logicWCPMT , false, 0); 
+    
+       new G4PVPlacement(0,G4ThreeVector(0, 0, 0 + PlateHalfThickness), cladding_log,"cladding",logicWCPMT,false,0);
+#endif
+
+
+  //**Create logical skin surfaces
+  // F. Nova Need this step to enforce cladding reflectivity
+  new G4LogicalSkinSurface("cladding_surf",   cladding_log,   OpCladdingSurface);
+
+
+    G4double PMTHolderZ[2] = {0, PMT_height};
+    // ensure to contain plate diagonal sqrt(2) = 1.4
+    G4double PMTHolderR[2] = {1.5*PlateHalfSide, 1.5*PlateHalfSide}; 
+    G4double PMTHolderr[2] = {0,0};
+    G4Polycone* solidWCPMT = 
+      new G4Polycone("WCPMT",                    
+		     0.0*deg,
+		     360.0*deg,
+		     2,
+		     PMTHolderZ,
+		     PMTHolderr, // R Inner
+		     PMTHolderR);// R Outer
+    logicWCPMT->SetSolid(solidWCPMT);
+    logicWCPMT->SetMaterial(G4Material::GetMaterial("Water"));
+
+}
+
+
+void WCSimDetectorConstruction::BuildWLSplatex16TriangularTile(double PMT_radius, double PMT_height, double sphereRadius, double PMTOffset, G4Box* solidCutOffTubs, G4LogicalVolume* logicWCPMT){
+
+  G4double PetalLength = 35.*cm;
+  G4double PetalHalfThickness = 1.2*cm;
+  G4double PetalHalfWidth = PMT_radius;
+  G4double CladdingThickness = 1.*mm;
+  
+  G4double Trapezoid_dx1 = PetalHalfWidth; //  half-length along x at z = - dz
+  G4double Trapezoid_dx2 = 0.; //  half-length along x at z = + dz
+  G4double Trapezoid_dy1 = PetalHalfThickness; //  half-length along y at z = - dz
+  G4double Trapezoid_dy2 = PetalHalfThickness; //  half-length along y at z = + dz
+  G4double Trapezoid_dz = PetalLength/2.; //  half-length along z
+  
+  
+  G4RotationMatrix* TrapezoidRotation = new G4RotationMatrix();
+  TrapezoidRotation->rotateY(180.*deg);
+  G4Transform3D TrapezoidTransform(*TrapezoidRotation, G4ThreeVector(0,0,-2.*Trapezoid_dz));
+  G4Trd *OuterPetal_half = new G4Trd("Outer Petal Half", Trapezoid_dx1, Trapezoid_dx2, Trapezoid_dy1, Trapezoid_dy2, Trapezoid_dz);
+  G4UnionSolid *OuterPetal = new G4UnionSolid("Outer Petal", OuterPetal_half, OuterPetal_half, TrapezoidTransform);
+  
+  
+  G4Trd *OuterCladding_half = new G4Trd("Outer Cladding Half", Trapezoid_dx1+CladdingThickness, Trapezoid_dx2+CladdingThickness, Trapezoid_dy1 + CladdingThickness/2., Trapezoid_dy2 + CladdingThickness/2., Trapezoid_dz);
+  G4UnionSolid *OuterCladding = new G4UnionSolid("Outer Cladding", OuterCladding_half, OuterCladding_half, TrapezoidTransform);
+  
+  
+  G4Sphere* tmp_glass_outer_surface =
+    new G4Sphere(    "tmp_glass_outer_surface",
+		     0.0*m,sphereRadius,
+		     0.0*deg,360.0*deg,
+		     0.0*deg,90.0*deg);
+  
+  G4SubtractionSolid* glass_outer_surface =
+    new G4SubtractionSolid(    "glass_outer_surface",
+			       tmp_glass_outer_surface,
+			       solidCutOffTubs);
+
+
+    G4RotationMatrix* PmtRotation = new G4RotationMatrix();
+    PmtRotation->rotateX(90.*deg);
+    G4Transform3D PmtTransform_for_WLSplate(*PmtRotation, G4ThreeVector(0,PetalHalfThickness + PMTOffset + CladdingThickness,-Trapezoid_dz));
+    G4Transform3D PmtTransform_for_cladding(*PmtRotation, G4ThreeVector(0,PetalHalfThickness + PMTOffset + CladdingThickness/2.,-Trapezoid_dz));
+    G4SubtractionSolid * WLSplate = new G4SubtractionSolid("wls_plate", OuterPetal, glass_outer_surface, PmtTransform_for_WLSplate);
+
+    G4SubtractionSolid * CladdingWithoutPetal = new G4SubtractionSolid("Cladding With Floor",OuterCladding,OuterPetal,0,G4ThreeVector(0,-CladdingThickness/2.,0));
+
+    G4SubtractionSolid * cladding = new G4SubtractionSolid("cladding",CladdingWithoutPetal, glass_outer_surface,PmtTransform_for_cladding);
+
+
+
+    G4LogicalVolume * WLSplate_log = new G4LogicalVolume(WLSplate,G4Material::GetMaterial("WLS_PVT"),"wls_plate_log");
+
+    //    G4LogicalVolume * cladding_log = new G4LogicalVolume(cladding,G4Material::GetMaterial("Pethylene"),"cladding",0,0,0);
+    G4LogicalVolume * cladding_log = new G4LogicalVolume(cladding,G4Material::GetMaterial("Tyvek"),"cladding",0,0,0);
+
+
+
+
+#if 1 //  F. Nova Comment this block to avoid building WLS plate and its cladding
+       new G4PVPlacement(PmtRotation, G4ThreeVector(0, 0 + Trapezoid_dz, 0 + PetalHalfThickness + CladdingThickness), WLSplate_log, "wlsplate", logicWCPMT , false, 0); 
+    
+       new G4PVPlacement(PmtRotation,G4ThreeVector(0, 0 + Trapezoid_dz, 0 + PetalHalfThickness + CladdingThickness/2.), cladding_log,"cladding",logicWCPMT,false,0);
+#endif
+
+
+  //**Create logical skin surfaces
+  // F. Nova Need this step to enforce cladding reflectivity
+  new G4LogicalSkinSurface("cladding_surf",   cladding_log,   OpCladdingSurface);
+
+
+
+
+  G4double WCPMT_Trapezoid_dx1 = PMT_radius; //  half-length along x at z = - dz
+  G4double WCPMT_Trapezoid_dx2 = 0.; //  half-length along x at z = + dz
+  G4double WCPMT_Trapezoid_dy1 = PMT_height; //  half-length along y at z = - dz
+  G4double WCPMT_Trapezoid_dy2 = PMT_height; //  half-length along y at z = + dz
+  G4double WCPMT_Trapezoid_dz = PetalLength/2.; //  half-length along z
+
+  G4Transform3D WCPMT_TrapezoidTransform(*TrapezoidRotation, G4ThreeVector(0,0,-2.*WCPMT_Trapezoid_dz));
+  G4Trd *WCPMT_container_half = new G4Trd("WCPMT_container_half", WCPMT_Trapezoid_dx1+CladdingThickness, WCPMT_Trapezoid_dx2+CladdingThickness, WCPMT_Trapezoid_dy1, WCPMT_Trapezoid_dy2, WCPMT_Trapezoid_dz);
+  G4UnionSolid *WCPMT_container = new G4UnionSolid("WCPMT_container", WCPMT_container_half, WCPMT_container_half, WCPMT_TrapezoidTransform);
+
+  G4double PMTHolderZ[2] = {0, PMT_height};
+  G4double PMTHolderR[2] = {PMT_radius, PMT_radius};
+  G4double PMTHolderr[2] = {0,0};
+  G4Polycone* PMT_envelope = 
+    new G4Polycone("WCPMT",                    
+		   0.0*deg,
+		   360.0*deg,
+		   2,
+		   PMTHolderZ,
+		   PMTHolderr, // R Inner
+		   PMTHolderR);// R Outer
+
+  G4RotationMatrix* ContainerRotation = new G4RotationMatrix();
+  ContainerRotation->rotateX(-90.*deg);
+  G4Transform3D ContainerTransform_for_PMT(*ContainerRotation, G4ThreeVector(0,Trapezoid_dz,PMT_height/2.));
+  G4UnionSolid* solidWCPMT = new G4UnionSolid("WCPMT", PMT_envelope, WCPMT_container, ContainerTransform_for_PMT);
+
+
+  logicWCPMT->SetSolid(solidWCPMT);
+  logicWCPMT->SetMaterial(G4Material::GetMaterial("Water"));
+
+}
+
+
+void WCSimDetectorConstruction::BuildWLSplateFastStar(double PMT_radius, double PMT_height, double sphereRadius, double PMTOffset, G4Box* solidCutOffTubs, G4LogicalVolume* logicWCPMT){
+
+
+  G4double PetalLength = 35*cm;
+  G4double PetalHalfThickness = 1.2*cm;
+  G4double CladdingThickness = 1.*mm;
+  
+  G4double n_triangles_per_plane = 8;
+  G4double angle_of_triangle = 2.*pi/n_triangles_per_plane; //  45 degrees
+  G4double half_angle_of_triangle = angle_of_triangle/2.; //  45/2 degrees
+  
+  G4double BottomPetalProtrudingLength = PetalLength - PMT_radius*cos(half_angle_of_triangle);
+  G4double BottomPetalProtrudedBase = PMT_radius*sqrt(2.*(1. - cos(angle_of_triangle)));
+  G4double BottomPetalBase = BottomPetalProtrudedBase*PetalLength/BottomPetalProtrudingLength;
+  G4double BottomPetalHalfWidth = BottomPetalBase/2.;
+  
+  G4double BottomTrapezoid_dx1 = BottomPetalHalfWidth; //  half-length along x at z = - dz
+  G4double BottomTrapezoid_dx2 = 0.; //  half-length along x at z = + dz
+  G4double BottomTrapezoid_dy1 = PetalHalfThickness; //  half-length along y at z = - dz
+  G4double BottomTrapezoid_dy2 = PetalHalfThickness; //  half-length along y at z = + dz
+  G4double BottomTrapezoid_dz = PetalLength/2.; //  half-length along z
+
+  G4double TopPetalZ = 2.*PetalHalfThickness+2*CladdingThickness;
+
+  G4double TopExpose = PMT_height - TopPetalZ;
+  G4double TopRadius = sqrt(2.*TopExpose*sphereRadius - pow(TopExpose,2));
+  G4double TopPetalProtrudingLength = PetalLength - TopRadius*cos(half_angle_of_triangle);
+  G4double TopPetalProtrudedBase = TopRadius*sqrt(2.*(1. - cos(angle_of_triangle)));
+  G4double TopPetalBase = TopPetalProtrudedBase*PetalLength/TopPetalProtrudingLength;
+  G4double TopPetalHalfWidth = TopPetalBase/2.;
+  
+  
+  G4double TopTrapezoid_dx1 = TopPetalHalfWidth; //  half-length along x at z = - dz
+  G4double TopTrapezoid_dx2 = 0.; //  half-length along x at z = + dz
+  G4double TopTrapezoid_dy1 = PetalHalfThickness; //  half-length along y at z = - dz
+  G4double TopTrapezoid_dy2 = PetalHalfThickness; //  half-length along y at z = + dz
+  G4double TopTrapezoid_dz = PetalLength/2.; //  half-length along z
+  
+  
+  G4RotationMatrix* TrapezoidRotation = new G4RotationMatrix();
+  TrapezoidRotation->rotateY(180.*deg);
+  G4Transform3D BottomTrapezoidTransform(*TrapezoidRotation, G4ThreeVector(0,0,-2.*BottomTrapezoid_dz));
+  G4Trd *OuterPetalBottom_half = new G4Trd("Outer Petal Bottom Half", BottomTrapezoid_dx1, BottomTrapezoid_dx2, BottomTrapezoid_dy1, BottomTrapezoid_dy2, BottomTrapezoid_dz);
+  G4UnionSolid *OuterPetalBottom = new G4UnionSolid("Outer Petal Bottom", OuterPetalBottom_half, OuterPetalBottom_half, BottomTrapezoidTransform);
+
+
+  G4Trd *OuterCladdingBottom_half = new G4Trd("Outer Cladding Bottom Half", BottomTrapezoid_dx1+CladdingThickness, BottomTrapezoid_dx2+CladdingThickness, BottomTrapezoid_dy1+CladdingThickness/2., BottomTrapezoid_dy2+CladdingThickness/2., BottomTrapezoid_dz);
+  G4UnionSolid *OuterCladdingBottom = new G4UnionSolid("Outer Cladding Bottom", OuterCladdingBottom_half, OuterCladdingBottom_half, BottomTrapezoidTransform);
+
+  G4Transform3D TopTrapezoidTransform(*TrapezoidRotation, G4ThreeVector(0,0,-2.*TopTrapezoid_dz));
+  G4Trd *OuterPetalTop_half = new G4Trd("Outer Petal Top Half", TopTrapezoid_dx1, TopTrapezoid_dx2, TopTrapezoid_dy1, TopTrapezoid_dy2, TopTrapezoid_dz);
+  G4UnionSolid *OuterPetalTop = new G4UnionSolid("Outer Petal Top", OuterPetalTop_half, OuterPetalTop_half, TopTrapezoidTransform);
+
+  G4Trd *OuterCladdingTop_half = new G4Trd("Outer Cladding Top Half", TopTrapezoid_dx1+CladdingThickness, TopTrapezoid_dx2+CladdingThickness, TopTrapezoid_dy1+CladdingThickness/2., TopTrapezoid_dy2+CladdingThickness/2., TopTrapezoid_dz);
+  G4UnionSolid *OuterCladdingTop = new G4UnionSolid("Outer Cladding Top", OuterCladdingTop_half, OuterCladdingTop_half, TopTrapezoidTransform);
+
+
+  G4RotationMatrix* PetalRotation21 = new G4RotationMatrix();
+  PetalRotation21->rotateY(-45.*deg);
+  G4Transform3D BottomPetalTransform1(*PetalRotation21, G4ThreeVector(-BottomTrapezoid_dz*sin(angle_of_triangle),0,-BottomTrapezoid_dz*(1. - cos(angle_of_triangle))));
+  G4UnionSolid * GrowingFlowerBottom1 = new G4UnionSolid("Growing Flower Bottom", OuterPetalBottom, OuterPetalBottom, BottomPetalTransform1 );
+  G4UnionSolid * GrowingCladdingBottom1 = new G4UnionSolid("Growing Cladding Bottom", OuterCladdingBottom, OuterCladdingBottom, BottomPetalTransform1);
+
+  G4RotationMatrix* PetalRotation22 = new G4RotationMatrix();
+  PetalRotation22->rotateY(-90.*deg);
+  G4Transform3D BottomPetalTransform2(*PetalRotation22, G4ThreeVector(-BottomTrapezoid_dz,0,-BottomTrapezoid_dz));
+  G4UnionSolid * GrowingFlowerBottom = new G4UnionSolid("Growing Flower Bottom", GrowingFlowerBottom1, OuterPetalBottom, BottomPetalTransform2 );
+  G4UnionSolid * GrowingCladdingBottom = new G4UnionSolid("Growing Cladding Bottom", GrowingCladdingBottom1, OuterCladdingBottom, BottomPetalTransform2);
+
+
+
+
+  G4Transform3D TopPetalTransform1(*PetalRotation21, G4ThreeVector(-TopTrapezoid_dz*sin(angle_of_triangle),0,-TopTrapezoid_dz*(1. - cos(angle_of_triangle))));
+  G4UnionSolid * GrowingFlowerTop1 = new G4UnionSolid("Growing Flower Top", OuterPetalTop, OuterPetalTop, TopPetalTransform1 );
+  G4UnionSolid * GrowingCladdingTop1 = new G4UnionSolid("Growing Cladding Top", OuterCladdingTop, OuterCladdingTop, TopPetalTransform1 );
+
+  G4Transform3D TopPetalTransform2(*PetalRotation22, G4ThreeVector(-TopTrapezoid_dz,0,-TopTrapezoid_dz));
+  G4UnionSolid * GrowingFlowerTop = new G4UnionSolid("Growing Flower Top", GrowingFlowerTop1, OuterPetalTop, TopPetalTransform2 );
+  G4UnionSolid * GrowingCladdingTop = new G4UnionSolid("Growing Cladding Top", GrowingCladdingTop1, OuterCladdingTop, TopPetalTransform2 );
+
+
+
+  G4RotationMatrix* PetalRotation3 = new G4RotationMatrix();
+  PetalRotation3->rotateY(-half_angle_of_triangle);
+  G4Transform3D PetalTransform2(*PetalRotation3, G4ThreeVector(-TopTrapezoid_dz*sin(half_angle_of_triangle),-TopPetalZ,-BottomTrapezoid_dz+TopTrapezoid_dz*cos(half_angle_of_triangle)));
+  G4UnionSolid * GrownFlower = new G4UnionSolid("Grown Flower", GrowingFlowerBottom, GrowingFlowerTop, PetalTransform2 );
+  G4UnionSolid * GrownCladding = new G4UnionSolid("Grown Cladding", GrowingCladdingBottom, GrowingCladdingTop, PetalTransform2 );
+  
+  G4RotationMatrix* PmtRotation = new G4RotationMatrix();
+  PmtRotation->rotateX(90.*deg);
+
+  G4Transform3D PmtTransform_for_WLSplate(*PmtRotation, G4ThreeVector(0,PetalHalfThickness + PMTOffset + CladdingThickness,-BottomTrapezoid_dz));
+  G4Transform3D PmtTransform_for_cladding(*PmtRotation, G4ThreeVector(0,PetalHalfThickness + PMTOffset + CladdingThickness/2.,-BottomTrapezoid_dz));
+
+  G4Sphere* tmp_glass_outer_surface =
+    new G4Sphere(    "tmp_glass_outer_surface",
+		     0.0*m,sphereRadius,
+		     0.0*deg,360.0*deg,
+		     0.0*deg,90.0*deg);
+  
+  G4SubtractionSolid* glass_outer_surface =
+    new G4SubtractionSolid(    "glass_outer_surface",
+			       tmp_glass_outer_surface,
+			       solidCutOffTubs);
+
+  G4SubtractionSolid * WLSplate = new G4SubtractionSolid("wls_plate", GrownFlower, glass_outer_surface, PmtTransform_for_WLSplate);
+
+  G4SubtractionSolid * CladdingWithoutPetal = new G4SubtractionSolid("Cladding With Floor",GrownCladding,GrownFlower,0,G4ThreeVector(0,-CladdingThickness/2.,0));
+
+  G4SubtractionSolid * cladding = new G4SubtractionSolid("cladding",CladdingWithoutPetal, glass_outer_surface,PmtTransform_for_cladding);
+
+
+  G4LogicalVolume * WLSplate_log = new G4LogicalVolume(WLSplate,G4Material::GetMaterial("WLS_PVT"),"wls_plate_log");
+  
+  //    G4LogicalVolume * cladding_log = new G4LogicalVolume(cladding,G4Material::GetMaterial("Pethylene"),"cladding",0,0,0);
+  G4LogicalVolume * cladding_log = new G4LogicalVolume(cladding,G4Material::GetMaterial("Tyvek"),"cladding",0,0,0);
+
+#if 1 //  F. Nova Comment this block to avoid building WLS plate and its cladding
+       new G4PVPlacement(PmtRotation, G4ThreeVector(0, 0 + BottomTrapezoid_dz, 0 + PetalHalfThickness + CladdingThickness), WLSplate_log, "wlsplate", logicWCPMT , false, 0); 
+    
+       new G4PVPlacement(PmtRotation,G4ThreeVector(0, 0 + BottomTrapezoid_dz, 0 + PetalHalfThickness + CladdingThickness/2.), cladding_log,"cladding",logicWCPMT,false,0);
+#endif
+
+
+  //**Create logical skin surfaces
+  // F. Nova Need this step to enforce cladding reflectivity
+  new G4LogicalSkinSurface("cladding_surf",   cladding_log,   OpCladdingSurface);
+
+
+    G4double PMTHolderZ[2] = {0, PMT_height};
+    //G4double PMTHolderR[2] = {PMT_radius, PMT_radius};
+    G4double PMTHolderR[2] = {PetalLength, PetalLength};
+    G4double PMTHolderr[2] = {0,0};
+    G4Polycone* solidWCPMT = 
+      new G4Polycone("WCPMT",                    
+		     0.0*deg,
+		     360.0*deg,
+		     2,
+		     PMTHolderZ,
+		     PMTHolderr, // R Inner
+		     PMTHolderR);// R Outer
+    logicWCPMT->SetSolid(solidWCPMT);
+    logicWCPMT->SetMaterial(G4Material::GetMaterial("Water"));
+
 }

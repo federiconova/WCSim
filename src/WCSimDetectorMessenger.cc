@@ -24,8 +24,14 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
 			  "SuperK_20inchBandL_14perCent\n"
 			  "Cylinder_60x74_20inchBandL_14perCent\n"
       			  "Cylinder_60x74_20inchBandL_40perCent\n"
+      			  "Cylinder_60x74_x1TriangularTiles_40perCent\n"
+      			  "Cylinder_60x74_x1SquarePlate_40perCent\n"
+      			  "Cylinder_60x74_x16TriangularTiles_40perCent\n"
+      			  "Cylinder_60x74_FastStars_40perCent\n"
 			  "Cylinder_12inchHPD_15perCent\n"
                           "HyperK\n"
+			  "HyperKWithOD\n"
+			  "HyperKWithOD_SquarePlate\n"
                           "HyperK_withHPD\n"
                          );
   PMTConfig->SetParameterName("PMTConfig", false);
@@ -36,8 +42,14 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
 			   "SuperK_20inchBandL_14perCent "
 			   "Cylinder_60x74_20inchBandL_14perCent\n"
       			   "Cylinder_60x74_20inchBandL_40perCent\n"
+      			   "Cylinder_60x74_x1TriangularTiles_40perCent\n"
+      			   "Cylinder_60x74_x1SquarePlate_40perCent\n"
+      			   "Cylinder_60x74_x16TriangularTiles_40perCent\n"
+      			   "Cylinder_60x74_FastStars_40perCent\n"
 			   "Cylinder_12inchHPD_15perCent "
 			   "HyperK "
+			   "HyperKWithOD "
+			   "HyperKWithOD_SquarePlate "
                            "HyperK_withHPD "
                            );
   PMTConfig->AvailableForStates(G4State_PreInit, G4State_Idle);
@@ -135,11 +147,23 @@ void WCSimDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
 		  WCSimDetector->Cylinder_60x74_20inchBandL_14perCent();
 		} else if ( newValue == "Cylinder_60x74_20inchBandL_40perCent" ) {
 		  WCSimDetector->Cylinder_60x74_20inchBandL_40perCent();
+		} else if ( newValue == "Cylinder_60x74_x1TriangularTiles_40perCent" ) {
+		  WCSimDetector->Cylinder_60x74_x1TriangularTiles_40perCent();
+		} else if ( newValue == "Cylinder_60x74_x1SquarePlate_40perCent" ) {
+		  WCSimDetector->Cylinder_60x74_x1SquarePlate_40perCent();
+		} else if ( newValue == "Cylinder_60x74_x16TriangularTiles_40perCent" ) {
+		  WCSimDetector->Cylinder_60x74_x16TriangularTiles_40perCent();
+		} else if ( newValue == "Cylinder_60x74_FastStars_40perCent" ) {
+		  WCSimDetector->Cylinder_60x74_FastStars_40perCent();
 		} else if (newValue == "Cylinder_12inchHPD_15perCent" ){
 		  WCSimDetector->Cylinder_12inchHPD_15perCent();
                 } else if ( newValue == "HyperK") {
                         WCSimDetector->SetIsHyperK(true);
 			WCSimDetector->SetHyperKGeometry();
+		} else if ( newValue == "HyperKWithOD" ){
+		  WCSimDetector->SetHyperKWithODGeometry();
+		} else if ( newValue == "HyperKWithOD_SquarePlate" ){
+		  WCSimDetector->SetHyperKWithOD_SquarePlateGeometry();
                 } else if ( newValue == "HyperK_withHPD") {
                         WCSimDetector->SetIsHyperK(true);
 			WCSimDetector->SetHyperKGeometry_withHPD();

@@ -6,6 +6,7 @@
 #include "G4ParticleGun.hh"
 #include "G4GeneralParticleSource.hh"
 #include "G4ParticleTable.hh"
+//#include "G4IonTable.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4ThreeVector.hh"
 #include "globals.hh"
@@ -56,6 +57,7 @@ WCSimPrimaryGeneratorAction::WCSimPrimaryGeneratorAction(
   particleGun->SetParticleMomentumDirection(G4ThreeVector(0.,0.,1.0));
 
   G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
+  //  G4IonTable* ionTable = G4IonTable::GetIonTable();
   G4String particleName;
   particleGun->
     SetParticleDefinition(particleTable->FindParticle(particleName="mu+"));
@@ -66,6 +68,8 @@ WCSimPrimaryGeneratorAction::WCSimPrimaryGeneratorAction(
   messenger = new WCSimPrimaryGeneratorMessenger(this);
   useMulineEvt = true;
   useNormalEvt = false;
+  useGunEvt    = false;
+  useGPSEvt    = false;
 }
 
 WCSimPrimaryGeneratorAction::~WCSimPrimaryGeneratorAction()
@@ -87,6 +91,7 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
   // We will need a particle table
   G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
+  //  G4IonTable* ionTable = G4IonTable::GetIonTable();
 
   // Temporary kludge to turn on/off vector text format 
 
@@ -245,8 +250,77 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     SetBeamDir(dir);
     SetBeamPDG(pdg);
   }
+  else if (useGunEvt)
+  {      // manual gun operation
+    particleGun->GeneratePrimaryVertex(anEvent);
+
+    //To prevent occasional seg fault from an un assigned targetpdg 
+    targetpdg = 2212; //ie. proton
+
+    G4ThreeVector P  =anEvent->GetPrimaryVertex()->GetPrimary()->GetMomentum();
+    G4ThreeVector vtx=anEvent->GetPrimaryVertex()->GetPosition();
+    G4double m       =anEvent->GetPrimaryVertex()->GetPrimary()->GetMass();
+    G4int pdg        =anEvent->GetPrimaryVertex()->GetPrimary()->GetPDGcode();
+
+    char strPDG[11];
+    char strA[10]={0};
+    char strZ[10]={0};
+    
+    
+    long int A=0,Z=0;
+    //		    A=strotl(strPDG,&str);
+    if(abs(pdg) >= 1000000000)
+      {
+	//ion
+	sprintf(strPDG,"%i",abs(pdg));
+	strncpy(strZ, &strPDG[3], 3);
+	strncpy(strA, &strPDG[6], 3);
+	strA[3]='\0';
+	strZ[3]='\0';
+	A=atoi(strA);
+	Z=atoi(strZ);
+
+	// G4ParticleDefinition* ion   = G4IonTable::GetIonTable()->GetIon(Z, A, 0);
+	// ion->SetPDGStable(false);
+	// ion->SetPDGLifeTime(0.);
+	
+	// G4ParticleDefinition* ion2   = G4IonTable::GetIonTable()->GetIon(Z, A, 0);
+	// std::cout<<"ion2 "<<ion2->GetPDGLifeTime()<<"\n";
+      }
+    
+    
+    G4ThreeVector dir  = P.unit();
+    G4double E         = std::sqrt((P.dot(P))+(m*m));
+
+//     particleGun->SetParticleEnergy(E);
+//     particleGun->SetParticlePosition(vtx);
+//     particleGun->SetParticleMomentumDirection(dir);
+
+    SetVtx(vtx);
+    SetBeamEnergy(E);
+    SetBeamDir(dir);
+    SetBeamPDG(pdg);
+  }
+  else if (useGPSEvt)
+    {
+      MyGPS->GeneratePrimaryVertex(anEvent);
+      
+      G4ThreeVector P   =anEvent->GetPrimaryVertex()->GetPrimary()->GetMomentum();
+      G4ThreeVector vtx =anEvent->GetPrimaryVertex()->GetPosition();
+      G4double m        =anEvent->GetPrimaryVertex()->GetPrimary()->GetMass();
+      G4int pdg         =anEvent->GetPrimaryVertex()->GetPrimary()->GetPDGcode();
+      
+      G4ThreeVector dir  = P.unit();
+      G4double E         = std::sqrt((P.dot(P))+(m*m));
+      
+      SetVtx(vtx);
+      SetBeamEnergy(E);
+      SetBeamDir(dir);
+      SetBeamPDG(pdg);
+    }
   else if (useLaserEvt)
     {
+      targetpdg = 2212; //ie. proton
       //T. Akiri: Create the GPS LASER event
       MyGPS->GeneratePrimaryVertex(anEvent);
       
@@ -262,6 +336,19 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       SetBeamDir(dir);
       SetBeamPDG(pdg);
     }
+}
+
+G4String WCSimPrimaryGeneratorAction::GetGeneratorTypeString()
+{
+  if(useMulineEvt)
+    return "muline";
+  else if(useGunEvt)
+    return "gun";
+  else if(useGPSEvt)
+    return "gps";
+  else if(useLaserEvt)
+    return "laser";
+  return "";
 }
 
 // Returns a vector with the tokens

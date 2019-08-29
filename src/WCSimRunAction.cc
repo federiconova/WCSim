@@ -25,7 +25,10 @@
 int pawc_[500000];                // Declare the PAWC common
 struct ntupleStruct jhfNtuple;
 
+// WCSimRunAction::WCSimRunAction(WCSimDetectorConstruction* test, WCSimRandomParameters* rand)
+//   : wcsimrandomparameters(rand), useTimer(false)
 WCSimRunAction::WCSimRunAction(WCSimDetectorConstruction* test)
+  : useTimer(false)
 {
   ntuples = 1;
 
@@ -42,6 +45,11 @@ WCSimRunAction::~WCSimRunAction()
 
 void WCSimRunAction::BeginOfRunAction(const G4Run* /*aRun*/)
 {
+  if(useTimer) {
+    timer.Reset();
+    timer.Start();
+  }
+
 //   G4cout << "### Run " << aRun->GetRunID() << " start." << G4endl;
   numberOfEventsGenerated = 0;
   numberOfTimesWaterTubeHit = 0;
@@ -65,27 +73,33 @@ void WCSimRunAction::BeginOfRunAction(const G4Run* /*aRun*/)
   hfile->SetCompressionLevel(2);
 
   // Event tree
-  TTree* tree = new TTree("wcsimT","WCSim Tree");
+  //  TTree* tree = new TTree("wcsimT","WCSim Tree");
+  //  SetTree(tree);
+  WCSimTree = new TTree("wcsimT","WCSim Tree");
 
-  SetTree(tree);
   wcsimrootsuperevent = new WCSimRootEvent(); //empty list
+  wcsimrootsuperevent_OD = new WCSimRootEvent();
   //  wcsimrootsuperevent->AddSubEvent(); // make at least one event
   wcsimrootsuperevent->Initialize(); // make at least one event
+  wcsimrootsuperevent_OD->Initialize(); // make at least one event
   Int_t branchStyle = 1; //new style by default
   TTree::SetBranchStyle(branchStyle);
   Int_t bufsize = 64000;
 
   //  TBranch *branch = tree->Branch("wcsimrootsuperevent", "Jhf2kmrootsuperevent", &wcsimrootsuperevent, bufsize,0);
-  TBranch *branch = tree->Branch("wcsimrootevent", "WCSimRootEvent", &wcsimrootsuperevent, bufsize,2);
+  //  TBranch *branch = tree->Branch("wcsimrootevent", "WCSimRootEvent", &wcsimrootsuperevent, bufsize,2);
+  wcsimrooteventbranch = WCSimTree->Branch("wcsimrootevent", "WCSimRootEvent", &wcsimrootsuperevent, bufsize,2);
+  wcsimrooteventbranch_OD = WCSimTree->Branch("wcsimrootevent_OD", "WCSimRootEvent", &wcsimrootsuperevent_OD, bufsize,2);
 
   // Geometry tree
 
   geoTree = new TTree("wcsimGeoT","WCSim Geometry Tree");
-  SetGeoTree(geoTree);
+  //  SetGeoTree(geoTree);
   wcsimrootgeom = new WCSimRootGeom();
   TBranch *geoBranch = geoTree->Branch("wcsimrootgeom", "WCSimRootGeom", &wcsimrootgeom, bufsize,0);
 
   FillGeoTree();
+
 }
 
 void WCSimRunAction::EndOfRunAction(const G4Run*)
@@ -102,6 +116,9 @@ void WCSimRunAction::EndOfRunAction(const G4Run*)
 //  G4cout << (float(numberOfTimesCatcherHit)/float(numberOfEventsGenerated))*100.
 //        << "% through-going (hit Catcher)" << G4endl;
 
+  //Write the options tree
+  G4cout << "EndOfRunAction" << G4endl;
+  
   // Close the Root file at the end of the run
 
   TFile* hfile = WCSimTree->GetCurrentFile();
@@ -111,8 +128,15 @@ void WCSimRunAction::EndOfRunAction(const G4Run*)
   // is taken care of by the file close
 
   delete wcsimrootsuperevent; wcsimrootsuperevent=0;
+  delete wcsimrootsuperevent_OD; wcsimrootsuperevent_OD=0;
   delete wcsimrootgeom; wcsimrootgeom=0;
 
+  if(useTimer) {
+    timer.Stop();
+    G4cout << "WCSimRunAction ran from BeginOfRunAction() to EndOfRunAction() in:"
+	   << "\t" << timer.CpuTime()  << " seconds (CPU)"
+	   << "\t" << timer.RealTime() << " seconds (real)" << G4endl;
+  }
 }
 
 void WCSimRunAction::FillGeoTree(){
@@ -121,6 +145,7 @@ void WCSimRunAction::FillGeoTree(){
   G4double cylinfo[3];
   G4double pmtradius;
   G4int numpmt;
+  G4int numpmt_OD;
   G4int orientation;
   Float_t offset[3];
   
@@ -150,6 +175,7 @@ void WCSimRunAction::FillGeoTree(){
 
   pmtradius = wcsimdetector->GetPMTSize1();
   numpmt = wcsimdetector->GetTotalNumPmts();
+  numpmt_OD = wcsimdetector->GetTotalNumODPmts();
   orientation = 0;
   
   wcsimrootgeom-> SetWCPMTRadius(pmtradius);
@@ -180,9 +206,32 @@ void WCSimRunAction::FillGeoTree(){
     G4cout << fpmts->size() <<" vs. "<< numpmt <<G4endl;
   }
   
+  //  qqq;
+  std::vector<WCSimPmtInfo*> *fODpmts = wcsimdetector->Get_ODPmts();
+  for (unsigned int i=0;i!=fODpmts->size();i++){
+    pmt = ((WCSimPmtInfo*)fODpmts->at(i));
+    pos[0] = pmt->Get_transx();
+    pos[1] = pmt->Get_transy();
+    pos[2] = pmt->Get_transz();
+    rot[0] = pmt->Get_orienx();
+    rot[1] = pmt->Get_orieny();
+    rot[2] = pmt->Get_orienz();
+    tubeNo = pmt->Get_tubeid();
+    cylLoc = pmt->Get_cylocation();
+    wcsimrootgeom-> SetPMT(fpmts->size() + i,tubeNo,cylLoc,rot,pos);
+  }
+  if (fODpmts->size() != (unsigned int)numpmt_OD) {
+    G4cout << "Mismatch between number of OD pmts and pmt list in geofile.txt!!"<<G4endl;
+    G4cout << fODpmts->size() <<" vs. "<< numpmt_OD <<G4endl;
+  }
+
+  //  qqq;
+
   wcsimrootgeom-> SetWCNumPMT(numpmt);
+  wcsimrootgeom-> SetWCNumPMT_OD(numpmt_OD);
   
   geoTree->Fill();
-  TFile* hfile = geoTree->GetCurrentFile();
-  hfile->Write(); 
+  geoTree->Write();
+  // TFile* hfile = geoTree->GetCurrentFile();
+  // hfile->Write(); 
 }

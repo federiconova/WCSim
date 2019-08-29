@@ -39,7 +39,8 @@ public:
 		     G4TrajectoryContainer*,
 		     WCSimWCHitsCollection*,
 		     WCSimWCDigitsCollection*,
-		     WCSimWCTriggeredDigitsCollection*);
+		     WCSimWCTriggeredDigitsCollection*,
+		     G4String detectorElement="tank");
   WCSimRunAction* GetRunAction(){return runAction;}
   void SetDigitizerChoice(G4String digitizer) { DigitizerChoice = digitizer; }
   void SetTriggerChoice  (G4String trigger)   { TriggerChoice   = trigger;   }
@@ -54,6 +55,7 @@ private:
   G4String DigitizerChoice;
   G4String TriggerChoice;
   bool     ConstructedDAQClasses;
+  bool     SavedOptions;
 };
 
 

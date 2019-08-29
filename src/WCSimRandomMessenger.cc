@@ -30,13 +30,7 @@ WCSimRandomMessenger::~WCSimRandomMessenger()
 
 void WCSimRandomMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
 {
-  if (command == Rangen)
-    {
-      if (newValue == "RANLUX") WCSimRandomParams->SetGenerator(RANDOM_E_RANLUX);
-      if (newValue == "RANECU") WCSimRandomParams->SetGenerator(RANDOM_E_RANECU);
-      if (newValue == "HEPJAMES") WCSimRandomParams->SetGenerator(RANDOM_E_HEPJAMES);
-    }
-  else if (command == Ranseed)
+  if (command == Ranseed)
     {
       WCSimRandomParams->SetSeed(Ranseed->GetNewIntValue(newValue));
     }

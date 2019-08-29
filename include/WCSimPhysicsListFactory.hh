@@ -26,6 +26,7 @@ class WCSimPhysicsListFactory : public G4VModularPhysicsList
     void ConstructParticle();
     void ConstructProcess();
     void SetCuts();
+
   private:
 
     G4String PhysicsListName;

@@ -18,9 +18,11 @@
 #include "G4SolidStore.hh"
 
 std::map<int, G4Transform3D> WCSimDetectorConstruction::tubeIDMap;
+std::map<int, G4Transform3D> WCSimDetectorConstruction::ODtubeIDMap;
 //std::map<int, cyl_location>  WCSimDetectorConstruction::tubeCylLocation;
 hash_map<std::string, int, hash<std::string> > 
 WCSimDetectorConstruction::tubeLocationMap;
+hash_map<std::string, int, hash<std::string> > WCSimDetectorConstruction::ODtubeLocationMap;
 
 WCSimDetectorConstruction::WCSimDetectorConstruction(G4int DetConfig,WCSimTuningParameters* WCSimTuningPars):WCSimTuningParams(WCSimTuningPars)
 {
@@ -30,6 +32,8 @@ WCSimDetectorConstruction::WCSimDetectorConstruction(G4int DetConfig,WCSimTuning
   isHyperK  = false;
 
   debugMode = false;
+
+  isODConstructed = false;
 
   myConfiguration = DetConfig;
 
@@ -44,10 +48,13 @@ WCSimDetectorConstruction::WCSimDetectorConstruction(G4int DetConfig,WCSimTuning
   //-----------------------------------------------------
 
   WCSimDetectorConstruction::tubeIDMap.clear();
+  WCSimDetectorConstruction::ODtubeIDMap.clear();
   //WCSimDetectorConstruction::tubeCylLocation.clear();// (JF) Removed
   WCSimDetectorConstruction::tubeLocationMap.clear();
+  WCSimDetectorConstruction::ODtubeLocationMap.clear();
   WCSimDetectorConstruction::PMTLogicalVolumes.clear();
   totalNumPMTs = 0;
+  totalNumODPMTs = 0;
   WCPMTExposeHeight= 0.;
   //-----------------------------------------------------
   // Set the default WC geometry.  This can be changed later.
@@ -99,6 +106,10 @@ WCSimDetectorConstruction::~WCSimDetectorConstruction(){
     delete fpmts.at(i);
   }
   fpmts.clear();
+  for (unsigned int i=0;i<fODpmts.size();i++){
+    delete fODpmts.at(i);
+  }
+  fODpmts.clear();
 }
 
 G4VPhysicalVolume* WCSimDetectorConstruction::Construct()
@@ -113,6 +124,7 @@ G4VPhysicalVolume* WCSimDetectorConstruction::Construct()
   WCSimDetectorConstruction::PMTLogicalVolumes.clear();
 
   totalNumPMTs = 0;
+  totalNumODPMTs = 0;
   
   //-----------------------------------------------------
   // Create Logical Volumes
@@ -187,6 +199,8 @@ G4VPhysicalVolume* WCSimDetectorConstruction::Construct()
   // Reset the tubeID and tubeLocation maps before refiling them
   tubeIDMap.clear();
   tubeLocationMap.clear();
+  ODtubeIDMap.clear();
+  ODtubeLocationMap.clear();
 
 
   // Traverse and print the geometry Tree
@@ -219,6 +233,11 @@ WCSimPMTObject *WCSimDetectorConstruction::CreatePMTObject(G4String PMTType, G4S
     WCSimDetectorConstruction::SetPMTPointer(PMT, CollectionName);
     return PMT;
   }
+  else if (PMTType == "PMT8inch_SquarePlate"){
+    WCSimPMTObject* PMT = new PMT8inch_SquarePlate;
+    WCSimDetectorConstruction::SetPMTPointer(PMT, CollectionName);
+    return PMT;
+  }
   else if (PMTType == "PMT10inch"){
     WCSimPMTObject* PMT = new PMT10inch;
     WCSimDetectorConstruction::SetPMTPointer(PMT, CollectionName);
@@ -246,6 +265,26 @@ WCSimPMTObject *WCSimDetectorConstruction::CreatePMTObject(G4String PMTType, G4S
   }
   else if (PMTType == "BoxandLine20inchHQE"){
     WCSimPMTObject* PMT = new BoxandLine20inchHQE;
+    WCSimDetectorConstruction::SetPMTPointer(PMT, CollectionName);
+    return PMT;
+  }
+  else if (PMTType == "x1TriangularTile3inch"){
+    WCSimPMTObject* PMT = new x1TriangularTile3inch;
+    WCSimDetectorConstruction::SetPMTPointer(PMT, CollectionName);
+    return PMT;
+  }
+  else if (PMTType == "x1SquarePlate3inch"){
+    WCSimPMTObject* PMT = new x1SquarePlate3inch;
+    WCSimDetectorConstruction::SetPMTPointer(PMT, CollectionName);
+    return PMT;
+  }
+  else if (PMTType == "x16TriangularTile3inch"){
+    WCSimPMTObject* PMT = new x16TriangularTile3inch;
+    WCSimDetectorConstruction::SetPMTPointer(PMT, CollectionName);
+    return PMT;
+  }
+  else if (PMTType == "FastStar3inch"){
+    WCSimPMTObject* PMT = new FastStar3inch;
     WCSimDetectorConstruction::SetPMTPointer(PMT, CollectionName);
     return PMT;
   }

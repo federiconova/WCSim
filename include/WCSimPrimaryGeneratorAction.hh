@@ -51,6 +51,8 @@ public:
   G4double GetYDir() {return yDir;};
   G4double GetZDir() {return zDir;};
 
+  G4String GetGeneratorTypeString();
+  
 private:
   WCSimDetectorConstruction*      myDetector;
   G4ParticleGun*                  particleGun;
@@ -60,6 +62,8 @@ private:
   // Variables set by the messenger
   G4bool   useMulineEvt;
   G4bool   useNormalEvt;
+  G4bool   useGunEvt;
+  G4bool   useGPSEvt;
   G4bool   useLaserEvt;  //T. Akiri: Laser flag
   std::fstream inputFile;
   G4String vectorFileName;
@@ -89,6 +93,12 @@ public:
 
   inline void SetNormalEvtGenerator(G4bool choice) { useNormalEvt = choice; }
   inline G4bool IsUsingNormalEvtGenerator()  { return useNormalEvt; }
+
+  inline void SetGunEvtGenerator(G4bool choice) { useGunEvt = choice; }
+  inline G4bool IsUsingGunEvtGenerator()  { return useGunEvt; }
+
+  inline void SetGPSEvtGenerator(G4bool choice) { useGPSEvt = choice; }
+  inline G4bool IsUsingGPSEvtGenerator()  { return useGPSEvt; }
 
   //T. Akiri: Addition of function for the laser flag
   inline void SetLaserEvtGenerator(G4bool choice) { useLaserEvt = choice; }

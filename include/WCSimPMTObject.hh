@@ -76,6 +76,28 @@ public:
   G4float  GetDarkRateConversionFactor();
 };
 
+class PMT8inch_SquarePlate : public WCSimPMTObject
+{
+
+public:
+  
+  PMT8inch_SquarePlate();
+  ~PMT8inch_SquarePlate();
+ 
+public:
+  G4String GetPMTName(); 
+  G4double GetExposeHeight(); 
+  G4double GetRadius();
+  G4float* Getqpe();
+  G4float* GetQE();
+  G4float* GetQEWavelength();
+  G4float  GetmaxQE();
+  float    HitTimeSmearing(float);
+  G4double GetPMTGlassThickness();
+  G4float  GetDarkRate();
+  G4float  GetDarkRateConversionFactor();
+};
+
  class PMT10inch : public WCSimPMTObject
 {
 
@@ -194,6 +216,102 @@ public:
   
   BoxandLine20inchHQE();
   ~BoxandLine20inchHQE();
+ 
+public:
+  G4String GetPMTName() ;
+  G4double GetExposeHeight();
+  G4double GetRadius();
+  G4float* Getqpe();
+  G4float* GetQE();
+  G4float* GetQEWavelength();
+  G4float  GetmaxQE();
+  float    HitTimeSmearing(float);
+  G4double GetPMTGlassThickness();
+  G4float  GetDarkRate();
+  G4float  GetDarkRateConversionFactor();
+protected:
+  G4float* GetCollectionEfficiencyArray();
+};
+
+class x1TriangularTile3inch : public WCSimPMTObject
+{
+
+public:
+  
+  x1TriangularTile3inch();
+  ~x1TriangularTile3inch();
+ 
+public:
+  G4String GetPMTName() ;
+  G4double GetExposeHeight();
+  G4double GetRadius();
+  G4float* Getqpe();
+  G4float* GetQE();
+  G4float* GetQEWavelength();
+  G4float  GetmaxQE();
+  float    HitTimeSmearing(float);
+  G4double GetPMTGlassThickness();
+  G4float  GetDarkRate();
+  G4float  GetDarkRateConversionFactor();
+protected:
+  G4float* GetCollectionEfficiencyArray();
+};
+
+class x1SquarePlate3inch : public WCSimPMTObject
+{
+
+public:
+  
+  x1SquarePlate3inch();
+  ~x1SquarePlate3inch();
+ 
+public:
+  G4String GetPMTName() ;
+  G4double GetExposeHeight();
+  G4double GetRadius();
+  G4float* Getqpe();
+  G4float* GetQE();
+  G4float* GetQEWavelength();
+  G4float  GetmaxQE();
+  float    HitTimeSmearing(float);
+  G4double GetPMTGlassThickness();
+  G4float  GetDarkRate();
+  G4float  GetDarkRateConversionFactor();
+protected:
+  G4float* GetCollectionEfficiencyArray();
+};
+
+class x16TriangularTile3inch : public WCSimPMTObject
+{
+
+public:
+  
+  x16TriangularTile3inch();
+  ~x16TriangularTile3inch();
+ 
+public:
+  G4String GetPMTName() ;
+  G4double GetExposeHeight();
+  G4double GetRadius();
+  G4float* Getqpe();
+  G4float* GetQE();
+  G4float* GetQEWavelength();
+  G4float  GetmaxQE();
+  float    HitTimeSmearing(float);
+  G4double GetPMTGlassThickness();
+  G4float  GetDarkRate();
+  G4float  GetDarkRateConversionFactor();
+protected:
+  G4float* GetCollectionEfficiencyArray();
+};
+
+class FastStar3inch : public WCSimPMTObject
+{
+
+public:
+  
+  FastStar3inch();
+  ~FastStar3inch();
  
 public:
   G4String GetPMTName() ;
