@@ -385,9 +385,15 @@ void WCSimDetectorConstruction::SetHyperKWithODGeometry()
   // Shift between PMTs inside a cell //
   WCODPMTShift = 0.*cm;
 
+  double WCPMTODRadius_for_coverage = WCPMTODRadius;
+#if 0
+  // build as many 3 inch as 8 inch in 1% coverage
+  WCPMTODRadius_for_coverage = 101.6*mm; // value from 8'' PMT
+#endif
+
   // OD caps //
   // WCODCapPMTSpacing = 100*cm;
-  WCODCapPMTSpacing  = (pi*WCIDDiameter/(round(WCIDDiameter*sqrt(pi*WCPMTODPercentCoverage)/(10.0*WCPMTODRadius))));
+  WCODCapPMTSpacing  = (pi*WCIDDiameter/(round(WCIDDiameter*sqrt(pi*WCPMTODPercentCoverage)/(10.0*WCPMTODRadius_for_coverage))));
   WCODCapEdgeLimit = WCIDDiameter/2.0 - WCPMTODRadius;
 
 }
@@ -446,9 +452,224 @@ void WCSimDetectorConstruction::SetHyperKWithOD_SquarePlateGeometry()
   // Shift between PMTs inside a cell //
   WCODPMTShift = 0.*cm;
 
+  double WCPMTODRadius_for_coverage = WCPMTODRadius;
+#if 0
+  // build as many 3 inch as 8 inch in 1% coverage
+  WCPMTODRadius_for_coverage = 101.6*mm; // value from 8'' PMT
+#endif
+
   // OD caps //
   // WCODCapPMTSpacing = 100*cm;
-  WCODCapPMTSpacing  = (pi*WCIDDiameter/(round(WCIDDiameter*sqrt(pi*WCPMTODPercentCoverage)/(10.0*WCPMTODRadius))));
+  WCODCapPMTSpacing  = (pi*WCIDDiameter/(round(WCIDDiameter*sqrt(pi*WCPMTODPercentCoverage)/(10.0*WCPMTODRadius_for_coverage))));
+  WCODCapEdgeLimit = WCIDDiameter/2.0 - WCPMTODRadius;
+
+}
+
+void WCSimDetectorConstruction::SetHyperKWithOD_TriangleGeometry()
+{
+  WCDetectorName = "HyperKWithOD_Triangle";
+  WCIDCollectionName = WCDetectorName +"-glassFaceWCPMT";
+  WCSimPMTObject * PMT = CreatePMTObject("BoxandLine20inchHQE", WCIDCollectionName);
+  WCPMTName           = PMT->GetPMTName();
+  WCPMTExposeHeight   = PMT->GetExposeHeight();
+  WCPMTRadius         = PMT->GetRadius();
+  WCIDDiameter          = 70.8*m; // = 74m - 2*(60cm ID wall + 1m OD)
+  WCIDHeight            = 54.8*m; // = 60m - 2*(60cm ID wall + 2m OD)
+  WCBarrelPMTOffset     = WCPMTRadius; //offset from vertical
+  WCPMTperCellHorizontal= 4;
+  WCPMTperCellVertical  = 3;
+  WCPMTPercentCoverage  = 40.0;
+  WCBarrelNumPMTHorizontal = round(WCIDDiameter*sqrt(pi*WCPMTPercentCoverage)/(10.0*WCPMTRadius));
+  WCBarrelNRings           = round(((WCBarrelNumPMTHorizontal*((WCIDHeight-2*WCBarrelPMTOffset)/(pi*WCIDDiameter)))
+      /WCPMTperCellVertical));
+  WCCapPMTSpacing       = (pi*WCIDDiameter/WCBarrelNumPMTHorizontal); // distance between centers of top and bottom pmts
+  WCCapEdgeLimit        = WCIDDiameter/2.0 - WCPMTRadius;
+  WCBlackSheetThickness = 2.0*cm;
+  WCAddGd               = false;
+
+  ////////////////////////////////////
+  // OD Parameters --- Beta version //
+  ////////////////////////////////////
+  isODConstructed = true;
+
+  // OD Dimensions //
+  WCODLateralWaterDepth    = 1.*m;
+  WCODHeightWaterDepth     = 2.*m;
+  WCODDeadSpace            = 600.*mm;
+  WCODTyvekSheetThickness  = 1.0*mm; // Quite standard I guess
+  WCODDiameter             = WCIDDiameter + 2*(WCBlackSheetThickness+WCODDeadSpace+WCODTyvekSheetThickness);
+
+  // OD PMTs //
+  WCODCollectionName = WCDetectorName + "-glassFaceWCPMT_OD";
+  WCSimPMTObject *PMTOD = CreatePMTObject("PMT8inch_Triangle", WCODCollectionName);
+  WCPMTODName           = PMTOD->GetPMTName();
+  WCPMTODExposeHeight   = PMTOD->GetExposeHeight();
+  WCPMTODRadius         = PMTOD->GetRadius();
+
+  // OD Coverage on barrel side //
+  WCPMTODperCellHorizontal = 1;
+  WCPMTODperCellVertical   = 1;
+
+  // OD Coverage on caps //
+  WCPMTODPercentCoverage   = 1.0; //default 1%
+  // NOTE : If you set WCPMTODperCellHorizontal=0 and WCPMTODperCellVertical=0,
+  // then method ComputeWCODPMT() inside ConstructCylinder will automatically compute
+  // the nb of PMTs to put on barrel side according to WCPMTODPercentCoverage
+
+  // Shift between PMTs inside a cell //
+  WCODPMTShift = 0.*cm;
+
+  double WCPMTODRadius_for_coverage = WCPMTODRadius;
+#if 0
+  // build as many 3 inch as 8 inch in 1% coverage
+  WCPMTODRadius_for_coverage = 101.6*mm; // value from 8'' PMT
+#endif
+
+  // OD caps //
+  // WCODCapPMTSpacing = 100*cm;
+  WCODCapPMTSpacing  = (pi*WCIDDiameter/(round(WCIDDiameter*sqrt(pi*WCPMTODPercentCoverage)/(10.0*WCPMTODRadius_for_coverage))));
+  WCODCapEdgeLimit = WCIDDiameter/2.0 - WCPMTODRadius;
+
+}
+
+void WCSimDetectorConstruction::SetHyperKWithOD_ID_TriangleGeometry()
+{
+  WCDetectorName = "HyperKWithOD_ID_Triangle";
+  WCIDCollectionName = WCDetectorName +"-glassFaceWCPMT";
+  WCSimPMTObject * PMT = CreatePMTObject("PMT8inch_Triangle", WCIDCollectionName);
+  WCPMTName           = PMT->GetPMTName();
+  WCPMTExposeHeight   = PMT->GetExposeHeight();
+  WCPMTRadius         = PMT->GetRadius();
+  WCIDDiameter          = 70.8*m; // = 74m - 2*(60cm ID wall + 1m OD)
+  WCIDHeight            = 54.8*m; // = 60m - 2*(60cm ID wall + 2m OD)
+  WCBarrelPMTOffset     = WCPMTRadius; //offset from vertical
+  WCPMTperCellHorizontal= 4;
+  WCPMTperCellVertical  = 3;
+  // build as many 3 inch as 20 inch in 40% coverage
+  WCPMTPercentCoverage  = 40.0;
+  double WCPMTRadius_for_coverage = .254*m; // value from 20'' PMT
+  double WCBarrelPMTOffset_for_coverage = WCPMTRadius_for_coverage;
+
+  WCBarrelNumPMTHorizontal = round(WCIDDiameter*sqrt(pi*WCPMTPercentCoverage)/(10.0*WCPMTRadius_for_coverage));
+  WCBarrelNRings           = round(((WCBarrelNumPMTHorizontal*((WCIDHeight-2*WCBarrelPMTOffset_for_coverage)/(pi*WCIDDiameter)))
+                                      /WCPMTperCellVertical));
+  WCCapPMTSpacing       = (pi*WCIDDiameter/WCBarrelNumPMTHorizontal); // distance between centers of top and bottom pmts
+  WCCapEdgeLimit        = WCIDDiameter/2.0 - WCPMTRadius;
+  WCBlackSheetThickness = 2.0*cm;
+  WCAddGd               = false;
+
+  ////////////////////////////////////
+  // OD Parameters --- Beta version //
+  ////////////////////////////////////
+  isODConstructed = true;
+
+  // OD Dimensions //
+  WCODLateralWaterDepth    = 1.*m;
+  WCODHeightWaterDepth     = 2.*m;
+  WCODDeadSpace            = 600.*mm;
+  WCODTyvekSheetThickness  = 1.0*mm; // Quite standard I guess
+  WCODDiameter             = WCIDDiameter + 2*(WCBlackSheetThickness+WCODDeadSpace+WCODTyvekSheetThickness);
+
+  // OD PMTs //
+  WCODCollectionName = WCDetectorName + "-glassFaceWCPMT_OD";
+  WCSimPMTObject *PMTOD = CreatePMTObject("PMT8inch", WCODCollectionName);
+  WCPMTODName           = PMTOD->GetPMTName();
+  WCPMTODExposeHeight   = PMTOD->GetExposeHeight();
+  WCPMTODRadius         = PMTOD->GetRadius();
+
+  // OD Coverage on barrel side //
+  WCPMTODperCellHorizontal = 1;
+  WCPMTODperCellVertical   = 1;
+
+  // OD Coverage on caps //
+  WCPMTODPercentCoverage   = 1.0; //default 1%
+  // NOTE : If you set WCPMTODperCellHorizontal=0 and WCPMTODperCellVertical=0,
+  // then method ComputeWCODPMT() inside ConstructCylinder will automatically compute
+  // the nb of PMTs to put on barrel side according to WCPMTODPercentCoverage
+
+  // Shift between PMTs inside a cell //
+  WCODPMTShift = 0.*cm;
+
+  double WCPMTODRadius_for_coverage = WCPMTODRadius;
+#if 0
+  // build as many 3 inch as 8 inch in 1% coverage
+  WCPMTODRadius_for_coverage = 101.6*mm; // value from 8'' PMT
+#endif
+
+  // OD caps //
+  // WCODCapPMTSpacing = 100*cm;
+  WCODCapPMTSpacing  = (pi*WCIDDiameter/(round(WCIDDiameter*sqrt(pi*WCPMTODPercentCoverage)/(10.0*WCPMTODRadius_for_coverage))));
+  WCODCapEdgeLimit = WCIDDiameter/2.0 - WCPMTODRadius;
+
+}
+
+void WCSimDetectorConstruction::SetHyperKWithOD_ID_SquarePlateGeometry()
+{
+  WCDetectorName = "HyperKWithOD_ID_SquarePlate";
+  WCIDCollectionName = WCDetectorName +"-glassFaceWCPMT";
+  WCSimPMTObject * PMT = CreatePMTObject("PMT8inch_SquarePlate", WCIDCollectionName);
+  WCPMTName           = PMT->GetPMTName();
+  WCPMTExposeHeight   = PMT->GetExposeHeight();
+  WCPMTRadius         = PMT->GetRadius();
+  WCIDDiameter          = 70.8*m; // = 74m - 2*(60cm ID wall + 1m OD)
+  WCIDHeight            = 54.8*m; // = 60m - 2*(60cm ID wall + 2m OD)
+  WCBarrelPMTOffset     = WCPMTRadius; //offset from vertical
+  WCPMTperCellHorizontal= 4;
+  WCPMTperCellVertical  = 3;
+  // build as many 3 inch as 20 inch in 40% coverage
+  WCPMTPercentCoverage  = 40.0;
+  double WCPMTRadius_for_coverage = .254*m; // value from 20'' PMT
+  double WCBarrelPMTOffset_for_coverage = WCPMTRadius_for_coverage;
+
+  WCBarrelNumPMTHorizontal = round(WCIDDiameter*sqrt(pi*WCPMTPercentCoverage)/(10.0*WCPMTRadius_for_coverage));
+  WCBarrelNRings           = round(((WCBarrelNumPMTHorizontal*((WCIDHeight-2*WCBarrelPMTOffset_for_coverage)/(pi*WCIDDiameter)))
+                                      /WCPMTperCellVertical));
+  WCCapPMTSpacing       = (pi*WCIDDiameter/WCBarrelNumPMTHorizontal); // distance between centers of top and bottom pmts
+  WCCapEdgeLimit        = WCIDDiameter/2.0 - WCPMTRadius;
+  WCBlackSheetThickness = 2.0*cm;
+  WCAddGd               = false;
+
+  ////////////////////////////////////
+  // OD Parameters --- Beta version //
+  ////////////////////////////////////
+  isODConstructed = true;
+
+  // OD Dimensions //
+  WCODLateralWaterDepth    = 1.*m;
+  WCODHeightWaterDepth     = 2.*m;
+  WCODDeadSpace            = 600.*mm;
+  WCODTyvekSheetThickness  = 1.0*mm; // Quite standard I guess
+  WCODDiameter             = WCIDDiameter + 2*(WCBlackSheetThickness+WCODDeadSpace+WCODTyvekSheetThickness);
+
+  // OD PMTs //
+  WCODCollectionName = WCDetectorName + "-glassFaceWCPMT_OD";
+  WCSimPMTObject *PMTOD = CreatePMTObject("PMT8inch", WCODCollectionName);
+  WCPMTODName           = PMTOD->GetPMTName();
+  WCPMTODExposeHeight   = PMTOD->GetExposeHeight();
+  WCPMTODRadius         = PMTOD->GetRadius();
+
+  // OD Coverage on barrel side //
+  WCPMTODperCellHorizontal = 1;
+  WCPMTODperCellVertical   = 1;
+
+  // OD Coverage on caps //
+  WCPMTODPercentCoverage   = 1.0; //default 1%
+  // NOTE : If you set WCPMTODperCellHorizontal=0 and WCPMTODperCellVertical=0,
+  // then method ComputeWCODPMT() inside ConstructCylinder will automatically compute
+  // the nb of PMTs to put on barrel side according to WCPMTODPercentCoverage
+
+  // Shift between PMTs inside a cell //
+  WCODPMTShift = 0.*cm;
+
+  double WCPMTODRadius_for_coverage = WCPMTODRadius;
+#if 0
+  // build as many 3 inch as 8 inch in 1% coverage
+  WCPMTODRadius_for_coverage = 101.6*mm; // value from 8'' PMT
+#endif
+
+  // OD caps //
+  // WCODCapPMTSpacing = 100*cm;
+  WCODCapPMTSpacing  = (pi*WCIDDiameter/(round(WCIDDiameter*sqrt(pi*WCPMTODPercentCoverage)/(10.0*WCPMTODRadius_for_coverage))));
   WCODCapEdgeLimit = WCIDDiameter/2.0 - WCPMTODRadius;
 
 }

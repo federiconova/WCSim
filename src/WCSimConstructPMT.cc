@@ -95,12 +95,19 @@ else
      logicWCPMT = new G4LogicalVolume(NULL, NULL, "WCPMT", 0, 0, 0);
      BuildWLSplateFastStar(radius, expose, sphereRadius, PMTOffset, solidCutOffTubs, logicWCPMT);
 
-   } else if( detectorElement == "OD" && PMTName == "8inch_SquarePlate" ){
+   } else if( PMTName == "8inch_SquarePlate" ){
 
      G4cout << "  qqq build OD wls square plate " << G4endl;
 
      logicWCPMT = new G4LogicalVolume(NULL, NULL, "WCPMT", 0, 0, 0);
      BuildWLSplatex1SquarePlate(radius, expose, sphereRadius, PMTOffset, solidCutOffTubs, logicWCPMT);
+
+   } else if( PMTName == "8inch_Triangle" ){
+
+     G4cout << "  qqq build OD wls triangle " << G4endl;
+
+     logicWCPMT = new G4LogicalVolume(NULL, NULL, "WCPMT", 0, 0, 0);
+     BuildWLSplatex1TriangularTile(radius, expose, sphereRadius, PMTOffset, solidCutOffTubs, logicWCPMT);
 
    }else{
 

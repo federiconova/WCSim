@@ -75,6 +75,9 @@ public:
   void Cylinder_12inchHPD_15perCent();
   void SetHyperKWithODGeometry();
   void SetHyperKWithOD_SquarePlateGeometry();
+  void SetHyperKWithOD_TriangleGeometry();
+  void SetHyperKWithOD_ID_TriangleGeometry();
+  void SetHyperKWithOD_ID_SquarePlateGeometry();
   void UpdateGeometry();
   
 

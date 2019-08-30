@@ -1103,6 +1103,8 @@ If used here, uncomment the SetVisAttributes(WClogic) line, and comment out the 
 		G4RotationMatrix* WCCapPMTRotation = new G4RotationMatrix;
 		WCCapPMTRotation->rotateY(180.*deg);
 
+		G4cout << " qqq put top OD PMT with z " << ((WCIDHeight + 2*WCODDeadSpace)/2)+WCODTyvekSheetThickness << G4endl;
+
 		// loop over the cap
 		G4int CapNCell = WCODCapEdgeLimit/WCODCapPMTSpacing + 2;
 		for ( int i = -CapNCell ; i <  CapNCell; i++) {

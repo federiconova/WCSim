@@ -32,6 +32,9 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
                           "HyperK\n"
 			  "HyperKWithOD\n"
 			  "HyperKWithOD_SquarePlate\n"
+			  "HyperKWithOD_Triangle\n"
+			  "HyperKWithOD_ID_Triangle\n"
+			  "HyperKWithOD_ID_SquarePlate\n"
                           "HyperK_withHPD\n"
                          );
   PMTConfig->SetParameterName("PMTConfig", false);
@@ -50,6 +53,9 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
 			   "HyperK "
 			   "HyperKWithOD "
 			   "HyperKWithOD_SquarePlate "
+			   "HyperKWithOD_Triangle "
+			   "HyperKWithOD_ID_Triangle "
+			   "HyperKWithOD_ID_SquarePlate "
                            "HyperK_withHPD "
                            );
   PMTConfig->AvailableForStates(G4State_PreInit, G4State_Idle);
@@ -164,6 +170,12 @@ void WCSimDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
 		  WCSimDetector->SetHyperKWithODGeometry();
 		} else if ( newValue == "HyperKWithOD_SquarePlate" ){
 		  WCSimDetector->SetHyperKWithOD_SquarePlateGeometry();
+		} else if ( newValue == "HyperKWithOD_Triangle" ){
+		  WCSimDetector->SetHyperKWithOD_TriangleGeometry();
+		} else if ( newValue == "HyperKWithOD_ID_Triangle" ){
+		  WCSimDetector->SetHyperKWithOD_ID_TriangleGeometry();
+		} else if ( newValue == "HyperKWithOD_ID_SquarePlate" ){
+		  WCSimDetector->SetHyperKWithOD_ID_SquarePlateGeometry();
                 } else if ( newValue == "HyperK_withHPD") {
                         WCSimDetector->SetIsHyperK(true);
 			WCSimDetector->SetHyperKGeometry_withHPD();
