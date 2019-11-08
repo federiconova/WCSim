@@ -1,12 +1,19 @@
 
 COMMAND="bqsub"
-TIME="10:00"
-EXECUTABLE="./exe/bin/Linux-g++/WCSim"
+TIME="12:00"
+EXECUTABLE="./simulate_muons.sh"
 
-#MACFILE="WCSim.mac"
-MACFILE="WCSim_x16TriangularTiles_600MeVmuon.mac"
+energy_min=150
 
-echo ${COMMAND} -c ${TIME} ${EXECUTABLE} ${MACFILE}
-${COMMAND} -c ${TIME} ${EXECUTABLE} ${MACFILE} > log_${MACFILE}.log
+energy_max=5150
+
+energy_step=100
+
+for((en=${energy_min}; en<${energy_max}; en+=${energy_step})); do
+
+    echo ${COMMAND} -c ${TIME} ${EXECUTABLE} ${en} 
+    ${COMMAND} -c ${TIME} ${EXECUTABLE} ${en}  > log_${en}.log
+
+done
 
 
