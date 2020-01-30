@@ -183,7 +183,7 @@ void WCSimDetectorConstruction::ConstructMaterials()
 
   //---PVT - WLS plates eljen EJ-286
   // linear formula [CH2CH(C6H4CH3)]n
-  density = 1.032*g/cm3;  // at 20deg
+  density = 1.023*g/cm3;  // at 20deg
   G4Material* WLS_PVT
       = new G4Material("WLS_PVT",density,2);
   WLS_PVT->AddElement(elC, 9); // PVT
@@ -214,7 +214,7 @@ void WCSimDetectorConstruction::ConstructMaterials()
   //**cladding properties
   const G4int cladding_num = 2;
   G4double cladding_ephoton[cladding_num] = { 1.*eV, 10*eV };
-  G4double claddingReflectivity[cladding_num] = {0.95, 0.95};
+  G4double claddingReflectivity[cladding_num] = {WCCladdingReflectivity, WCCladdingReflectivity};
   G4double claddingEfficiency[cladding_num] = {0., 0.};
   G4MaterialPropertiesTable* claddingPT = new G4MaterialPropertiesTable();
   claddingPT->AddProperty("REFLECTIVITY", cladding_ephoton, claddingReflectivity, cladding_num);
