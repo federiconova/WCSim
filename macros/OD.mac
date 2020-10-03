@@ -81,7 +81,7 @@
 /DarkRate/SetDarkLow 0
 /DarkRate/SetDarkHigh 1000
 /DarkRate/SetDarkWindow 4000
-#/DarkRate/SetDarkRate 0 kHz
+/DarkRate/SetDarkRate 0 kHz
 
 /DarkRate/SetDetectorElement OD
 /DarkRate/SetDarkMode 0
@@ -123,10 +123,10 @@
 
 ## change the name of the output root file, default = wcsim.root
 
-/WCSimIO/RootFile wcsim_13k_OD_PMTs_no_ID_no_dark_noise_horizontal_muon.root
+/WCSimIO/RootFile wcsim__no_dark_noise__1GeV_horizontal_muon.root
 
 ## set a timer running on WCSimRunAction
 #/WCSimIO/Timer false
 
-/run/beamOn 10
+/run/beamOn 100
 #exit
