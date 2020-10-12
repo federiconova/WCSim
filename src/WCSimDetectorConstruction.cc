@@ -308,6 +308,13 @@ void WCSimDetectorConstruction::UpdateODGeo()
   CreateCombinedPMTQE(WCColName);
 }
 
+//A function to recalculate the dimensions of the HKID tank if the parameters are changed
+void WCSimDetectorConstruction::UpdateIDGeo()
+{
+  WCCapEdgeLimit = std::min(WCIDDiameter/2.0 - WCPMTRadius, WCIDDiameter/2.0 - WCIDWLSPlatesLength/2);
+
+}
+
 void WCSimDetectorConstruction::CreateCombinedPMTQE(std::vector<G4String> CollectionName){
 
   // Show printouts for debugging purposes

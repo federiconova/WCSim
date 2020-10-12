@@ -79,6 +79,7 @@ public:
   void SetHyperKGeometry();
   void SetHyperKWithODGeometry();
   void UpdateGeometry();
+  void UpdateIDGeo();
   void UpdateODGeo();
 
 
@@ -191,15 +192,19 @@ public:
   void SetWCODHeightWaterDepth(G4double val){WCODHeightWaterDepth = val;}
   void SetWCODDeadSpace(G4double val){WCODDeadSpace = val;}
   void SetWCODTyvekSheetThickness(G4double val){WCODTyvekSheetThickness = val;}
+  void SetWCIDWLSPlatesThickness(G4double val){WCIDWLSPlatesThickness = val;}
   void SetWCODWLSPlatesThickness(G4double val){WCODWLSPlatesThickness = val;}
+  void SetWCIDWLSPlatesLength(G4double val){WCIDWLSPlatesLength = val;}
   void SetWCODWLSPlatesLength(G4double val){WCODWLSPlatesLength = val;}
   void SetWCPMTODperCellHorizontal(G4double val){WCPMTODperCellHorizontal = val;}
   void SetWCPMTODperCellVertical(G4double val){WCPMTODperCellVertical = val;}
   void SetWCPMTODPercentCoverage(G4double val){WCPMTODPercentCoverage = val;}
   void SetWCODPMTShift(G4double val){WCODPMTShift = val;}
+  void SetIDEdited(G4bool val){idEdited = val;}
   void SetODEdited(G4bool val){odEdited = val;}
   void SetIsWLSFilled(G4bool val){isWLSFilled = val;}
   void SetBuildCladding(G4bool val){BuildCladding = val;}
+  G4bool GetIDEdited(){return idEdited;}
   G4bool GetODEdited(){return odEdited;}
 
   ////////// END OD /////////////
@@ -242,6 +247,7 @@ private:
   // The Construction routines
   G4LogicalVolume*   ConstructCylinder();
   G4LogicalVolume* ConstructPMT(G4String,G4String,G4String detectorElement="tank");
+  G4LogicalVolume* ConstructIDPMTAndWLSPlate(G4String,G4String,G4String detectorElement="tank");
   G4LogicalVolume* ConstructODPMTAndWLSPlate(G4String,G4String,G4String detectorElement="OD");
 
   G4LogicalVolume* ConstructCaps(G4int zflip);
@@ -250,6 +256,10 @@ private:
 
   G4LogicalVolume* logicWCBarrelCellODTyvek;
   G4LogicalVolume* logicWCTowerODTyvek;
+
+  G4LogicalVolume* logicWCIDWLSAndPMT;
+  G4LogicalVolume* logicWCIDWLSPlate;
+  G4LogicalVolume* logicWCIDWLSPlateCladding;
 
   G4LogicalVolume* logicWCODWLSAndPMT;
   G4LogicalVolume* logicWCODWLSPlate;
@@ -392,7 +402,9 @@ private:
   G4double WCODHeightWaterDepth;
   G4double WCODDeadSpace;
   G4double WCODTyvekSheetThickness;
+  G4double WCIDWLSPlatesThickness = 1.;
   G4double WCODWLSPlatesThickness;
+  G4double WCIDWLSPlatesLength = 1.;
   G4double WCODWLSPlatesLength;
 
   G4double WCODCapPMTSpacing;
@@ -493,6 +505,7 @@ private:
     G4double outerPMT_TopRpitch;
     G4double outerPMT_BotRpitch;
     G4double outerPMT_Apitch;
+    G4bool idEdited;
     G4bool odEdited;
 
 

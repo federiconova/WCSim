@@ -266,7 +266,7 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructODPMTAndWLSPlate(G4String P
   // offset to have water between WLS plate and tyvek
   G4double WLS_plate_offset= 1.*mm;
 
-  G4cout << " create WLSPlate with inner radius " << radius/m << " m, half side " << WCODWLSPlatesLength/2/m << " m, half thickness " << WCODWLSPlatesThickness/2/m << " m, cladding thickness " << CladdingWidth/m << " m, PMT expose " << expose/m << " m, sphereRadius " << sphereRadius/m << " m, WLS_plate_offset " << WLS_plate_offset/m << " m" <<  G4endl;
+  G4cout << " create OD WLSPlate with inner radius " << radius/m << " m, half side " << WCODWLSPlatesLength/2/m << " m, half thickness " << WCODWLSPlatesThickness/2/m << " m, cladding thickness " << CladdingWidth/m << " m, PMT expose " << expose/m << " m, sphereRadius " << sphereRadius/m << " m, WLS_plate_offset " << WLS_plate_offset/m << " m" <<  G4endl;
 
   // EVERYTHING WILL BE ORIENTATED ALONG Z-AXIS
 
@@ -305,14 +305,14 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructODPMTAndWLSPlate(G4String P
   // Create a WLS plate towards x,y plane and drilled hole will be around z-axis
   // WLS
   G4Box *WLSPlateAndCladding =
-      new G4Box("WLSPlateAndCladding",
+      new G4Box("ODWLSPlateAndCladding",
                 (WCODWLSPlatesLength+2*CladdingWidth)/2,
                 (WCODWLSPlatesLength+2*CladdingWidth)/2,
                 WCODWLSPlatesThickness/2);
 
 
   G4Box *WLSPlate =
-      new G4Box("WLSPlate",
+      new G4Box("ODWLSPlate",
                 WCODWLSPlatesLength/2,
                 WCODWLSPlatesLength/2,
                 WCODWLSPlatesThickness/2);
@@ -426,4 +426,189 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructODPMTAndWLSPlate(G4String P
 
 
   return logicContainer;
+}
+
+G4LogicalVolume* WCSimDetectorConstruction::ConstructIDPMTAndWLSPlate(G4String PMTName, G4String CollectionName, G4String detectorElement){
+
+  G4double expose;
+  G4double radius;
+  G4String Water = "Water";
+  G4String WLS_Material = "Water";
+  G4String WLSCladding_Material = "Water";
+  if(isWLSFilled){
+    WLS_Material = "WLS_PVT";
+    WLSCladding_Material = "Tyvek";
+  }
+  
+
+  WCSimPMTObject *PMT = GetPMTPointer(CollectionName);
+  expose = PMT->GetExposeHeight();
+  radius = PMT->GetRadius();
+
+  G4double sphereRadius = (expose*expose+ radius*radius)/(2*expose);
+  G4double PMTOffset =  sphereRadius - expose;
+
+  // CLADDING
+  G4double CladdingWidth= 1.*mm;
+
+  // offset to have water between WLS plate and tyvek
+  G4double WLS_plate_offset= 1.*mm;
+
+  G4cout << " create ID WLSPlate with inner radius " << radius/m << " m, half side " << WCIDWLSPlatesLength/2/m << " m, half thickness " << WCIDWLSPlatesThickness/2/m << " m, cladding thickness " << CladdingWidth/m << " m, PMT expose " << expose/m << " m, sphereRadius " << sphereRadius/m << " m, WLS_plate_offset " << WLS_plate_offset/m << " m" <<  G4endl;
+
+  //All components of the PMT are now contained in a single logical volume logicWCPMT.
+  //Origin is on the blacksheet, faces positive z-direction.
+  // the volume is now a cylinder of radius = the plate diagonal, i.e. sqrt(2) * (plate half side)
+  G4double PMTHolderZ[2] = {0, expose};
+  double plate_diagonal = sqrt(2.)*(WCIDWLSPlatesLength/2. + CladdingWidth);
+  G4double PMTHolderR[2] = {plate_diagonal, plate_diagonal};
+  G4double PMTHolderr[2] = {0,0};
+
+
+  G4Polycone* container = 
+   new G4Polycone("rectangleWLS",                    
+                  0.0*deg,
+                  360.0*deg,
+                  2,
+                  PMTHolderZ,
+                  PMTHolderr, // R Inner
+                  PMTHolderR);// R Outer
+
+
+  G4LogicalVolume* logicContainer =
+    new G4LogicalVolume(    container,
+                            G4Material::GetMaterial("Water"),
+                            "WCIDContainer",
+                            0,0,0);
+
+if (Vis_Choice == "RayTracer"){
+// Makes the volume containing the PMT visible, solid, and forces the auxiliary edges to be viewed.
+  G4VisAttributes* WCPMTVisAtt = new G4VisAttributes(G4Colour(0.0,0.0,1.0));
+  WCPMTVisAtt->SetForceSolid(true); // force the object to be visualized with a surface
+  WCPMTVisAtt->SetForceAuxEdgeVisible(true); // force auxiliary edges to be shown 
+
+    logicContainer->SetVisAttributes(WCPMTVisAtt);}
+
+else{
+// Makes the volume containg the PMT invisible for normal visualization
+    logicContainer->SetVisAttributes(G4VisAttributes::Invisible);}
+
+  ////////////////////////////////////////////////
+  // Create a WLS plate towards x,y plane and drilled hole will be around z-axis
+  // WLS
+  G4Box *WLSPlateAndCladding =
+      new G4Box("IDWLSPlateAndCladding",
+                (WCIDWLSPlatesLength+2*CladdingWidth)/2,
+                (WCIDWLSPlatesLength+2*CladdingWidth)/2,
+                WCIDWLSPlatesThickness/2);
+
+
+  G4Box *WLSPlate =
+      new G4Box("IDWLSPlate",
+                WCIDWLSPlatesLength/2,
+                WCIDWLSPlatesLength/2,
+                WCIDWLSPlatesThickness/2);
+
+
+  //Need a volume to cut away excess behind blacksheet
+  G4Box* solidCutOffTubs =
+      new G4Box(    "cutOffTubs",
+            sphereRadius+1.*cm,
+            sphereRadius+1.*cm,
+            PMTOffset);
+  G4Sphere* tmp_glass_outer_surface =
+    new G4Sphere(    "tmp_glass_outer_surface",
+		     0.0*m,sphereRadius,
+		     0.0*deg,360.0*deg,
+		     0.0*deg,90.0*deg);
+  
+  G4SubtractionSolid* glass_outer_surface =
+    new G4SubtractionSolid(    "glass_outer_surface",
+			       tmp_glass_outer_surface,
+			       solidCutOffTubs);
+
+  G4RotationMatrix* NullRotation = new G4RotationMatrix();
+  G4Transform3D WLSplateTransform(*NullRotation, G4ThreeVector(0, 0, - WCIDWLSPlatesThickness/2. - PMTOffset - WLS_plate_offset)); // center of glass outer surface in WLSPlate coordinates
+  G4SubtractionSolid * extrudedWLS = new G4SubtractionSolid("extrudedWLS", WLSPlate, glass_outer_surface, WLSplateTransform);
+
+  G4SubtractionSolid* WLSCladding =
+      new G4SubtractionSolid("WLSCladding", WLSPlateAndCladding, WLSPlate);
+
+  logicWCIDWLSPlate =
+      new G4LogicalVolume(extrudedWLS,
+                          G4Material::GetMaterial(WLS_Material),
+                          "WCIDWLSPlate",
+                          0,0,0);
+
+  G4VisAttributes* visWLS
+      = new G4VisAttributes(G4Colour(0.0, 1.0, 1.0));
+  visWLS->SetForceSolid(true);
+
+  logicWCIDWLSPlate->SetVisAttributes(G4VisAttributes::Invisible);
+  //// Uncomment following for WLS visualization
+  logicWCIDWLSPlate->SetVisAttributes(visWLS);
+
+
+  logicWCIDWLSPlateCladding =
+      new G4LogicalVolume(WLSCladding,
+                          G4Material::GetMaterial(WLSCladding_Material),
+                          "WCIDWLSPlateCladding",
+                          0,0,0);
+
+
+  G4VisAttributes* visWLSCladding
+      = new G4VisAttributes(G4Colour(1.0, 1.0, 1.0));
+  visWLSCladding->SetForceSolid(true);
+
+  logicWCIDWLSPlateCladding->SetVisAttributes(G4VisAttributes::Invisible);
+  //// Uncomment following for WLS visualization
+  logicWCIDWLSPlateCladding->SetVisAttributes(visWLSCladding);
+
+  ////////////////////////////////////////////////
+  // PMTs
+  G4LogicalVolume* logicWCPMT = ConstructPMT(PMTName,CollectionName,detectorElement);
+
+
+  ////////////////////////////////////////////////
+  // Ali G. : Do dat placement inda box
+  G4VPhysicalVolume* physiWLS =
+      new G4PVPlacement(0,
+                        G4ThreeVector(0, 0, WCIDWLSPlatesThickness/2 + WLS_plate_offset),
+                        logicWCIDWLSPlate,
+                        "WCCellWLSPlateID",
+                        logicContainer,
+                        false,
+                        0,
+                        checkOverlaps);
+
+  if(BuildCladding) {
+
+    G4VPhysicalVolume* physiWLSCladding =
+      new G4PVPlacement(0,
+                        G4ThreeVector(0, 0, WCIDWLSPlatesThickness/2 + WLS_plate_offset),
+                        logicWCIDWLSPlateCladding,
+                        "WCCellWLSPlateIDCladding",
+                        logicContainer,
+                        false,
+                        0,
+                        checkOverlaps);
+    
+    new G4LogicalSkinSurface("cladding_surf",   logicWCIDWLSPlateCladding,   OpCladdingSurface);
+  }
+
+  G4VPhysicalVolume* physiPMT =
+      new G4PVPlacement(0,
+                        G4ThreeVector(0, 0, 0),
+                        logicWCPMT,
+                        "WCPMT",
+                        logicContainer,
+                        false,
+                        0,
+                        checkOverlaps);
+
+
+
+  return logicContainer;
+
+
 }

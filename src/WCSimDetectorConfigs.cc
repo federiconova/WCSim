@@ -239,22 +239,31 @@ void WCSimDetectorConstruction::SetHyperKWithODGeometry()
 {
   WCDetectorName = "HyperK";
   WCIDCollectionName = WCDetectorName +"-glassFaceWCPMT";
-  WCSimPMTObject * PMT = CreatePMTObject("BoxandLine20inchHQE", WCIDCollectionName);
+
+  // ID WLS plate
+  WCIDWLSPlatesThickness   = 1.*cm; //
+  WCIDWLSPlatesLength      = 60.*cm; //
+
+  WCSimPMTObject * PMT_for_coverage = CreatePMTObject("BoxandLine20inchHQE", WCIDCollectionName);
+  double WCPMTRadius_for_coverage         = PMT_for_coverage->GetRadius();
+  WCSimPMTObject * PMT = CreatePMTObject("PMT3inch", WCIDCollectionName);
   WCPMTName           = PMT->GetPMTName();
   WCPMTExposeHeight   = PMT->GetExposeHeight();
   WCPMTRadius         = PMT->GetRadius();
   WCIDDiameter          = 65.8*m; // = 69m - 2*(60cm ID wall + 1m OD)
   WCIDHeight            = 67.8*m; // = 73m - 2*(60cm ID wall + 2m OD)
-  WCBarrelPMTOffset     = WCPMTRadius; //offset from vertical
+
+
+  WCBarrelPMTOffset     = WCPMTRadius_for_coverage; //offset from vertical
   WCBorderPMTOffset     = 0.25*m; // PMT offset in border cells. Also makes distance between PMTs shorter.
   WCPMTperCellHorizontal= 4;
   WCPMTperCellVertical  = 3;
   WCPMTPercentCoverage  = 40.0;
-  WCBarrelNumPMTHorizontal = round(WCIDDiameter*sqrt(pi*WCPMTPercentCoverage)/(10.0*WCPMTRadius));
+  WCBarrelNumPMTHorizontal = round(WCIDDiameter*sqrt(pi*WCPMTPercentCoverage)/(10.0*WCPMTRadius_for_coverage));
   WCBarrelNRings =
       round(((WCBarrelNumPMTHorizontal*((WCIDHeight-2*WCBarrelPMTOffset)/(pi*WCIDDiameter)))/WCPMTperCellVertical));
   WCCapPMTSpacing       = (pi*WCIDDiameter/WCBarrelNumPMTHorizontal); // distance between centers of top and bottom pmts
-  WCCapEdgeLimit        = WCIDDiameter/2.0 - WCPMTRadius;
+  WCCapEdgeLimit        = WCIDDiameter/2.0 - WCIDWLSPlatesLength/2;
   WCBlackSheetThickness = 2.0*cm;
   WCAddGd               = false;
 
@@ -262,6 +271,7 @@ void WCSimDetectorConstruction::SetHyperKWithODGeometry()
   // Cave Parameters --- Beta version //
   //////////////////////////////////////
   CaveTyvekSheetThickness  = 1.*mm; // Quite Standard I guess
+
 
   ////////////////////////////////////
   // OD Parameters --- Beta version //

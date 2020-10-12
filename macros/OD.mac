@@ -7,6 +7,9 @@
 # HyperK
 /WCSim/WCgeom HyperKWithOD
 
+/WCSim/HyperKOD/IDWLSPlatesThickness 0.8 cm
+/WCSim/HyperKOD/IDWLSPlatesLength 50 cm
+
 # HyperK Outer Detector
 /WCSim/HyperKOD/PMTODRadius 3inch
 /WCSim/HyperKOD/ODLateralWaterDepth 1 m

@@ -45,6 +45,9 @@ class WCSimDetectorMessenger: public G4UImessenger
   G4UIcmdWithAString* distortionCmd;
   G4UIcmdWithoutParameter* WCConstruct;
 
+  G4UIcmdWithADoubleAndUnit* IDWLSPlatesThickness;
+  G4UIcmdWithADoubleAndUnit* IDWLSPlatesLength;
+
   // OD Geometry
   G4UIcmdWithADoubleAndUnit* ODLateralWaterDepth;
   G4UIcmdWithADoubleAndUnit* ODHeightWaterDepth;

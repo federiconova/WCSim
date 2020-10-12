@@ -158,6 +158,24 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
   ODTyvekSheetThickness->SetDefaultUnit("mm");
   ODTyvekSheetThickness->SetUnitCandidates("mm");
 
+  // ID WLS Plates thickness
+  IDWLSPlatesThickness = new G4UIcmdWithADoubleAndUnit("/WCSim/HyperKOD/IDWLSPlatesThickness", this);
+  IDWLSPlatesThickness->SetGuidance("Set ID WLS plates thickness (unit: cm mm).");
+  IDWLSPlatesThickness->SetParameterName("IDWLSPlatesThickness", true);
+  IDWLSPlatesThickness->SetDefaultValue(1.);
+  IDWLSPlatesThickness->SetUnitCategory("Length");
+  IDWLSPlatesThickness->SetDefaultUnit("cm");
+  IDWLSPlatesThickness->SetUnitCandidates("cm mm");
+
+  // ID WLS Plates length
+  IDWLSPlatesLength = new G4UIcmdWithADoubleAndUnit("/WCSim/HyperKOD/IDWLSPlatesLength", this);
+  IDWLSPlatesLength->SetGuidance("Set ID WLS plates length (unit: cm mm).");
+  IDWLSPlatesLength->SetParameterName("IDWLSPlatesLength", true);
+  IDWLSPlatesLength->SetDefaultValue(60.);
+  IDWLSPlatesLength->SetUnitCategory("Length");
+  IDWLSPlatesLength->SetDefaultUnit("cm");
+  IDWLSPlatesLength->SetUnitCandidates("cm mm");
+
   // OD WLS Plates thickness
   ODWLSPlatesThickness = new G4UIcmdWithADoubleAndUnit("/WCSim/HyperKOD/ODWLSPlatesThickness", this);
   ODWLSPlatesThickness->SetGuidance("Set OD WLS plates thickness (unit: cm mm).");
@@ -261,6 +279,7 @@ void WCSimDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
 		} else if ( newValue == "HyperKWithOD" ){
 		  WCSimDetector->SetHyperKWithODGeometry();
           WCSimDetector->SetODEdited(false);
+          WCSimDetector->SetIDEdited(false);
 		} else if ( newValue == "EggShapedHyperK") {
 		  WCSimDetector->SetIsEggShapedHyperK(true);
 		  WCSimDetector->SetEggShapedHyperKGeometry();
@@ -389,10 +408,22 @@ void WCSimDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
       WCSimDetector->SetWCODTyvekSheetThickness(ODTyvekSheetThickness->GetNewDoubleValue(newValue));
     }
 
+    if(command == IDWLSPlatesThickness){
+	WCSimDetector->SetIDEdited(true);
+      G4cout << "Set OD WLS plates thickness " << newValue << " " << G4endl;
+      WCSimDetector->SetWCIDWLSPlatesThickness(IDWLSPlatesThickness->GetNewDoubleValue(newValue));
+    }
+
     if(command == ODWLSPlatesThickness){
 	WCSimDetector->SetODEdited(true);
       G4cout << "Set OD WLS plates thickness " << newValue << " " << G4endl;
       WCSimDetector->SetWCODWLSPlatesThickness(ODWLSPlatesThickness->GetNewDoubleValue(newValue));
+    }
+
+    if(command == IDWLSPlatesLength){
+	WCSimDetector->SetIDEdited(true);
+      G4cout << "Set ID WLS plates length " << newValue << " " << G4endl;
+      WCSimDetector->SetWCIDWLSPlatesLength(IDWLSPlatesLength->GetNewDoubleValue(newValue));
     }
 
     if(command == ODWLSPlatesLength){
@@ -443,6 +474,7 @@ void WCSimDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
 
   if(command == WCConstruct) {
 //If the OD geometry has been changed, then reconstruct the whole tank with the proper recalculated dimensions
+	if (WCSimDetector->GetIDEdited() == true) {WCSimDetector->UpdateIDGeo();}
 	if (WCSimDetector->GetODEdited() == true) {WCSimDetector->UpdateODGeo();}
 	WCSimDetector->UpdateGeometry();
 	}
