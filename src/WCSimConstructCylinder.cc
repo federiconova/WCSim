@@ -977,7 +977,7 @@ If used here, uncomment the SetVisAttributes(WClogic) line, and comment out the 
     // WLS and OD PMTs Barrel Side
     // ------------------------------------------------------------
 
-    logicWCODWLSAndPMT = ConstructPMTAndWLSPlate(WCPMTODName, WCODCollectionName, "OD");
+    logicWCODWLSAndPMT = ConstructODPMTAndWLSPlate(WCPMTODName, WCODCollectionName, "OD");
     // sphereRadius is the size along z of the logicWCODCapTyvek box containing WLS+PMT
 
     ///////////////   Barrel PMT placement

@@ -241,7 +241,7 @@ else {
   return logicWCPMT;
 }
 
-G4LogicalVolume* WCSimDetectorConstruction::ConstructPMTAndWLSPlate(G4String PMTName, G4String CollectionName, G4String detectorElement){
+G4LogicalVolume* WCSimDetectorConstruction::ConstructODPMTAndWLSPlate(G4String PMTName, G4String CollectionName, G4String detectorElement){
 
   G4double expose;
   G4double radius;
