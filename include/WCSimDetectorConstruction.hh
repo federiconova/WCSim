@@ -78,6 +78,7 @@ public:
   void Cylinder_12inchHPD_15perCent();
   void SetHyperKGeometry();
   void SetHyperKWithODGeometry();
+  void SetHyperKWithODGeometry_20k_3inch_pmts();
   void UpdateGeometry();
   void UpdateIDGeo();
   void UpdateODGeo();
