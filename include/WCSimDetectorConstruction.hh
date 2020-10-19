@@ -79,6 +79,7 @@ public:
   void SetHyperKGeometry();
   void SetHyperKWithODGeometry();
   void SetHyperKWithODGeometry_20k_3inch_pmts();
+  void SetHyperKWithODGeometry_20k_X16_3inch_pmts();
   void UpdateGeometry();
   void UpdateIDGeo();
   void UpdateODGeo();
@@ -205,6 +206,7 @@ public:
   void SetODEdited(G4bool val){odEdited = val;}
   void SetIsWLSFilled(G4bool val){isWLSFilled = val;}
   void SetBuildCladding(G4bool val){BuildCladding = val;}
+  void SetWCIDWLSPlatesType(G4String val){WCIDWLSPlatesType = val;}
   G4bool GetIDEdited(){return idEdited;}
   G4bool GetODEdited(){return odEdited;}
 
@@ -407,6 +409,7 @@ private:
   G4double WCODWLSPlatesThickness;
   G4double WCIDWLSPlatesLength = 1.;
   G4double WCODWLSPlatesLength;
+  G4String WCIDWLSPlatesType = "square";
 
   G4double WCODCapPMTSpacing;
   G4double WCODCapEdgeLimit;

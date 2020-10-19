@@ -6,10 +6,13 @@
 
 # HyperK
 #/WCSim/WCgeom HyperKWithOD
-/WCSim/WCgeom HyperKWithOD_20k_3inch_pmts
+#/WCSim/WCgeom HyperKWithOD_20k_3inch_pmts
+/WCSim/WCgeom HyperKWithOD_20k_X16_3inch_pmts
+
 
 /WCSim/HyperKOD/IDWLSPlatesThickness 0.8 cm
 /WCSim/HyperKOD/IDWLSPlatesLength 50 cm
+/WCSim/HyperKOD/IDWLSPlatesType triangle
 
 # HyperK Outer Detector
 /WCSim/HyperKOD/PMTODRadius 3inch

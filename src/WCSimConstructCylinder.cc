@@ -718,7 +718,14 @@ else {
   // The PMT glass is the sensitive volume in this new configuration.
 
   //  G4LogicalVolume* logicWCPMT = ConstructPMT(WCPMTName, WCIDCollectionName, "tank");
-  G4LogicalVolume* logicWCPMT = ConstructIDPMTAndWLSPlate(WCPMTName, WCIDCollectionName, "tank");
+  G4LogicalVolume* logicWCPMT;
+  G4cout << "qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq veto WCIDWLSPlatesType : " << WCIDWLSPlatesType << G4endl;
+  if( WCIDWLSPlatesType == "square" ){
+	logicWCPMT = ConstructIDPMTAndWLSPlate(WCPMTName, WCIDCollectionName, "tank");
+  }else{
+	G4cout << " warning! unknown WCIDWLSPlatesType " << WCIDWLSPlatesType << G4endl;
+	logicWCPMT = ConstructPMT(WCPMTName, WCIDCollectionName, "tank");
+  }
 
 
   /*These lines of code will give color and volume to the PMTs if it hasn't been set in WCSimConstructPMT.cc.
@@ -1610,7 +1617,14 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCaps(G4int zflip)
   // -----------------------------------------------------
   
  //    G4LogicalVolume* logicWCPMT = ConstructPMT(WCPMTName, WCIDCollectionName, "tank");
-	G4LogicalVolume* logicWCPMT = ConstructIDPMTAndWLSPlate(WCPMTName, WCIDCollectionName, "tank");
+  G4LogicalVolume* logicWCPMT;
+  G4cout << "qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq barrel WCIDWLSPlatesType : " << WCIDWLSPlatesType << G4endl;
+  if( WCIDWLSPlatesType == "square" ){
+	logicWCPMT = ConstructIDPMTAndWLSPlate(WCPMTName, WCIDCollectionName, "tank");
+  }else{
+	G4cout << " warning! unknown WCIDWLSPlatesType " << WCIDWLSPlatesType << G4endl;
+	logicWCPMT = ConstructPMT(WCPMTName, WCIDCollectionName, "tank");
+  }
 	
 	// If using RayTracer and want to view the detector without caps, comment out the top and bottom PMT's
 

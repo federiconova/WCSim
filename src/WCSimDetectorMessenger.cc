@@ -28,6 +28,7 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
 			  "HyperK\n"
 			  "HyperKWithOD\n"
 			  "HyperKWithOD_20k_3inch_pmts\n"
+			  "HyperKWithOD_20k_X16_3inch_pmts\n"
 			  "EggShapedHyperK\n"
 			  "EggShapedHyperK_withHPD\n"
 			  );
@@ -43,6 +44,7 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
 			  "HyperK "
 			  "HyperKWithOD "
 			  "HyperKWithOD_20k_3inch_pmts "
+			  "HyperKWithOD_20k_X16_3inch_pmts "
 			  "EggShapedHyperK "
 			  "EggShapedHyperK_withHPD "
 			  );
@@ -178,6 +180,17 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
   IDWLSPlatesLength->SetDefaultUnit("cm");
   IDWLSPlatesLength->SetUnitCandidates("cm mm");
 
+  // ID WLS Plates type
+  IDWLSPlatesType = new G4UIcmdWithAString("/WCSim/HyperKOD/IDWLSPlatesType", this);
+  IDWLSPlatesType->SetGuidance("Set the shape of ID WLS plate");
+  IDWLSPlatesType->SetGuidance("Available options are:\n"
+						  "square\n"
+						  "triangle\n");
+  IDWLSPlatesType->SetParameterName("IDWLSPlatesType", false);
+  IDWLSPlatesType->SetCandidates("square "
+				 "triangle ");
+  IDWLSPlatesType->AvailableForStates(G4State_PreInit, G4State_Idle);
+
   // OD WLS Plates thickness
   ODWLSPlatesThickness = new G4UIcmdWithADoubleAndUnit("/WCSim/HyperKOD/ODWLSPlatesThickness", this);
   ODWLSPlatesThickness->SetGuidance("Set OD WLS plates thickness (unit: cm mm).");
@@ -284,6 +297,10 @@ void WCSimDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
           WCSimDetector->SetIDEdited(false);
 		} else if ( newValue == "HyperKWithOD_20k_3inch_pmts" ){
 		  WCSimDetector->SetHyperKWithODGeometry_20k_3inch_pmts();
+          WCSimDetector->SetODEdited(false);
+          WCSimDetector->SetIDEdited(false);
+		} else if ( newValue == "HyperKWithOD_20k_X16_3inch_pmts" ){
+		  WCSimDetector->SetHyperKWithODGeometry_20k_X16_3inch_pmts();
           WCSimDetector->SetODEdited(false);
           WCSimDetector->SetIDEdited(false);
 		} else if ( newValue == "EggShapedHyperK") {
@@ -437,6 +454,12 @@ void WCSimDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
       G4cout << "Set OD WLS plates length " << newValue << " " << G4endl;
       WCSimDetector->SetWCODWLSPlatesLength(ODWLSPlatesLength->GetNewDoubleValue(newValue));
     }
+
+    if(command == IDWLSPlatesType){
+      WCSimDetector->SetIDEdited(true);
+      G4cout << "Set ID WLS plates shape " << newValue << G4endl;
+      WCSimDetector->SetWCIDWLSPlatesType(newValue);
+	}
 
     if(command == PMTODperCellHorizontal){
 	WCSimDetector->SetODEdited(true);
