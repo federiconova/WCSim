@@ -12,6 +12,7 @@
 #include "G4VPhysicalVolume.hh"
 #include "G4OpticalSurface.hh"
 #include "globals.hh"
+#include "G4Trd.hh"
 
 #include "G4SubtractionSolid.hh"
 
@@ -78,6 +79,7 @@ public:
   void Cylinder_12inchHPD_15perCent();
   void SetHyperKGeometry();
   void SetHyperKWithODGeometry();
+  void SetHyperKWithODGeometry_20k_20inch_pmts();
   void SetHyperKWithODGeometry_20k_3inch_pmts();
   void SetHyperKWithODGeometry_20k_X16_3inch_pmts();
   void UpdateGeometry();
@@ -250,7 +252,7 @@ private:
   // The Construction routines
   G4LogicalVolume*   ConstructCylinder();
   G4LogicalVolume* ConstructPMT(G4String,G4String,G4String detectorElement="tank");
-  G4LogicalVolume* ConstructIDPMTAndWLSPlate(G4String,G4String,G4String detectorElement="tank");
+  G4LogicalVolume* ConstructIDPMTAndWLSPlate(G4String,G4String,G4String PlateType, G4String detectorElement="tank");
   G4LogicalVolume* ConstructODPMTAndWLSPlate(G4String,G4String,G4String detectorElement="OD");
 
   G4LogicalVolume* ConstructCaps(G4int zflip);
@@ -300,6 +302,10 @@ private:
 				  const G4Transform3D&);
   void GetWCGeom(G4VPhysicalVolume*, int, int, 
 			      const G4Transform3D&);
+
+  void BuildWLSplatex1SquarePlate(double PMT_radius, double PMT_height, double sphereRadius, double PMTOffset, G4Box* solidCutOffTubs, G4LogicalVolume* logicWCPMT);
+
+  void BuildWLSplatex16TriangularTile(double PMT_radius, double PMT_height, double sphereRadius, double PMTOffset, G4Box* solidCutOffTubs, G4LogicalVolume* logicWCPMT);
 
   //---Volume lengths
 

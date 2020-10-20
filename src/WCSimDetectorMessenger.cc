@@ -27,6 +27,7 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
 			  "Cylinder_12inchHPD_15perCent\n"
 			  "HyperK\n"
 			  "HyperKWithOD\n"
+			  "HyperKWithOD_20k_20inch_pmts\n"
 			  "HyperKWithOD_20k_3inch_pmts\n"
 			  "HyperKWithOD_20k_X16_3inch_pmts\n"
 			  "EggShapedHyperK\n"
@@ -43,6 +44,7 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
 			  "Cylinder_12inchHPD_15perCent "
 			  "HyperK "
 			  "HyperKWithOD "
+			  "HyperKWithOD_20k_20inch_pmts "
 			  "HyperKWithOD_20k_3inch_pmts "
 			  "HyperKWithOD_20k_X16_3inch_pmts "
 			  "EggShapedHyperK "
@@ -297,6 +299,10 @@ void WCSimDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
           WCSimDetector->SetIDEdited(false);
 		} else if ( newValue == "HyperKWithOD_20k_3inch_pmts" ){
 		  WCSimDetector->SetHyperKWithODGeometry_20k_3inch_pmts();
+          WCSimDetector->SetODEdited(false);
+          WCSimDetector->SetIDEdited(false);
+		} else if ( newValue == "HyperKWithOD_20k_20inch_pmts" ){
+		  WCSimDetector->SetHyperKWithODGeometry_20k_20inch_pmts();
           WCSimDetector->SetODEdited(false);
           WCSimDetector->SetIDEdited(false);
 		} else if ( newValue == "HyperKWithOD_20k_X16_3inch_pmts" ){
