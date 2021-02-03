@@ -268,6 +268,11 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 		    particleGun->SetParticlePosition(vtx);
 		    particleGun->SetParticleMomentumDirection(dir);
 		    particleGun->GeneratePrimaryVertex(anEvent);
+		    
+		    G4cout << " nuance primary vertex (" << vtx.x() << ", " << vtx.y() << ", " << vtx.z() << "), dir ("
+			   << dir.x() << ", " << dir.y() << ", " << dir.z() << ") vtxphi " << atan(vtx.y()/vtx.x())*180/acos(-1.) << " dirphi " << atan(dir.y()/dir.x())*180/acos(-1.) << " m " << mass << " K "<< ekin << " pdg " << pdgid << G4endl;
+
+
 		  }
 	      }
 	  }
@@ -332,17 +337,19 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   else if (useGPSEvt)
     {
       MyGPS->GeneratePrimaryVertex(anEvent);
+
+      G4PrimaryVertex * vertex = anEvent->GetPrimaryVertex();
       
-      G4ThreeVector P   =anEvent->GetPrimaryVertex()->GetPrimary()->GetMomentum();
-      G4ThreeVector vtx =anEvent->GetPrimaryVertex()->GetPosition();
-      G4double m        =anEvent->GetPrimaryVertex()->GetPrimary()->GetMass();
-      G4int pdg         =anEvent->GetPrimaryVertex()->GetPrimary()->GetPDGcode();
+      G4ThreeVector P   =vertex->GetPrimary()->GetMomentum();
+      G4ThreeVector vtx =vertex->GetPosition();
+      G4double m        =vertex->GetPrimary()->GetMass();
+      G4int pdg         =vertex->GetPrimary()->GetPDGcode();
       
       G4ThreeVector dir  = P.unit();
       G4double E         = std::sqrt((P.dot(P))+(m*m));
 
       G4cout << " GPS primary vertex (" << vtx.x() << ", " << vtx.y() << ", " << vtx.z() << "), dir ("
-	     << dir.x() << ", " << dir.y() << ", " << dir.z() << ") m " << m << " E "<< E << " pdg " << pdg << G4endl;
+	     << dir.x() << ", " << dir.y() << ", " << dir.z() << ") theta " << acos(dir.z()) << " phi " << atan(dir.y()/dir.x()) << " m " << m << " E "<< E << " pdg " << pdg << G4endl;
       
       SetVtx(vtx);
       SetBeamEnergy(E);
