@@ -356,6 +356,7 @@ private:
   G4double WCBarrelNRings;
   G4double WCPMTperCellHorizontal;
   G4double WCPMTperCellVertical;
+  G4int BarrelCellNPhi;
 
   G4double WCPMTPercentCoverage;
 

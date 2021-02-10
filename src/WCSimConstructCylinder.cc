@@ -81,6 +81,7 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
   totalAngle  = 2.0*pi*rad*(WCBarrelRingNPhi*WCPMTperCellHorizontal/WCBarrelNumPMTHorizontal) ;
   // angle per regular cell:
   dPhi        =  totalAngle/ WCBarrelRingNPhi;
+  BarrelCellNPhi = (G4int)(totalAngle/(dPhi+dPhi/2.));
   // it's hight:
   barrelCellHeight  = (WCIDHeight-2.*WCBarrelPMTOffset)/WCBarrelNRings;
   // the hight of all regular cells together:
@@ -337,7 +338,6 @@ else {
   // Subdivisions of the BarrelRings are cells
   //------------------------------------------------------
 
- G4int BarrelCellNPhi = (G4int)(totalAngle/(dPhi+dPhi/2.));
   G4Polyhedra* solidWCBarrelCell = new G4Polyhedra("WCBarrelCell",
                                                    -dPhi/2.+0.*deg, // phi start
                                                    dPhi, //total Phi
