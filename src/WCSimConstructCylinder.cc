@@ -337,7 +337,7 @@ else {
   // Subdivisions of the BarrelRings are cells
   //------------------------------------------------------
 
-
+ G4int BarrelCellNPhi = (G4int)(totalAngle/(dPhi+dPhi/2.));
   G4Polyhedra* solidWCBarrelCell = new G4Polyhedra("WCBarrelCell",
                                                    -dPhi/2.+0.*deg, // phi start
                                                    dPhi, //total Phi
@@ -358,7 +358,7 @@ else {
 		    logicWCBarrelCell,
 		    logicWCBarrelRing,
 		    kPhi,
-		    (G4int)WCBarrelRingNPhi,
+			BarrelCellNPhi,
 		    dPhi,
                     0.); 
 
