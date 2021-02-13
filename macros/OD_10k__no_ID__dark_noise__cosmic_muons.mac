@@ -78,14 +78,14 @@
 #i.e. hit time ± (/DarkRate/SetDarkWindow) / 2
 /DarkRate/SetDetectorElement tank
 /DarkRate/SetDarkMode 0
-/DarkRate/SetDarkLow -1000
+/DarkRate/SetDarkLow 0
 /DarkRate/SetDarkHigh 3000
 /DarkRate/SetDarkWindow 4000
-#/DarkRate/SetDarkRate 0 kHz
+/DarkRate/SetDarkRate 0 kHz
 
 /DarkRate/SetDetectorElement OD
 /DarkRate/SetDarkMode 0
-/DarkRate/SetDarkLow -1000
+/DarkRate/SetDarkLow 0
 /DarkRate/SetDarkHigh 3000
 /DarkRate/SetDarkWindow 4000
 /DarkRate/SetDarkRate 0.2 kHz

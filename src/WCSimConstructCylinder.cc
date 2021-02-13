@@ -358,7 +358,8 @@ else {
 		    logicWCBarrelCell,
 		    logicWCBarrelRing,
 		    kPhi,
-			BarrelCellNPhi,
+					//			BarrelCellNPhi,
+			WCBarrelRingNPhi,
 		    dPhi,
                     0.); 
 
