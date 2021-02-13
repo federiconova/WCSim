@@ -25,9 +25,9 @@
 
 
 //WCSim Includes
-#include "../../include/WCSimRootEvent.hh"
-#include "../../include/WCSimRootGeom.hh"
-#include "../../include/WCSimEnumerations.hh"
+#include "../include/WCSimRootEvent.hh"
+#include "../include/WCSimRootGeom.hh"
+#include "../include/WCSimEnumerations.hh"
 
 #ifdef __MAKECINT__
 #pragma link C++ class std::vector<std::vector<Int_t> >+;
@@ -367,7 +367,7 @@ int main(int argc, char** argv){
   // load library
   load_library();
 
-  char *inFileName ="../../wcsim.root";
+  char *inFileName ="../wcsim.root";
 
   // open input file
   TFile *inFile = get_input_file(inFileName);
