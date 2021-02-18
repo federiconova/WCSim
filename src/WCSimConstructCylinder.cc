@@ -81,7 +81,6 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
   totalAngle  = 2.0*pi*rad*(WCBarrelRingNPhi*WCPMTperCellHorizontal/WCBarrelNumPMTHorizontal) ;
   // angle per regular cell:
   dPhi        =  totalAngle/ WCBarrelRingNPhi;
-  BarrelCellNPhi = (G4int)(totalAngle/(dPhi+dPhi/2.));
   // it's hight:
   barrelCellHeight  = (WCIDHeight-2.*WCBarrelPMTOffset)/WCBarrelNRings;
   // the hight of all regular cells together:
@@ -358,8 +357,7 @@ else {
 		    logicWCBarrelCell,
 		    logicWCBarrelRing,
 		    kPhi,
-					//			BarrelCellNPhi,
-			WCBarrelRingNPhi,
+			(G4int)WCBarrelRingNPhi,
 		    dPhi,
                     0.); 
 
