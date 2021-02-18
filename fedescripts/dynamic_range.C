@@ -20,6 +20,14 @@
 #include <TInterpreter.h>
 
 std::string number_with_digits(int i, int n);
+bool is_impact_horizontal_plane(double x, double y, double z,
+				double ux, double uy, double uz,
+				double R, double zplane,
+				double * impact_time, double *impact_x, double *impact_y, double *impact_z);
+bool is_impact_side(double x, double y, double z,
+		    double ux, double uy, double uz,
+		    double R, double H,
+		    double * impact_time, double *impact_x, double *impact_y, double *impact_z);
 
 int n_digits = 5;
 double time_bin_size = 10.; // ns
@@ -54,6 +62,8 @@ int main(){
   geom_tree->SetBranchAddress("number_of_pmts_OD",&number_of_pmts_OD);
   geom_tree->GetEntry(0);
   detector_radius = 3800.;
+  double OD_radius = 3400.;
+  double OD_height = 3400.;
   std::clog << " detector_length " << detector_length << " detector_radius " << detector_radius << " pmt_radius " << pmt_radius << " number_of_pmts " << number_of_pmts << " number_of_pmts_OD " << number_of_pmts_OD << std::endl;
 
   double r_limit=detector_radius;
@@ -201,9 +211,9 @@ int main(){
 
 
   TH3F PMT_x_y_z("PMT_x_y_z","PMT_x_y_z; x [cm]; y [cm]; z [cm]",
-		 nbins_x,-(r_limit_with_source*1.1),(r_limit*1.1),
-		 nbins_y,-(r_limit*1.1),(r_limit*1.1),
-		 nbins_z,-(z_limit*1.1),z_limit);
+		 nbins_x,-(r_limit*1.3),(r_limit*1.3),
+		 nbins_y,-(r_limit*1.3),(r_limit*1.3),
+		 nbins_z,-(z_limit*1.3),z_limit*1.3);
   PMT_x_y_z.SetFillColor(kBlack);
   PMT_x_y_z.SetMarkerColor(kBlack);
   PMT_x_y_z.SetMarkerStyle(1);
@@ -214,21 +224,21 @@ int main(){
 
 
   TH3F PMT_OD_x_y_z("PMT_OD_x_y_z","OD pmt; x [cm]; y [cm]; z [cm]",
-		 nbins_x,-(r_limit_with_source*1.1),(r_limit*1.1),
-		 nbins_y,-(r_limit*1.1),(r_limit*1.1),
-		 nbins_z,-(z_limit*1.1),z_limit);
+		 nbins_x,-(r_limit*1.3),(r_limit*1.3),
+		 nbins_y,-(r_limit*1.3),(r_limit*1.3),
+		 nbins_z,-(z_limit*1.3),z_limit*1.3);
   PMT_OD_x_y_z.SetFillColor(kBlack);
   PMT_OD_x_y_z.SetMarkerColor(kBlack);
   PMT_OD_x_y_z.SetMarkerStyle(1);
   TH2F PMT_OD_x_y("PMT_OD_x_y","OD pmt; x [cm]; y [cm]",
-		 nbins_x,-(r_limit_with_source*1.1),(r_limit*1.1),
-		 nbins_y,-(r_limit*1.1),(r_limit*1.1));
+		 nbins_x,-(r_limit*1.3),(r_limit*1.3),
+		 nbins_y,-(r_limit*1.3),(r_limit*1.3));
   PMT_OD_x_y.SetFillColor(kBlack);
   PMT_OD_x_y.SetMarkerColor(kBlack);
   PMT_OD_x_y.SetMarkerStyle(1);
 
   TH1F PMT_OD_z("PMT_OD_z","OD pmt; z [cm]",
-				       nbins_z,-(z_limit*1.1),(z_limit*1.2));
+				       nbins_z,-(z_limit*1.3),(z_limit*1.3));
   PMT_OD_z.SetLineColor(kBlack);
   PMT_OD_z.SetLineWidth(2);
 
@@ -240,36 +250,36 @@ int main(){
   }
 
   TH3F *h_trigger_vtx_x_y_z = new TH3F("h_trigger_vtx_x_y_z","muon starting point; x [cm]; y [cm]; z [cm]",
-				       		 nbins_x,-(r_limit_with_source*1.1),(r_limit*1.1),
-				       nbins_y,-(r_limit*1.1),(r_limit*1.1),
-				       nbins_z,-(z_limit*1.1),z_limit);
+				       		 nbins_x,-(r_limit*1.3),(r_limit*1.3),
+				       nbins_y,-(r_limit*1.3),(r_limit*1.3),
+				       nbins_z,-(z_limit*1.3),z_limit*1.3);
   h_trigger_vtx_x_y_z->SetFillColor(kBlack);
   h_trigger_vtx_x_y_z->SetMarkerColor(kBlue);
   h_trigger_vtx_x_y_z->SetMarkerStyle(2);
 
   TH2F *h_trigger_vtx_x_y = new TH2F("h_trigger_vtx_x_y","muon starting point; x [cm]; y [cm]",
-				     nbins_x,-(r_limit_with_source*1.1),(r_limit*1.1),
-				       nbins_y,-(r_limit*1.1),(r_limit*1.1));
+				     nbins_x,-(r_limit*1.3),(r_limit*1.3),
+				       nbins_y,-(r_limit*1.3),(r_limit*1.3));
   h_trigger_vtx_x_y->SetFillColor(kBlack);
   h_trigger_vtx_x_y->SetMarkerColor(kBlue);
   h_trigger_vtx_x_y->SetMarkerStyle(1);
 
   TH1F *h_trigger_vtx_z = new TH1F("h_trigger_vtx_z","muon starting point; z [cm]",
-				       nbins_z,-(z_limit*1.1),(z_limit*1.2));
+				       nbins_z,-(z_limit*1.3),(z_limit*1.3));
   h_trigger_vtx_z->SetLineColor(kBlue);
   h_trigger_vtx_z->SetLineWidth(2);
 
   TH3F *h_hit_x_y_z = new TH3F("h_hit_x_y_z","h_hit_x_y_z",
-			       nbins_x,-(r_limit_with_source*1.1),(r_limit*1.1),
-			       nbins_y,-(r_limit*1.1),(r_limit*1.1),
-			       nbins_z,-(z_limit*1.1),z_limit);
+			       nbins_x,-(r_limit*1.3),(r_limit*1.3),
+			       nbins_y,-(r_limit*1.3),(r_limit*1.3),
+			       nbins_z,-(z_limit*1.3),z_limit*1.3);
   h_hit_x_y_z->SetFillColor(kBlack);
   h_hit_x_y_z->SetMarkerColor(kRed);
   h_hit_x_y_z->SetMarkerStyle(2);
 
   TH2F *h_hit_x_y = new TH2F("h_hit_x_y","h_hit_x_y",
-			       nbins_x,-(r_limit_with_source*1.1),(r_limit*1.1),
-			       nbins_y,-(r_limit*1.1),(r_limit*1.1));
+			       nbins_x,-(r_limit*1.3),(r_limit*1.3),
+			       nbins_y,-(r_limit*1.3),(r_limit*1.3));
   h_hit_x_y->SetFillColor(kBlack);
   h_hit_x_y->SetMarkerColor(kRed);
   h_hit_x_y->SetMarkerStyle(2);
@@ -287,7 +297,7 @@ int main(){
   h_digitized_hit_OD_Q_bottom_tubes.SetLineColor(kBlue);
 
   TH1F h_charge_vs_z("h_charge_vs_z","h_charge_vs_z; z [cm]; max charge [p.e.]",
-		     				       nbins_z,-(z_limit*1.1),(z_limit*1.1));
+		     				       nbins_z,-(z_limit*1.3),(z_limit*1.3));
   h_charge_vs_z.SetLineWidth(2);
   h_charge_vs_z.SetLineColor(kBlack);
 
@@ -301,6 +311,17 @@ int main(){
   h_hit_time.SetLineWidth(2);
   h_hit_time.SetLineColor(kBlack);
 
+  double n_hits_limit = 300.;
+  TH1F h_hit_time_few_nhits("h_hit_time_few_nhits",Form("nhits < %.0f; hit time [ns]",n_hits_limit),
+		  2000,-0.5,1999.5);
+  h_hit_time_few_nhits.SetLineWidth(2);
+  h_hit_time_few_nhits.SetLineColor(kBlue);
+
+  TH1F h_hit_time_many_nhits("h_hit_time_many_nhits",Form("nhits > %.0f; hit time [ns]",n_hits_limit),
+		  2000,-0.5,1999.5);
+  h_hit_time_many_nhits.SetLineWidth(2);
+  h_hit_time_many_nhits.SetLineColor(kRed);
+
   TH1F h_total_charge("h_total_charge","h_total_charge; charge [p.e.]",
 		      800,1,-1);
   h_total_charge.SetLineWidth(2);
@@ -312,12 +333,18 @@ int main(){
   h_n_hits_vs_radius.SetLineWidth(2);
   h_n_hits_vs_radius.SetLineColor(kBlack);
 
-  double max_nhits = 1000.; // dynamic range
-  max_nhits = 99.5; // horizontal muon
+  double max_nhits = 1200.; // dynamic range
+  //  max_nhits = 99.5; // horizontal muon
   double min_nhits = -0.5;
-  min_nhits=1;
-  max_nhits=-1;
+  //  min_nhits=1;
+  //  max_nhits=-1;
 
+  TH1F h_digitized_photons_id0("h_digitized_photons_id0","top; hit id[0]; n of events",100,1,-1);
+  h_digitized_photons_id0.SetLineWidth(2);
+  h_digitized_photons_id0.SetLineColor(kRed);
+  TH1F h_digitized_n_photons_ids("h_digitized_n_photons_ids","top; n hit ids; n of events",100,1,-1);
+  h_digitized_n_photons_ids.SetLineWidth(2);
+  h_digitized_n_photons_ids.SetLineColor(kRed);
   TH1F h_digitized_nhits_top_tubes("h_digitized_nhits_top_tubes","top; n of hits; n of events",100,min_nhits,max_nhits);
   h_digitized_nhits_top_tubes.SetLineWidth(2);
   h_digitized_nhits_top_tubes.SetLineColor(kRed);
@@ -330,66 +357,142 @@ int main(){
   TH1F h_digitized_nhits_all_tubes("h_digitized_nhits_all_tubes","all; n of hits; n of events",100,min_nhits,max_nhits);
   h_digitized_nhits_all_tubes.SetLineWidth(2);
   h_digitized_nhits_all_tubes.SetLineColor(kBlue);
-  TH1F h_digitized_nhits_nonzero_tubes("h_digitized_nhits_nonzero_tubes","nonzero; n of hits; n of events",100,min_nhits,max_nhits);
-  h_digitized_nhits_nonzero_tubes.SetLineWidth(2);
-  h_digitized_nhits_nonzero_tubes.SetLineColor(kBlue);
+  TH1F h_digitized_nhits_top_physics_tubes("h_digitized_nhits_top_physics_tubes","top; n of hits; n of events",100,1,-1);
+  h_digitized_nhits_top_physics_tubes.SetLineWidth(2);
+  h_digitized_nhits_top_physics_tubes.SetLineColor(kRed);
+  TH1F h_digitized_nhits_side_physics_tubes("h_digitized_nhits_side_physics_tubes","side; n of hits; n of events",100,1,-1);
+  h_digitized_nhits_side_physics_tubes.SetLineWidth(2);
+  h_digitized_nhits_side_physics_tubes.SetLineColor(kBlack);
+  TH1F h_digitized_nhits_bottom_physics_tubes("h_digitized_nhits_bottom_physics_tubes","bottom; n of hits; n of events",100,1,-1);
+  h_digitized_nhits_bottom_physics_tubes.SetLineWidth(2);
+  h_digitized_nhits_bottom_physics_tubes.SetLineColor(kBlue);
+  TH1F h_digitized_nhits_physics_tubes("h_digitized_nhits_physics_tubes","nonzero; n of hits; n of events",100,1,-1);
+  h_digitized_nhits_physics_tubes.SetLineWidth(2);
+  h_digitized_nhits_physics_tubes.SetLineColor(kBlue);
 
   TH2F h_npes_vs_digitized_nhits("h_npes_vs_digitized_nhits","npes vs n hits; n of hits; n of pes",100,min_nhits,max_nhits,800,1,-1);
   TH2F h_nhits_vs_muon_energy("h_nhits_vs_muon_energy","n hits vs muon energy; muon energy [MeV]; n of hits",100,1,-1,100,min_nhits,max_nhits);
 
-  TH2F h_hit_position_top_tubes("h_hit_position_top_tubes","top; x; y", 20,-(r_limit*1.1),(r_limit*1.1), 20,-(r_limit*1.1),(r_limit*1.1));
-  TH2F h_hit_position_bottom_tubes("h_hit_position_bottom_tubes","bottom; x; y", 20,-(r_limit*1.1),(r_limit*1.1), 20,-(r_limit*1.1),(r_limit*1.1));
-  TH2F h_hit_position_side_tubes("h_hit_position_side_tubes","side; phi; z", 300,-180.,180., 40,-(z_limit*1.1),(z_limit*1.1));
+  TH2F h_hit_position_top_tubes("h_hit_position_top_tubes","top; x; y", 20,-(r_limit*1.3),(r_limit*1.3), 20,-(r_limit*1.3),(r_limit*1.3));
+  TH2F h_hit_position_bottom_tubes("h_hit_position_bottom_tubes","bottom; x; y", 20,-(r_limit*1.3),(r_limit*1.3), 20,-(r_limit*1.3),(r_limit*1.3));
+  TH2F h_hit_position_side_tubes("h_hit_position_side_tubes","side; phi; z", 300,-180.,180., 40,-(z_limit*1.3),(z_limit*1.3));
   
-  TH1F h_distance_pmt_vertex("h_distance_pmt_vertex","distance PMT vertex; distance PMT vertex [cm]",100,1,-1);
-  h_distance_pmt_vertex.SetLineWidth(2);
-  h_distance_pmt_vertex.SetLineColor(kBlack);
+  TH1F h_distance_pmt_impact("h_distance_pmt_impact","distance PMT impact point; distance PMT impact point [cm]",100,1,-1);
+  h_distance_pmt_impact.SetLineWidth(2);
+  h_distance_pmt_impact.SetLineColor(kBlack);
+  TH1F h_distance_pmt_impact_few_nhits("h_distance_pmt_impact_few_nhits",Form("distance when nhits < %.0f; distance PMT impact point [cm]",n_hits_limit),100,1,-1);
+  h_distance_pmt_impact_few_nhits.SetLineWidth(2);
+  h_distance_pmt_impact_few_nhits.SetLineColor(kBlue);
+  TH1F h_distance_pmt_impact_many_nhits("h_distance_pmt_impact_many_nhits",Form("distance when nhits > %.0f; distance PMT impact point [cm]",n_hits_limit),100,1,-1);
+  h_distance_pmt_impact_many_nhits.SetLineWidth(2);
+  h_distance_pmt_impact_many_nhits.SetLineColor(kRed);
 
-  TH1F h_nhits_OD_cluster("h_nhits_OD_cluster","nhits OD cluster; nhits OD cluster",100,1,-1);
-  h_nhits_OD_cluster.SetLineWidth(2);
-  h_nhits_OD_cluster.SetLineColor(kBlack);
+  TH3F *h_muon_start_x_y_z_impact_few_nhits = new TH3F("h_muon_start_x_y_z_impact_few_nhits",Form("when nhits < %.0f",n_hits_limit),
+						       nbins_x,-(r_limit*1.3),(r_limit*1.3),
+						       nbins_y,-(r_limit*1.3),(r_limit*1.3),
+						       nbins_z,-(z_limit*1.3),z_limit*1.3);
+  h_muon_start_x_y_z_impact_few_nhits->SetFillColor(kBlack);
+  h_muon_start_x_y_z_impact_few_nhits->SetMarkerColor(kBlue);
+  h_muon_start_x_y_z_impact_few_nhits->SetMarkerStyle(2);
 
-  TH1F h_npes_OD_cluster("h_npes_OD_cluster","npes OD cluster; npes OD cluster",100,1,-1);
-  h_npes_OD_cluster.SetLineWidth(2);
-  h_npes_OD_cluster.SetLineColor(kBlack);
+  TH3F *h_muon_start_x_y_z_impact_many_nhits = new TH3F("h_muon_start_x_y_z_impact_many_nhits",Form("when nhits > %.0f",n_hits_limit),
+				       		 nbins_x,-(r_limit*1.3),(r_limit*1.3),
+				       nbins_y,-(r_limit*1.3),(r_limit*1.3),
+				       nbins_z,-(z_limit*1.3),z_limit*1.3);
+  h_muon_start_x_y_z_impact_many_nhits->SetFillColor(kBlack);
+  h_muon_start_x_y_z_impact_many_nhits->SetMarkerColor(kRed);
+  h_muon_start_x_y_z_impact_many_nhits->SetMarkerStyle(2);
+
+  double cluster_radius_1=800.;  // cm
+  double cluster_radius_2=1600.;
+  TH1F h_nhits_OD_cluster_1("h_nhits_OD_cluster_1",Form("cluster (< %.0f); n OD hits in cluster",cluster_radius_1),100,min_nhits,max_nhits);
+  h_nhits_OD_cluster_1.SetLineWidth(2);
+  h_nhits_OD_cluster_1.SetLineColor(kBlack);
+
+  double min_npes=0;
+  double max_npes=4000;
+
+  TH1F h_npes_OD_cluster_1("h_npes_OD_cluster_1",Form("cluster (< %.0f); n OD p.e.'s in cluster",cluster_radius_1),100,min_npes,max_npes);
+  h_npes_OD_cluster_1.SetLineWidth(2);
+  h_npes_OD_cluster_1.SetLineColor(kBlack);
+
+  TH1F h_nhits_OD_cluster_2("h_nhits_OD_cluster_2",Form("cluster (< %.0f); n OD hits in cluster",cluster_radius_2),100,min_nhits,max_nhits);
+  h_nhits_OD_cluster_2.SetLineWidth(2);
+  h_nhits_OD_cluster_2.SetLineColor(kBlue);
+
+  TH1F h_npes_OD_cluster_2("h_npes_OD_cluster_2",Form("cluster (< %.0f); n OD p.e.'s in cluster",cluster_radius_2),100,min_npes,max_npes);
+  h_npes_OD_cluster_2.SetLineWidth(2);
+  h_npes_OD_cluster_2.SetLineColor(kBlue);
 
   TH3F *h_muon_start_x_y_z = new TH3F("h_muon_start_x_y_z","h_muon_start_x_y_z",
-				       		 nbins_x,-(r_limit_with_source*1.1),(r_limit*1.1),
-				       nbins_y,-(r_limit*1.1),(r_limit*1.1),
-				       nbins_z,-(z_limit*1.1),z_limit*1.1);
+				       		 nbins_x,-(r_limit*1.3),(r_limit*1.3),
+				       nbins_y,-(r_limit*1.3),(r_limit*1.3),
+				       nbins_z,-(z_limit*1.3),z_limit*1.3);
   h_muon_start_x_y_z->SetFillColor(kBlack);
   h_muon_start_x_y_z->SetMarkerColor(kBlue);
   h_muon_start_x_y_z->SetMarkerStyle(2);
 
+  TH3F *h_muon_start_x_y_z_impact = new TH3F("h_muon_start_x_y_z_impact","h_muon_start_x_y_z_impact",
+				       		 nbins_x,-(r_limit*1.3),(r_limit*1.3),
+				       nbins_y,-(r_limit*1.3),(r_limit*1.3),
+				       nbins_z,-(z_limit*1.3),z_limit*1.3);
+  h_muon_start_x_y_z_impact->SetFillColor(kBlack);
+  h_muon_start_x_y_z_impact->SetMarkerColor(kBlue);
+  h_muon_start_x_y_z_impact->SetMarkerStyle(2);
+
+  TH3F *h_muon_start_x_y_z_impact_top = new TH3F("h_muon_start_x_y_z_impact_top","h_muon_start_x_y_z_impact_top",
+				       		 nbins_x,-(r_limit*1.3),(r_limit*1.3),
+				       nbins_y,-(r_limit*1.3),(r_limit*1.3),
+				       nbins_z,-(z_limit*1.3),z_limit*1.3);
+  h_muon_start_x_y_z_impact_top->SetFillColor(kBlack);
+  h_muon_start_x_y_z_impact_top->SetMarkerColor(kBlue);
+  h_muon_start_x_y_z_impact_top->SetMarkerStyle(2);
+
+  TH3F *h_muon_start_x_y_z_impact_side = new TH3F("h_muon_start_x_y_z_impact_side","h_muon_start_x_y_z_impact_side",
+				       		 nbins_x,-(r_limit*1.3),(r_limit*1.3),
+				       nbins_y,-(r_limit*1.3),(r_limit*1.3),
+				       nbins_z,-(z_limit*1.3),z_limit*1.3);
+  h_muon_start_x_y_z_impact_side->SetFillColor(kBlack);
+  h_muon_start_x_y_z_impact_side->SetMarkerColor(kBlue);
+  h_muon_start_x_y_z_impact_side->SetMarkerStyle(2);
+
+  TH3F *h_muon_start_x_y_z_impact_bottom = new TH3F("h_muon_start_x_y_z_impact_bottom","h_muon_start_x_y_z_impact_bottom",
+				       		 nbins_x,-(r_limit*1.3),(r_limit*1.3),
+				       nbins_y,-(r_limit*1.3),(r_limit*1.3),
+				       nbins_z,-(z_limit*1.3),z_limit*1.3);
+  h_muon_start_x_y_z_impact_bottom->SetFillColor(kBlack);
+  h_muon_start_x_y_z_impact_bottom->SetMarkerColor(kBlue);
+  h_muon_start_x_y_z_impact_bottom->SetMarkerStyle(2);
+
   TH2F *h_muon_start_x_y = new TH2F("h_muon_start_x_y","h_muon_start_x_y",
-				     nbins_x,-(r_limit_with_source*1.1),(r_limit*1.1),
-				       nbins_y,-(r_limit*1.1),(r_limit*1.1));
+				     nbins_x,-(r_limit*1.3),(r_limit*1.3),
+				       nbins_y,-(r_limit*1.3),(r_limit*1.3));
   h_muon_start_x_y->SetFillColor(kBlack);
   h_muon_start_x_y->SetMarkerColor(kBlue);
   h_muon_start_x_y->SetMarkerStyle(1);
 
   TH1F *h_muon_start_z = new TH1F("h_muon_start_z","h_muon_start_z",
-				       nbins_z,-(z_limit*1.1),(z_limit*1.2));
+				       nbins_z,-(z_limit*1.3),(z_limit*1.3));
   h_muon_start_z->SetLineColor(kBlack);
   h_muon_start_z->SetLineWidth(2);
 
   TH3F *h_muon_stop_x_y_z = new TH3F("h_muon_stop_x_y_z","h_muon_stop_x_y_z",
-				       		 nbins_x,-(r_limit_with_source*1.1),(r_limit*1.1),
-				       nbins_y,-(r_limit*1.1),(r_limit*1.1),
-				       nbins_z,-(z_limit*2),z_limit*1.1);
+				       		 nbins_x,-(r_limit*1.3),(r_limit*1.3),
+				       nbins_y,-(r_limit*1.3),(r_limit*1.3),
+				       nbins_z,-(z_limit*2),z_limit*1.3);
   h_muon_stop_x_y_z->SetFillColor(kBlack);
   h_muon_stop_x_y_z->SetMarkerColor(kBlue);
   h_muon_stop_x_y_z->SetMarkerStyle(2);
 
   TH2F *h_muon_stop_x_y = new TH2F("h_muon_stop_x_y","h_muon_stop_x_y",
-				     nbins_x,-(r_limit_with_source*1.1),(r_limit*1.1),
-				       nbins_y,-(r_limit*1.1),(r_limit*1.1));
+				     nbins_x,-(r_limit*1.3),(r_limit*1.3),
+				       nbins_y,-(r_limit*1.3),(r_limit*1.3));
   h_muon_stop_x_y->SetFillColor(kBlack);
   h_muon_stop_x_y->SetMarkerColor(kBlue);
   h_muon_stop_x_y->SetMarkerStyle(1);
 
   TH1F *h_muon_stop_z = new TH1F("h_muon_stop_z","h_muon_stop_z",
-				       nbins_z,-(z_limit*2),(z_limit*1.1));
+				       nbins_z,-(z_limit*2),(z_limit*1.3));
   h_muon_stop_z->SetLineColor(kBlack);
   h_muon_stop_z->SetLineWidth(2);
 
@@ -433,6 +536,35 @@ int main(){
   h_muon_momentum_z->SetLineColor(kBlack);
   h_muon_momentum_z->SetLineWidth(2);
 
+  TH3F *h_muon_impact_x_y_z = new TH3F("h_muon_impact_x_y_z","h_muon_impact_x_y_z",
+				       		 nbins_x,-(r_limit*1.3),(r_limit*1.3),
+				       nbins_y,-(r_limit*1.3),(r_limit*1.3),
+				       nbins_z,-(z_limit*1.3),z_limit*1.3);
+  h_muon_impact_x_y_z->SetFillColor(kBlack);
+  h_muon_impact_x_y_z->SetMarkerColor(kBlue);
+  h_muon_impact_x_y_z->SetMarkerStyle(2);
+
+  TH2F *h_muon_impact_vs_start_x = new TH2F("h_muon_impact_vs_start_x","h_muon_impact_vs_start_x",
+					    nbins_x,-(r_limit*1.3),(r_limit*1.3),
+					    nbins_x,-(r_limit*1.3),(r_limit*1.3));
+  h_muon_impact_vs_start_x->SetFillColor(kBlack);
+  h_muon_impact_vs_start_x->SetMarkerColor(kBlue);
+  h_muon_impact_vs_start_x->SetMarkerStyle(1);
+
+  TH2F *h_muon_impact_vs_start_y = new TH2F("h_muon_impact_vs_start_y","h_muon_impact_vs_start_y",
+					    nbins_x,-(r_limit*1.3),(r_limit*1.3),
+					    nbins_x,-(r_limit*1.3),(r_limit*1.3));
+  h_muon_impact_vs_start_y->SetFillColor(kBlack);
+  h_muon_impact_vs_start_y->SetMarkerColor(kBlue);
+  h_muon_impact_vs_start_y->SetMarkerStyle(1);
+
+  TH2F *h_muon_impact_vs_start_z = new TH2F("h_muon_impact_vs_start_z","h_muon_impact_vs_start_z",
+					    nbins_x,-(r_limit*1.3),(r_limit*1.3),
+					    nbins_x,-(r_limit*1.3),(r_limit*1.3));
+  h_muon_impact_vs_start_z->SetFillColor(kBlack);
+  h_muon_impact_vs_start_z->SetMarkerColor(kBlue);
+  h_muon_impact_vs_start_z->SetMarkerStyle(1);
+
   TH1F h_muon_M("h_muon_M","h_muon_M;muon M",100,1,-1);
   h_muon_M.SetLineWidth(2);
   h_muon_M.SetLineColor(kBlack);
@@ -456,11 +588,13 @@ int main(){
   double vtx_radius, vtx_x, vtx_y, vtx_z;
   double hit_time;
   int modulo = 100;
-  double cluster_radius=800.;  // cm
-  double distance_pmt_vertex;
-  double nhits_OD_cluster;
-  double npes_OD_cluster;
+  double distance_pmt_impact;
+  double nhits_OD_cluster_1;
+  double npes_OD_cluster_1;
+  double nhits_OD_cluster_2;
+  double npes_OD_cluster_2;
   double muon_energy;
+  int muon_pdg_id = 13;
 
   for(int ievent=0; ievent<primary_events_tree->GetEntries(); ievent++){
 
@@ -472,9 +606,18 @@ int main(){
     for(size_t itrigger=0; itrigger<trigger_ntrack->size(); itrigger++){
       // loop on triggers in the event
 
+      bool impact_top = false;
+      bool impact_bottom = false;
+      bool impact_side = false;
+      bool impact = false;
+      double impact_top_time,  impact_top_x,  impact_top_y,  impact_top_z;
+      double impact_bottom_time,  impact_bottom_x,  impact_bottom_y,  impact_bottom_z;
+      double impact_side_time,  impact_side_x,  impact_side_y,  impact_side_z;
+      double impact_time,  impact_x,  impact_y,  impact_z;
+
       for(int itrack=0; itrack<trigger_ntrack->at(itrigger); itrack++){
 	// loop on tracks in the event
-	if( track_ipnu->at(itrigger).at(itrack) == 13 && track_M->at(itrigger).at(itrack) > 0 ){ // muon
+	if( track_ipnu->at(itrigger).at(itrack) == muon_pdg_id && track_M->at(itrigger).at(itrack) > 0 ){ // muon
 	  h_muon_start_x_y_z->Fill(track_start_x->at(itrigger).at(itrack),track_start_y->at(itrigger).at(itrack),track_start_z->at(itrigger).at(itrack));
 	  h_muon_start_x_y->Fill(track_start_x->at(itrigger).at(itrack),track_start_y->at(itrigger).at(itrack));
 	  h_muon_start_z->Fill(track_start_z->at(itrigger).at(itrack));
@@ -496,6 +639,61 @@ int main(){
 	  h_muon_E.Fill(muon_energy);
 	  h_muon_time.Fill(track_time->at(itrigger).at(itrack));
 	  h_muon_phi.Fill(atan2(track_uy->at(itrigger).at(itrack),track_ux->at(itrigger).at(itrack))*180./acos(-1.));
+
+
+	  impact_top = is_impact_horizontal_plane(track_start_x->at(itrigger).at(itrack),track_start_y->at(itrigger).at(itrack),track_start_z->at(itrigger).at(itrack),
+						  track_ux->at(itrigger).at(itrack),track_uy->at(itrigger).at(itrack),track_uz->at(itrigger).at(itrack),
+						  OD_radius, OD_height,
+						     & impact_top_time, & impact_top_x, & impact_top_y, & impact_top_z);
+	  impact_bottom = is_impact_horizontal_plane(track_start_x->at(itrigger).at(itrack),track_start_y->at(itrigger).at(itrack),track_start_z->at(itrigger).at(itrack),
+						  track_ux->at(itrigger).at(itrack),track_uy->at(itrigger).at(itrack),track_uz->at(itrigger).at(itrack),
+						     OD_radius, -OD_height,
+						     & impact_bottom_time, & impact_bottom_x, & impact_bottom_y, & impact_bottom_z);
+	  if( ! impact_top ) // muons always move down, so if they go through the top the impact point is there (even if later they cross the side)
+	    impact_side = is_impact_side(track_start_x->at(itrigger).at(itrack),track_start_y->at(itrigger).at(itrack),track_start_z->at(itrigger).at(itrack),
+					 track_ux->at(itrigger).at(itrack),track_uy->at(itrigger).at(itrack),track_uz->at(itrigger).at(itrack),
+					 OD_radius, OD_height,
+					 & impact_side_time, & impact_side_x, & impact_side_y, & impact_side_z);
+
+	  if( impact_top && impact_bottom ) impact_bottom = false;
+	  if( impact_top && impact_side ) impact_side = false;
+	  if( impact_side && impact_bottom ){
+	    if( impact_bottom_time < impact_side_time ) impact_side = false;
+	    else impact_bottom = false;
+	  }
+	  if( impact_top || impact_side || impact_bottom ) impact = true;
+
+	  if( impact ){
+	    h_muon_start_x_y_z_impact->Fill(track_start_x->at(itrigger).at(itrack),track_start_y->at(itrigger).at(itrack),track_start_z->at(itrigger).at(itrack));
+	    if( impact_top ){
+	      h_muon_start_x_y_z_impact_top->Fill(track_start_x->at(itrigger).at(itrack),track_start_y->at(itrigger).at(itrack),track_start_z->at(itrigger).at(itrack));
+	      impact_time = impact_top_time;
+	      impact_x = impact_top_x;
+	      impact_y = impact_top_y;
+	      impact_z = impact_top_z;
+	    }
+	    if( impact_side ){
+	      h_muon_start_x_y_z_impact_side->Fill(track_start_x->at(itrigger).at(itrack),track_start_y->at(itrigger).at(itrack),track_start_z->at(itrigger).at(itrack));
+	      impact_time = impact_side_time;
+	      impact_x = impact_side_x;
+	      impact_y = impact_side_y;
+	      impact_z = impact_side_z;
+	    }
+	    if( impact_bottom ){
+	      h_muon_start_x_y_z_impact_bottom->Fill(track_start_x->at(itrigger).at(itrack),track_start_y->at(itrigger).at(itrack),track_start_z->at(itrigger).at(itrack));
+	      impact_time = impact_bottom_time;
+	      impact_x = impact_bottom_x;
+	      impact_y = impact_bottom_y;
+	      impact_z = impact_bottom_z;
+	    }
+
+	    h_muon_impact_x_y_z->Fill(impact_x, impact_y, impact_z);
+	    h_muon_impact_vs_start_x->Fill(track_start_x->at(itrigger).at(itrack),impact_x);
+	    h_muon_impact_vs_start_y->Fill(track_start_y->at(itrigger).at(itrack),impact_y);
+	    h_muon_impact_vs_start_z->Fill(track_start_z->at(itrigger).at(itrack),impact_z);
+
+
+	  }
 	}
       }
 
@@ -515,15 +713,22 @@ int main(){
 	vtx_radius = sqrt(vtx_radius);
 	h_n_hits_vs_radius.Fill(vtx_radius, trigger_number_digitized_hits_OD->at(itrigger));
 
+
       }
 
       int nhits_top = 0;
       int nhits_bottom = 0;
       int nhits_side = 0;
       int nhits_all = 0;
+      int nhits_top_physics = 0;
+      int nhits_bottom_physics = 0;
+      int nhits_side_physics = 0;
+      int nhits_all_physics = 0;
       double total_charge = 0.;
-      nhits_OD_cluster = 0;
-      npes_OD_cluster = 0;
+      nhits_OD_cluster_1 = 0;
+      npes_OD_cluster_1 = 0;
+      nhits_OD_cluster_2 = 0;
+      npes_OD_cluster_2 = 0;
 
 
       for(size_t idigitizedhit=0; idigitizedhit<(digitized_hit_OD_tube_id->at(itrigger)).size(); idigitizedhit++){
@@ -556,31 +761,48 @@ int main(){
 	h_hit_x_y_z->Fill(pmt_x_OD, pmt_y_OD, pmt_z_OD);
 	h_hit_x_y->Fill(pmt_x_OD, pmt_y_OD);
 
-	if( pmt_location_OD == 5 )
-	  nhits_top ++;
-	else if( pmt_location_OD == 4 )
-	  nhits_side ++;
-	else if( pmt_location_OD == 3 )
-	  nhits_bottom ++;
+	if( impact ){
+	  distance_pmt_impact = sqrt(pow(pmt_x_OD - impact_x,2) + pow(pmt_y_OD - impact_y,2) + pow(pmt_z_OD - impact_z,2));
+	  h_distance_pmt_impact.Fill(distance_pmt_impact);
 
+	  if( distance_pmt_impact <= cluster_radius_1 ){
+	    nhits_OD_cluster_1 ++;
+	    npes_OD_cluster_1 += charge;
+	  }
+	  if( distance_pmt_impact <= cluster_radius_2 ){
+	    nhits_OD_cluster_2 ++;
+	    npes_OD_cluster_2 += charge;
+	  }
+	}
+
+	if( pmt_location_OD == 5 ){
+	  nhits_top ++;
+	  if( impact )
+	    nhits_top_physics ++;
+	}
+	else if( pmt_location_OD == 4 ){
+	  nhits_side ++;
+	  if( impact )
+	    nhits_side_physics ++;
+	}
+	else if( pmt_location_OD == 3 ){
+	  nhits_bottom ++;
+	  if( impact )
+	    nhits_bottom_physics ++;
+	}
 	ibin = h_charge_vs_z.FindBin(pmt_z_OD);
 	maxcharge = h_charge_vs_z.GetBinContent(ibin);
 	if( charge > maxcharge )
 	  h_charge_vs_z.SetBinContent(ibin,charge);
 
-	distance_pmt_vertex = sqrt(pow(pmt_y_OD - vtx_y,2) + pow(pmt_z_OD - vtx_z,2));
-	h_distance_pmt_vertex.Fill(distance_pmt_vertex);
 
-	if( distance_pmt_vertex <= cluster_radius ){
-	  nhits_OD_cluster ++;
-	  npes_OD_cluster += charge;
-	}
+	h_digitized_n_photons_ids.Fill(((digitized_hit_OD_photon_ids->at(itrigger)).at(idigitizedhit)).size());
+	if( digitized_hit_OD_photon_ids->size() )
+	  h_digitized_photons_id0.Fill(((digitized_hit_OD_photon_ids->at(itrigger)).at(idigitizedhit))[0]);
 
       }
 
       h_total_charge.Fill(total_charge);
-      h_nhits_OD_cluster.Fill(nhits_OD_cluster);
-      h_npes_OD_cluster.Fill(npes_OD_cluster);
 
 
       h_digitized_nhits_top_tubes.Fill(nhits_top);
@@ -588,12 +810,55 @@ int main(){
       h_digitized_nhits_bottom_tubes.Fill(nhits_bottom);
 
       nhits_all = nhits_top + nhits_side + nhits_bottom;
-
+    
       h_digitized_nhits_all_tubes.Fill(nhits_all);
       h_npes_vs_digitized_nhits.Fill(nhits_all, total_charge);
       h_nhits_vs_muon_energy.Fill(muon_energy,nhits_all);
-      if( nhits_all > 0 )
-	h_digitized_nhits_nonzero_tubes.Fill(nhits_all);
+
+      if( impact ){
+	h_digitized_nhits_top_physics_tubes.Fill(nhits_top_physics);
+	h_digitized_nhits_side_physics_tubes.Fill(nhits_side_physics);
+	h_digitized_nhits_bottom_physics_tubes.Fill(nhits_bottom_physics);
+
+	nhits_all_physics = nhits_top_physics + nhits_side_physics + nhits_bottom_physics;
+	h_digitized_nhits_physics_tubes.Fill(nhits_all_physics);
+
+	h_nhits_OD_cluster_1.Fill(nhits_OD_cluster_1);
+	h_npes_OD_cluster_1.Fill(npes_OD_cluster_1);
+	h_nhits_OD_cluster_2.Fill(nhits_OD_cluster_2);
+	h_npes_OD_cluster_2.Fill(npes_OD_cluster_2);
+      
+	for(int itrack=0; itrack<trigger_ntrack->at(itrigger); itrack++){
+	  // loop on tracks in the event
+	  if( track_ipnu->at(itrigger).at(itrack) == muon_pdg_id && track_M->at(itrigger).at(itrack) > 0 ){ // muon
+	    if( nhits_all_physics < n_hits_limit )
+	      h_muon_start_x_y_z_impact_few_nhits->Fill(track_start_x->at(itrigger).at(itrack),track_start_y->at(itrigger).at(itrack),track_start_z->at(itrigger).at(itrack));
+	    else
+	      h_muon_start_x_y_z_impact_many_nhits->Fill(track_start_x->at(itrigger).at(itrack),track_start_y->at(itrigger).at(itrack),track_start_z->at(itrigger).at(itrack));
+	  }
+	}
+
+	// qqq
+	for(size_t idigitizedhit=0; idigitizedhit<(digitized_hit_OD_tube_id->at(itrigger)).size(); idigitizedhit++){
+	  // loop on digitized hits in the trigger
+	  
+	  tube_id = (digitized_hit_OD_tube_id->at(itrigger)).at(idigitizedhit);
+	  all_pmts_tree_OD->GetEntry(tube_id - 1);
+
+	  distance_pmt_impact = sqrt(pow(pmt_x_OD - impact_x,2) + pow(pmt_y_OD - impact_y,2) + pow(pmt_z_OD - impact_z,2));
+	  hit_time = (digitized_hit_OD_time->at(itrigger)).at(idigitizedhit);
+	  
+	  if( nhits_all_physics < n_hits_limit ){
+	    h_distance_pmt_impact_few_nhits.Fill(distance_pmt_impact);
+	    h_hit_time_few_nhits.Fill(hit_time);
+	  }
+	  else{
+	    h_distance_pmt_impact_many_nhits.Fill(distance_pmt_impact);
+	    h_hit_time_many_nhits.Fill(hit_time);
+	  }
+	}
+      // qqq
+      }
 
     }
   }
@@ -617,16 +882,27 @@ int main(){
   h_charge_vs_z.Write();
   h_charge.Write();
   h_hit_time.Write();
+  h_hit_time_few_nhits.Write();
+  h_hit_time_many_nhits.Write();
   h_total_charge.Write();
   h_n_hits_vs_radius.Write();
-  h_distance_pmt_vertex.Write();
-  h_nhits_OD_cluster.Write();
-  h_npes_OD_cluster.Write();
+  h_distance_pmt_impact.Write();
+  h_distance_pmt_impact_few_nhits.Write();
+  h_distance_pmt_impact_many_nhits.Write();
+  h_nhits_OD_cluster_1.Write();
+  h_npes_OD_cluster_1.Write();
+  h_nhits_OD_cluster_2.Write();
+  h_npes_OD_cluster_2.Write();
+  h_digitized_n_photons_ids.Write();
+  h_digitized_photons_id0.Write();
   h_digitized_nhits_top_tubes.Write();
   h_digitized_nhits_side_tubes.Write();
   h_digitized_nhits_bottom_tubes.Write();
   h_digitized_nhits_all_tubes.Write();
-  h_digitized_nhits_nonzero_tubes.Write();
+  h_digitized_nhits_top_physics_tubes.Write();
+  h_digitized_nhits_side_physics_tubes.Write();
+  h_digitized_nhits_bottom_physics_tubes.Write();
+  h_digitized_nhits_physics_tubes.Write();
   h_npes_vs_digitized_nhits.Write();
   h_nhits_vs_muon_energy.Write();
   h_hit_position_top_tubes.Write();
@@ -639,6 +915,16 @@ int main(){
   h_muon_start_x_y_z->Write();
   h_muon_start_x_y->Write();
   h_muon_start_z->Write();
+  h_muon_start_x_y_z_impact->Write();
+  h_muon_start_x_y_z_impact_top->Write();
+  h_muon_start_x_y_z_impact_side->Write();
+  h_muon_start_x_y_z_impact_bottom->Write();
+  h_muon_start_x_y_z_impact_few_nhits->Write();
+  h_muon_start_x_y_z_impact_many_nhits->Write();
+  h_muon_impact_x_y_z->Write();
+  h_muon_impact_vs_start_x->Write();
+  h_muon_impact_vs_start_y->Write();
+  h_muon_impact_vs_start_z->Write();
   h_muon_stop_x_y_z->Write();
   h_muon_stop_x_y->Write();
   h_muon_stop_z->Write();
@@ -691,3 +977,172 @@ std::string number_with_digits(int i, int n){
 }
 
 
+bool is_impact_horizontal_plane(double x, double y, double z,
+				double ux, double uy, double uz,
+				double R, double zplane,
+				double * impact_time, double *impact_x, double *impact_y, double *impact_z){
+
+  bool is = false;
+
+  double time = (zplane - z)/uz; // time of crossing horizontal plane
+  double x_plane = x + ux*time; // position when crossing horizontal plane
+  double y_plane = y + uy*time;
+  double z_plane = z + uz*time;
+  //  std::cout << " pos(" << x << ", " << y << ", " << z << ") dir(" << ux << ", " << uy << ", " << uz << ") R " << R << " zplane " << zplane << " time " << time << std::endl;
+  *impact_time = time;
+  *impact_x = x_plane;
+  *impact_y = y_plane;
+  *impact_z = z_plane;
+  if( time > 0. ){ // crossing happens after muon is born
+    double r_plane = sqrt(pow(x_plane,2) + pow(y_plane,2));
+    //    std::cout << " x_plane " << x_plane << " y_plane " << y_plane << " r_plane " << r_plane << std::endl;
+    if( r_plane < R ) // crossing point is within cylinder radius
+      is = true;
+  }
+  //  std::cout << " is " << is << std::endl;
+
+
+
+  return is;
+
+}
+
+bool is_impact_side(double x, double y, double z,
+		    double ux, double uy, double uz,
+		    double R, double H,
+		    double * impact_time, double *impact_x, double *impact_y, double *impact_z){
+
+  bool is = false;
+
+  double r02 = pow(x,2) + pow(y,2); // initial distance from axis
+  double r0 = sqrt(r02); // initial distance from axis
+  //  std::cout << " r0 " << r0 << " z " << z << std::endl;
+  if( r0 < R ){ // muon starts within cylinder radius
+    if( z > -H && z < H ) // weird: muon starts inside tank
+      return is;
+    // muon starts above tank within cylinder radius
+    // can't go through side without going first through top
+    return is;
+  }
+
+
+  // line - circle intersection
+  double x1 = x + ux;
+  double y1 = y + uy;
+  double D = x*y1 - x1*y;
+  double u2 = pow(ux,2) + pow(uy,2);
+  double Delta = pow(R,2)*u2 - pow(D,2);
+
+  if( Delta <= 0 ) return is; // no intersection
+
+  Delta = sqrt(Delta);
+
+  double sign = 1.;
+  if( uy < 0 ) sign = -1.;
+  double x_side_1 = (D*uy + sign*ux*Delta)/u2;
+  double x_side_2 = (D*uy - sign*ux*Delta)/u2;
+  double t1 = (x_side_1 - x)/ux;
+
+
+  double y_side_1 = (-D*ux + fabs(uy)*Delta)/u2;
+  double y_side_2 = (-D*ux - fabs(uy)*Delta)/u2;
+  double t2 = (x_side_2 - x)/ux;
+
+  double r1 = sqrt(pow(x_side_1,2) + pow(y_side_1,2));
+  double r2 = sqrt(pow(x_side_2,2) + pow(y_side_2,2));
+  //  std::clog << " r1  " << r1 << " t1 " << t1 << " r2 " << r2 << " t2 " << t2 << std::endl;
+
+  double time_intersection;
+  if( t1 < 0. && t2 < 0. ) // both intersections before muon is born
+    return is;
+
+  bool use_1 = false;
+  if( t1 < 0. )
+    use_1 = false;
+  else if( t2 < 0. )
+    use_1 = true;
+  else{
+    if( t1 < t2 ) use_1 = true;
+    else use_1 = false;
+  }
+
+  double x_side, y_side, z_side, r_side;
+
+  if( use_1 ){
+    time_intersection = t1;
+    x_side = x_side_1;
+    y_side = y_side_1;
+  }else{
+    time_intersection = t2;
+    x_side = x_side_2;
+    y_side = y_side_2;
+  }
+  z_side = z + uz*time_intersection;
+    
+  r_side = sqrt(pow(x_side,2) + pow(y_side,2)); // distance from cylinder axis
+
+  //  std::cout << " time_intersection " << time_intersection << " x_side " << x_side << " y_side " << y_side << " z_side " << z_side << " r_side " << r_side << std::endl;
+  if( z_side < -H )
+    return is;
+  if( z_side > H )
+    return is;
+  
+
+  is = true;
+  //  std::cout << " is " << is << std::endl;
+
+  *impact_time = time_intersection;
+  *impact_x = x_side;
+  *impact_y = y_side;
+  *impact_z = z_side;
+
+  // double xv = x*ux + y*uy;
+  // double time = - xv/u2; // time of maximum approach to cylinder axis
+  // double x_side = x + ux*time; // position at maximum approach to cylinder axis
+  // double y_side = y + uy*time;
+  // double z_side = z + uz*time;
+  // double r_side2 = pow(x_side,2) + pow(y_side,2);
+  // double r_side = sqrt(r_side2); // min distance from cylinder axis
+  // std::cout << " pos(" << x << ", " << y << ", " << z << ") dir(" << ux << ", " << uy << ", " << uz << ") R " << R << " H " << H << " time " << time << " r_side " << r_side << " z_side " << z_side << std::endl;
+
+  // if( r_side > R ) // muon never gets within cylinder radius
+  //   return is;
+
+  // // muon starts outside cylinder radius, but does get inside cylinder radius
+
+  // double time_intersection_1 = - xv - sqrt(pow(xv,2) - u2*(r02 - pow(R,2))); // times at which muon intersects cylinder radius
+  // double time_intersection_2 = - xv + sqrt(pow(xv,2) - u2*(r02 - pow(R,2)));
+
+  // double time_intersection;
+  // std::cout << " time_intersection_1 " << time_intersection_1 << " time_intersection_2 " << time_intersection_2 << std::endl;
+  // if( time + time_intersection_1 < 0. ){
+  //   if( time + time_intersection_2 < 0. ) // both intersections before muon is born
+  //     return is;
+  //   time_intersection = time_intersection_2;
+  // }else{
+  //   time_intersection =time_intersection_1;
+  // }
+
+  // x_side += ux*time_intersection; // position when intersecting radius
+  // y_side += uy*time_intersection;
+  // z_side += uz*time_intersection;
+  // r_side = sqrt(pow(x_side,2) + pow(y_side,2)); // distance from cylinder axis
+
+  // std::cout << " time_intersection " << time_intersection << " x_side " << x_side << " y_side " << y_side << " z_side " << z_side << " r_side " << r_side << std::endl;
+  // if( z_side < -H )
+  //   return is;
+  // if( z_side > H )
+  //   return is;
+  
+
+  // is = true;
+  // //  std::cout << " is " << is << std::endl;
+
+  // *impact_time = time_intersection;
+  // *impact_x = x_side;
+  // *impact_y = y_side;
+  // *impact_z = z_side;
+
+  return is;
+
+}
