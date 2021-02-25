@@ -306,21 +306,39 @@ int main(){
   h_charge.SetLineWidth(2);
   h_charge.SetLineColor(kBlack);
 
+  double tmax = 4000.;
   TH1F h_hit_time("h_hit_time","h_hit_time; hit time [ns]",
-		  2000,-0.5,1999.5);
+		  2000,-0.5,tmax);
   h_hit_time.SetLineWidth(2);
   h_hit_time.SetLineColor(kBlack);
 
   double n_hits_limit = 300.;
   TH1F h_hit_time_few_nhits("h_hit_time_few_nhits",Form("nhits < %.0f; hit time [ns]",n_hits_limit),
-		  2000,-0.5,1999.5);
+		  2000,-0.5,tmax);
   h_hit_time_few_nhits.SetLineWidth(2);
   h_hit_time_few_nhits.SetLineColor(kBlue);
 
   TH1F h_hit_time_many_nhits("h_hit_time_many_nhits",Form("nhits > %.0f; hit time [ns]",n_hits_limit),
-		  2000,-0.5,1999.5);
+		  2000,-0.5,tmax);
   h_hit_time_many_nhits.SetLineWidth(2);
   h_hit_time_many_nhits.SetLineColor(kRed);
+
+  double max_path_length = 1000;
+
+  TH1F h_muon_path_length_impact("h_muon_path_length_impact","h_muon_path_length_impact; path length [cm]",
+				    100,0,max_path_length);
+  h_muon_path_length_impact.SetLineWidth(2);
+  h_muon_path_length_impact.SetLineColor(kBlack);
+
+  TH1F h_muon_path_length_impact_few_nhits("h_muon_path_length_impact_few_nhits",Form("nhits < %.0f; path length [cm]",n_hits_limit),
+				    100,0,max_path_length);
+  h_muon_path_length_impact_few_nhits.SetLineWidth(2);
+  h_muon_path_length_impact_few_nhits.SetLineColor(kBlue);
+
+  TH1F h_muon_path_length_impact_many_nhits("h_muon_path_length_impact_many_nhits",Form("nhits > %.0f; path length [cm]",n_hits_limit),
+				    100,0,max_path_length);
+  h_muon_path_length_impact_many_nhits.SetLineWidth(2);
+  h_muon_path_length_impact_many_nhits.SetLineColor(kRed);
 
   TH1F h_total_charge("h_total_charge","h_total_charge; charge [p.e.]",
 		      800,1,-1);
@@ -370,12 +388,36 @@ int main(){
   h_digitized_nhits_physics_tubes.SetLineWidth(2);
   h_digitized_nhits_physics_tubes.SetLineColor(kBlue);
 
+  TH1F h_digitized_nhits_physics_tubes_impact_few_nhits("h_digitized_nhits_physics_tubes_impact_few_nhits",Form("nhits < %.0f; n of hits",n_hits_limit),100,0,max_nhits);
+  h_digitized_nhits_physics_tubes_impact_few_nhits.SetLineWidth(2);
+  h_digitized_nhits_physics_tubes_impact_few_nhits.SetLineColor(kBlue);
+
+  TH1F h_digitized_nhits_physics_tubes_impact_many_nhits("h_digitized_nhits_physics_tubes_impact_many_nhits",Form("nhits > %.0f; n of hits",n_hits_limit),100,0,max_nhits);
+  h_digitized_nhits_physics_tubes_impact_many_nhits.SetLineWidth(2);
+  h_digitized_nhits_physics_tubes_impact_many_nhits.SetLineColor(kRed);
+
   TH2F h_npes_vs_digitized_nhits("h_npes_vs_digitized_nhits","npes vs n hits; n of hits; n of pes",100,min_nhits,max_nhits,800,1,-1);
   TH2F h_nhits_vs_muon_energy("h_nhits_vs_muon_energy","n hits vs muon energy; muon energy [MeV]; n of hits",100,1,-1,100,min_nhits,max_nhits);
 
   TH2F h_hit_position_top_tubes("h_hit_position_top_tubes","top; x; y", 20,-(r_limit*1.3),(r_limit*1.3), 20,-(r_limit*1.3),(r_limit*1.3));
   TH2F h_hit_position_bottom_tubes("h_hit_position_bottom_tubes","bottom; x; y", 20,-(r_limit*1.3),(r_limit*1.3), 20,-(r_limit*1.3),(r_limit*1.3));
   TH2F h_hit_position_side_tubes("h_hit_position_side_tubes","side; phi; z", 300,-180.,180., 40,-(z_limit*1.3),(z_limit*1.3));
+
+  TH1F h_angle_muon_direction_normal_top_impact_few_nhits("h_angle_muon_direction_normal_top_impact_few_nhits",Form("nhits < %.0f; cos(#mu direction, normal to top)",n_hits_limit),100,-1,1);
+  h_angle_muon_direction_normal_top_impact_few_nhits.SetLineWidth(2);
+  h_angle_muon_direction_normal_top_impact_few_nhits.SetLineColor(kBlue);
+  
+  TH1F h_angle_muon_direction_normal_top_impact_many_nhits("h_angle_muon_direction_normal_top_impact_many_nhits",Form("nhits > %.0f; cos(#mu direction, normal to top)",n_hits_limit),100,-1,1);
+  h_angle_muon_direction_normal_top_impact_many_nhits.SetLineWidth(2);
+  h_angle_muon_direction_normal_top_impact_many_nhits.SetLineColor(kRed);
+  
+  TH1F h_angle_muon_direction_normal_side_impact_few_nhits("h_angle_muon_direction_normal_side_impact_few_nhits",Form("nhits < %.0f; cos(#mu direction, normal to side)",n_hits_limit),100,-1,1);
+  h_angle_muon_direction_normal_side_impact_few_nhits.SetLineWidth(2);
+  h_angle_muon_direction_normal_side_impact_few_nhits.SetLineColor(kBlue);
+  
+  TH1F h_angle_muon_direction_normal_side_impact_many_nhits("h_angle_muon_direction_normal_side_impact_many_nhits",Form("nhits > %.0f; cos(#mu direction, normal to side)",n_hits_limit),100,-1,1);
+  h_angle_muon_direction_normal_side_impact_many_nhits.SetLineWidth(2);
+  h_angle_muon_direction_normal_side_impact_many_nhits.SetLineColor(kRed);
   
   TH1F h_distance_pmt_impact("h_distance_pmt_impact","distance PMT impact point; distance PMT impact point [cm]",100,1,-1);
   h_distance_pmt_impact.SetLineWidth(2);
@@ -405,24 +447,28 @@ int main(){
 
   double cluster_radius_1=800.;  // cm
   double cluster_radius_2=1600.;
-  TH1F h_nhits_OD_cluster_1("h_nhits_OD_cluster_1",Form("cluster (< %.0f); n OD hits in cluster",cluster_radius_1),100,min_nhits,max_nhits);
+  TH1F h_nhits_OD_cluster_1("h_nhits_OD_cluster_1",Form("cluster (< %.0f); n OD hits in cluster",cluster_radius_1),500,min_nhits,max_nhits);
   h_nhits_OD_cluster_1.SetLineWidth(2);
   h_nhits_OD_cluster_1.SetLineColor(kBlack);
+  h_nhits_OD_cluster_1.SetFillColor(kBlack);
 
   double min_npes=0;
   double max_npes=4000;
 
-  TH1F h_npes_OD_cluster_1("h_npes_OD_cluster_1",Form("cluster (< %.0f); n OD p.e.'s in cluster",cluster_radius_1),100,min_npes,max_npes);
+  TH1F h_npes_OD_cluster_1("h_npes_OD_cluster_1",Form("cluster (< %.0f); n OD p.e.'s in cluster",cluster_radius_1),500,min_npes,max_npes);
   h_npes_OD_cluster_1.SetLineWidth(2);
   h_npes_OD_cluster_1.SetLineColor(kBlack);
+  h_npes_OD_cluster_1.SetFillColor(kBlack);
 
-  TH1F h_nhits_OD_cluster_2("h_nhits_OD_cluster_2",Form("cluster (< %.0f); n OD hits in cluster",cluster_radius_2),100,min_nhits,max_nhits);
+  TH1F h_nhits_OD_cluster_2("h_nhits_OD_cluster_2",Form("cluster (< %.0f); n OD hits in cluster",cluster_radius_2),500,min_nhits,max_nhits);
   h_nhits_OD_cluster_2.SetLineWidth(2);
   h_nhits_OD_cluster_2.SetLineColor(kBlue);
+  h_nhits_OD_cluster_2.SetFillColor(kBlue);
 
-  TH1F h_npes_OD_cluster_2("h_npes_OD_cluster_2",Form("cluster (< %.0f); n OD p.e.'s in cluster",cluster_radius_2),100,min_npes,max_npes);
+  TH1F h_npes_OD_cluster_2("h_npes_OD_cluster_2",Form("cluster (< %.0f); n OD p.e.'s in cluster",cluster_radius_2),500,min_npes,max_npes);
   h_npes_OD_cluster_2.SetLineWidth(2);
   h_npes_OD_cluster_2.SetLineColor(kBlue);
+  h_npes_OD_cluster_2.SetFillColor(kBlue);
 
   TH3F *h_muon_start_x_y_z = new TH3F("h_muon_start_x_y_z","h_muon_start_x_y_z",
 				       		 nbins_x,-(r_limit*1.3),(r_limit*1.3),
@@ -471,10 +517,34 @@ int main(){
   h_muon_start_x_y->SetMarkerColor(kBlue);
   h_muon_start_x_y->SetMarkerStyle(1);
 
+  TH2F *h_muon_start_x_y_impact_few_nhits = new TH2F("h_muon_start_x_y_impact_few_nhits",Form("when nhits < %.0f",n_hits_limit),
+						     nbins_x,-(r_limit*1.3),(r_limit*1.3),
+						     nbins_y,-(r_limit*1.3),(r_limit*1.3));
+  h_muon_start_x_y_impact_few_nhits->SetFillColor(kBlack);
+  h_muon_start_x_y_impact_few_nhits->SetMarkerColor(kBlue);
+  h_muon_start_x_y_impact_few_nhits->SetMarkerStyle(1);
+
+  TH2F *h_muon_start_x_y_impact_many_nhits = new TH2F("h_muon_start_x_y_impact_many_nhits",Form("when nhits > %.0f",n_hits_limit),
+						     nbins_x,-(r_limit*1.3),(r_limit*1.3),
+						     nbins_y,-(r_limit*1.3),(r_limit*1.3));
+  h_muon_start_x_y_impact_many_nhits->SetFillColor(kBlack);
+  h_muon_start_x_y_impact_many_nhits->SetMarkerColor(kRed);
+  h_muon_start_x_y_impact_many_nhits->SetMarkerStyle(1);
+
   TH1F *h_muon_start_z = new TH1F("h_muon_start_z","h_muon_start_z",
 				       nbins_z,-(z_limit*1.3),(z_limit*1.3));
   h_muon_start_z->SetLineColor(kBlack);
   h_muon_start_z->SetLineWidth(2);
+
+  TH1F *h_muon_start_z_impact_few_nhits = new TH1F("h_muon_start_z_impact_few_nhits",Form("when nhits < %.0f",n_hits_limit),
+						   nbins_z,-(z_limit*1.3),(z_limit*1.3));
+  h_muon_start_z_impact_few_nhits->SetLineColor(kBlue);
+  h_muon_start_z_impact_few_nhits->SetLineWidth(2);
+
+  TH1F *h_muon_start_z_impact_many_nhits = new TH1F("h_muon_start_z_impact_many_nhits",Form("when nhits > %.0f",n_hits_limit),
+						   nbins_z,-(z_limit*1.3),(z_limit*1.3));
+  h_muon_start_z_impact_many_nhits->SetLineColor(kRed);
+  h_muon_start_z_impact_many_nhits->SetLineWidth(2);
 
   TH3F *h_muon_stop_x_y_z = new TH3F("h_muon_stop_x_y_z","h_muon_stop_x_y_z",
 				       		 nbins_x,-(r_limit*1.3),(r_limit*1.3),
@@ -822,6 +892,12 @@ int main(){
 
 	nhits_all_physics = nhits_top_physics + nhits_side_physics + nhits_bottom_physics;
 	h_digitized_nhits_physics_tubes.Fill(nhits_all_physics);
+	if( nhits_all_physics < n_hits_limit ){
+	  h_digitized_nhits_physics_tubes_impact_few_nhits.Fill(nhits_all_physics);
+	}
+	else{
+	  h_digitized_nhits_physics_tubes_impact_many_nhits.Fill(nhits_all_physics);
+	}
 
 	h_nhits_OD_cluster_1.Fill(nhits_OD_cluster_1);
 	h_npes_OD_cluster_1.Fill(npes_OD_cluster_1);
@@ -831,10 +907,32 @@ int main(){
 	for(int itrack=0; itrack<trigger_ntrack->at(itrigger); itrack++){
 	  // loop on tracks in the event
 	  if( track_ipnu->at(itrigger).at(itrack) == muon_pdg_id && track_M->at(itrigger).at(itrack) > 0 ){ // muon
-	    if( nhits_all_physics < n_hits_limit )
+	    double muon_path_length = sqrt(pow(track_start_x->at(itrigger).at(itrack) - impact_x,2) + pow(track_start_y->at(itrigger).at(itrack) - impact_y,2) + pow(track_start_z->at(itrigger).at(itrack) - impact_z,2));
+	    h_muon_path_length_impact.Fill(muon_path_length);
+	    if( nhits_all_physics < n_hits_limit ){
 	      h_muon_start_x_y_z_impact_few_nhits->Fill(track_start_x->at(itrigger).at(itrack),track_start_y->at(itrigger).at(itrack),track_start_z->at(itrigger).at(itrack));
-	    else
+	      h_muon_start_x_y_impact_few_nhits->Fill(track_start_x->at(itrigger).at(itrack),track_start_y->at(itrigger).at(itrack));
+	      h_muon_start_z_impact_few_nhits->Fill(track_start_z->at(itrigger).at(itrack));
+	      if( impact_top )
+		h_angle_muon_direction_normal_top_impact_few_nhits.Fill(track_uz->at(itrigger).at(itrack));
+	      if( impact_side )
+		h_angle_muon_direction_normal_side_impact_few_nhits.Fill(
+									  (track_ux->at(itrigger).at(itrack)*impact_x + track_uy->at(itrigger).at(itrack)*impact_y)/sqrt(pow(impact_x,2) + pow(impact_y,2))
+									  );
+	      h_muon_path_length_impact_few_nhits.Fill(muon_path_length);
+	    }
+	    else{
 	      h_muon_start_x_y_z_impact_many_nhits->Fill(track_start_x->at(itrigger).at(itrack),track_start_y->at(itrigger).at(itrack),track_start_z->at(itrigger).at(itrack));
+	      h_muon_start_x_y_impact_many_nhits->Fill(track_start_x->at(itrigger).at(itrack),track_start_y->at(itrigger).at(itrack));
+	      h_muon_start_z_impact_many_nhits->Fill(track_start_z->at(itrigger).at(itrack));
+	      if( impact_top )
+		h_angle_muon_direction_normal_top_impact_many_nhits.Fill(track_uz->at(itrigger).at(itrack));
+	      if( impact_side )
+		h_angle_muon_direction_normal_side_impact_many_nhits.Fill(
+									  (track_ux->at(itrigger).at(itrack)*impact_x + track_uy->at(itrigger).at(itrack)*impact_y)/sqrt(pow(impact_x,2) + pow(impact_y,2))
+									   );
+	      h_muon_path_length_impact_many_nhits.Fill(muon_path_length);
+	    }
 	  }
 	}
 
@@ -866,6 +964,21 @@ int main(){
 
   f->Close();
 
+
+  double charge_integral = h_digitized_hit_OD_Q_side_tubes.Integral();
+  double charge_90;
+  double charge_99;
+  double charge_999;
+  for(int i=1; i<h_digitized_hit_OD_Q_side_tubes.GetNbinsX(); i++){
+    double local_charge = h_digitized_hit_OD_Q_side_tubes.GetBinCenter(i);
+    double local_integral = h_digitized_hit_OD_Q_side_tubes.Integral(0,i);
+    double charge_ratio = local_integral/charge_integral;
+    if( charge_ratio <= 0.90 ) charge_90 = local_charge;
+    if( charge_ratio <= 0.99 ) charge_99 = local_charge;
+    if( charge_ratio <= 0.999 ) charge_999 = local_charge;
+  }
+
+  std::cout << " charge_90 " << charge_90 << " charge_99 " << charge_99 << " charge_999 " << charge_999 << std::endl;
 
   of->cd();
   PMT_x_y_z.Write();
@@ -903,6 +1016,8 @@ int main(){
   h_digitized_nhits_side_physics_tubes.Write();
   h_digitized_nhits_bottom_physics_tubes.Write();
   h_digitized_nhits_physics_tubes.Write();
+  h_digitized_nhits_physics_tubes_impact_few_nhits.Write();
+  h_digitized_nhits_physics_tubes_impact_many_nhits.Write();
   h_npes_vs_digitized_nhits.Write();
   h_nhits_vs_muon_energy.Write();
   h_hit_position_top_tubes.Write();
@@ -914,13 +1029,21 @@ int main(){
   h_muon_E.Write();
   h_muon_start_x_y_z->Write();
   h_muon_start_x_y->Write();
+  h_muon_start_x_y_impact_few_nhits->Write();
+  h_muon_start_x_y_impact_many_nhits->Write();
   h_muon_start_z->Write();
+  h_muon_start_z_impact_few_nhits->Write();
+  h_muon_start_z_impact_many_nhits->Write();
   h_muon_start_x_y_z_impact->Write();
   h_muon_start_x_y_z_impact_top->Write();
   h_muon_start_x_y_z_impact_side->Write();
   h_muon_start_x_y_z_impact_bottom->Write();
   h_muon_start_x_y_z_impact_few_nhits->Write();
   h_muon_start_x_y_z_impact_many_nhits->Write();
+  h_angle_muon_direction_normal_top_impact_few_nhits.Write();
+  h_angle_muon_direction_normal_top_impact_many_nhits.Write();
+  h_angle_muon_direction_normal_side_impact_few_nhits.Write();
+  h_angle_muon_direction_normal_side_impact_many_nhits.Write();
   h_muon_impact_x_y_z->Write();
   h_muon_impact_vs_start_x->Write();
   h_muon_impact_vs_start_y->Write();
@@ -936,6 +1059,9 @@ int main(){
   h_muon_momentum_z->Write();
   h_muon_time.Write();
   h_muon_phi.Write();
+  h_muon_path_length_impact.Write();
+  h_muon_path_length_impact_few_nhits.Write();
+  h_muon_path_length_impact_many_nhits.Write();
 
   delete trigger_number ; delete  trigger_date ; delete  trigger_mode ; delete  trigger_vtxvol ; delete  trigger_vec_rec_number ; delete  trigger_jmu ; delete  trigger_jp ; delete  trigger_npar ; delete  trigger_ntrack ; delete  trigger_number_raw_hits ; delete  trigger_number_digitized_hits ; delete  trigger_number_raw_hits_OD ; delete  trigger_number_digitized_hits_OD ; delete  trigger_number_times ;
 
