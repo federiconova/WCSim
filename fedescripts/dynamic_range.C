@@ -22,11 +22,11 @@
 std::string number_with_digits(int i, int n);
 bool is_impact_horizontal_plane(double x, double y, double z,
 				double ux, double uy, double uz,
-				double R, double zplane,
+				double R, double zplane, double E,
 				double * impact_time, double *impact_x, double *impact_y, double *impact_z);
 bool is_impact_side(double x, double y, double z,
 		    double ux, double uy, double uz,
-		    double R, double H,
+		    double R, double H, double E,
 		    double * impact_time, double *impact_x, double *impact_y, double *impact_z);
 
 int n_digits = 5;
@@ -62,7 +62,7 @@ int main(){
   geom_tree->SetBranchAddress("number_of_pmts_OD",&number_of_pmts_OD);
   geom_tree->GetEntry(0);
   detector_radius = 3800.;
-  double OD_radius = 3400.;
+  double OD_radius = 3300.;
   double OD_height = 3400.;
   std::clog << " detector_length " << detector_length << " detector_radius " << detector_radius << " pmt_radius " << pmt_radius << " number_of_pmts " << number_of_pmts << " number_of_pmts_OD " << number_of_pmts_OD << std::endl;
 
@@ -655,7 +655,7 @@ int main(){
   double charge;
   int ibin;
   double maxcharge;
-  double vtx_radius, vtx_x, vtx_y, vtx_z;
+  double vtx_radius, vtx_x, vtx_y, vtx_z, dir_x, dir_y, dir_z;
   double hit_time;
   int modulo = 100;
   double distance_pmt_impact;
@@ -697,6 +697,9 @@ int main(){
 	  h_muon_stop_z->Fill(track_stop_z->at(itrigger).at(itrack));
 
 	  h_muon_direction_x_y_z->Fill(track_ux->at(itrigger).at(itrack),track_uy->at(itrigger).at(itrack),track_uz->at(itrigger).at(itrack));
+	  dir_x = track_ux->at(itrigger).at(itrack);
+	  dir_y = track_uy->at(itrigger).at(itrack);
+	  dir_z = track_uz->at(itrigger).at(itrack);
 	  h_muon_direction_x_y->Fill(track_ux->at(itrigger).at(itrack),track_uy->at(itrigger).at(itrack));
 	  h_muon_direction_z->Fill(track_uz->at(itrigger).at(itrack));
 
@@ -713,16 +716,16 @@ int main(){
 
 	  impact_top = is_impact_horizontal_plane(track_start_x->at(itrigger).at(itrack),track_start_y->at(itrigger).at(itrack),track_start_z->at(itrigger).at(itrack),
 						  track_ux->at(itrigger).at(itrack),track_uy->at(itrigger).at(itrack),track_uz->at(itrigger).at(itrack),
-						  OD_radius, OD_height,
+						  OD_radius, OD_height, muon_energy,
 						     & impact_top_time, & impact_top_x, & impact_top_y, & impact_top_z);
 	  impact_bottom = is_impact_horizontal_plane(track_start_x->at(itrigger).at(itrack),track_start_y->at(itrigger).at(itrack),track_start_z->at(itrigger).at(itrack),
 						  track_ux->at(itrigger).at(itrack),track_uy->at(itrigger).at(itrack),track_uz->at(itrigger).at(itrack),
-						     OD_radius, -OD_height,
+						     OD_radius, -OD_height, muon_energy,
 						     & impact_bottom_time, & impact_bottom_x, & impact_bottom_y, & impact_bottom_z);
 	  if( ! impact_top ) // muons always move down, so if they go through the top the impact point is there (even if later they cross the side)
 	    impact_side = is_impact_side(track_start_x->at(itrigger).at(itrack),track_start_y->at(itrigger).at(itrack),track_start_z->at(itrigger).at(itrack),
 					 track_ux->at(itrigger).at(itrack),track_uy->at(itrigger).at(itrack),track_uz->at(itrigger).at(itrack),
-					 OD_radius, OD_height,
+					 OD_radius, OD_height, muon_energy,
 					 & impact_side_time, & impact_side_x, & impact_side_y, & impact_side_z);
 
 	  if( impact_top && impact_bottom ) impact_bottom = false;
@@ -899,6 +902,17 @@ int main(){
 	  h_digitized_nhits_physics_tubes_impact_many_nhits.Fill(nhits_all_physics);
 	}
 
+	if( nhits_OD_cluster_1 == 0 ){
+	  std::cout << " event " << ievent << " of " << primary_events_tree->GetEntries() << std::endl;
+	  std::cout << " impact " << impact << " impact_top " << impact_top << " impact_side " << impact_side << " impact_bottom " << impact_bottom << std::endl;
+	  std::cout << " impact point( " << impact_x << ", " << impact_y << ", " << impact_z << ") impact radius " << sqrt(pow(impact_x,2) + pow(impact_y,2)) << std::endl;
+	  std::cout << " vtx point( " << vtx_x << ", " << vtx_y << ", " << vtx_z << ") vtx_radius " << vtx_radius << std::endl;
+	  std::cout << " dir point( " << dir_x << ", " << dir_y << ", " << dir_z << ") " << std::endl;
+	  std::cout << " nhits_top " << nhits_top << " nhits_side " << nhits_side << " nhits_bottom " << nhits_bottom << " nhits_all_physics " << nhits_all_physics <<  std::endl;
+	  std::cout << " path length " << sqrt(pow(vtx_x-impact_x,2) + pow(vtx_y-impact_y,2) + pow(vtx_z-impact_z,2)) << " E " << muon_energy << " possible length " << muon_energy/200.e-2 << std::endl;
+
+	}
+
 	h_nhits_OD_cluster_1.Fill(nhits_OD_cluster_1);
 	h_npes_OD_cluster_1.Fill(npes_OD_cluster_1);
 	h_nhits_OD_cluster_2.Fill(nhits_OD_cluster_2);
@@ -965,20 +979,57 @@ int main(){
   f->Close();
 
 
+  TH1F h_dynamic_range("h_dynamic_range","h_dynamic_range; dynamic range [p.e.]; fraction of saturated electronics",h_digitized_hit_OD_Q_side_tubes.GetNbinsX(),h_digitized_hit_OD_Q_side_tubes.GetXaxis()->GetXmin(),h_digitized_hit_OD_Q_side_tubes.GetXaxis()->GetXmax());
   double charge_integral = h_digitized_hit_OD_Q_side_tubes.Integral();
-  double charge_90;
-  double charge_99;
-  double charge_999;
-  for(int i=1; i<h_digitized_hit_OD_Q_side_tubes.GetNbinsX(); i++){
-    double local_charge = h_digitized_hit_OD_Q_side_tubes.GetBinCenter(i);
-    double local_integral = h_digitized_hit_OD_Q_side_tubes.Integral(0,i);
+  for(int i=1; i<=h_digitized_hit_OD_Q_side_tubes.GetNbinsX(); i++){
+    double local_integral = h_digitized_hit_OD_Q_side_tubes.Integral(i,h_digitized_hit_OD_Q_side_tubes.GetNbinsX());
     double charge_ratio = local_integral/charge_integral;
-    if( charge_ratio <= 0.90 ) charge_90 = local_charge;
-    if( charge_ratio <= 0.99 ) charge_99 = local_charge;
-    if( charge_ratio <= 0.999 ) charge_999 = local_charge;
+    h_dynamic_range.SetBinContent(i,charge_ratio);
   }
 
-  std::cout << " charge_90 " << charge_90 << " charge_99 " << charge_99 << " charge_999 " << charge_999 << std::endl;
+  TH1F h_nhits_cluster_1_efficiency("h_nhits_cluster_1_efficiency",Form("cluster (< %.0f); threshold [nhits]; efficiency",cluster_radius_1),h_nhits_OD_cluster_1.GetNbinsX(),h_nhits_OD_cluster_1.GetXaxis()->GetXmin(),h_nhits_OD_cluster_1.GetXaxis()->GetXmax());
+  h_nhits_cluster_1_efficiency.SetLineColor(h_nhits_OD_cluster_1.GetLineColor());
+  h_nhits_cluster_1_efficiency.SetLineWidth(2);
+  double nhits_integral = h_nhits_OD_cluster_1.Integral();
+  for(int i=1; i<=h_nhits_OD_cluster_1.GetNbinsX(); i++){
+    double local_integral = h_nhits_OD_cluster_1.Integral(i,h_nhits_OD_cluster_1.GetNbinsX());
+    double nhits_ratio = local_integral/nhits_integral;
+    h_nhits_cluster_1_efficiency.SetBinContent(i,nhits_ratio);
+  }
+
+
+  TH1F h_nhits_cluster_2_efficiency("h_nhits_cluster_2_efficiency",Form("cluster (< %.0f); threshold [nhits]; efficiency",cluster_radius_2),h_nhits_OD_cluster_2.GetNbinsX(),h_nhits_OD_cluster_2.GetXaxis()->GetXmin(),h_nhits_OD_cluster_2.GetXaxis()->GetXmax());
+  h_nhits_cluster_2_efficiency.SetLineColor(h_nhits_OD_cluster_2.GetLineColor());
+  h_nhits_cluster_2_efficiency.SetLineWidth(2);
+  nhits_integral = h_nhits_OD_cluster_2.Integral();
+  for(int i=1; i<=h_nhits_OD_cluster_2.GetNbinsX(); i++){
+    double local_integral = h_nhits_OD_cluster_2.Integral(i,h_nhits_OD_cluster_2.GetNbinsX());
+    double nhits_ratio = local_integral/nhits_integral;
+    h_nhits_cluster_2_efficiency.SetBinContent(i,nhits_ratio);
+  }
+
+
+  TH1F h_npes_cluster_1_efficiency("h_npes_cluster_1_efficiency",Form("cluster (< %.0f); threshold [npes]; efficiency",cluster_radius_1),h_npes_OD_cluster_1.GetNbinsX(),h_npes_OD_cluster_1.GetXaxis()->GetXmin(),h_npes_OD_cluster_1.GetXaxis()->GetXmax());
+  h_npes_cluster_1_efficiency.SetLineColor(h_npes_OD_cluster_1.GetLineColor());
+  h_npes_cluster_1_efficiency.SetLineWidth(2);
+  double npes_integral = h_npes_OD_cluster_1.Integral();
+  for(int i=1; i<=h_npes_OD_cluster_1.GetNbinsX(); i++){
+    double local_integral = h_npes_OD_cluster_1.Integral(i,h_npes_OD_cluster_1.GetNbinsX());
+    double npes_ratio = local_integral/npes_integral;
+    h_npes_cluster_1_efficiency.SetBinContent(i,npes_ratio);
+  }
+
+
+  TH1F h_npes_cluster_2_efficiency("h_npes_cluster_2_efficiency",Form("cluster (< %.0f); threshold [npes]; efficiency",cluster_radius_2),h_npes_OD_cluster_2.GetNbinsX(),h_npes_OD_cluster_2.GetXaxis()->GetXmin(),h_npes_OD_cluster_2.GetXaxis()->GetXmax());
+  h_npes_cluster_2_efficiency.SetLineColor(h_npes_OD_cluster_2.GetLineColor());
+  h_npes_cluster_2_efficiency.SetLineWidth(2);
+  npes_integral = h_npes_OD_cluster_2.Integral();
+  for(int i=1; i<=h_npes_OD_cluster_2.GetNbinsX(); i++){
+    double local_integral = h_npes_OD_cluster_2.Integral(i,h_npes_OD_cluster_2.GetNbinsX());
+    double npes_ratio = local_integral/npes_integral;
+    h_npes_cluster_2_efficiency.SetBinContent(i,npes_ratio);
+  }
+
 
   of->cd();
   PMT_x_y_z.Write();
@@ -1062,6 +1113,12 @@ int main(){
   h_muon_path_length_impact.Write();
   h_muon_path_length_impact_few_nhits.Write();
   h_muon_path_length_impact_many_nhits.Write();
+  h_dynamic_range.Write();
+  h_nhits_cluster_1_efficiency.Write();
+  h_nhits_cluster_2_efficiency.Write();
+  h_npes_cluster_1_efficiency.Write();
+  h_npes_cluster_2_efficiency.Write();
+
 
   delete trigger_number ; delete  trigger_date ; delete  trigger_mode ; delete  trigger_vtxvol ; delete  trigger_vec_rec_number ; delete  trigger_jmu ; delete  trigger_jp ; delete  trigger_npar ; delete  trigger_ntrack ; delete  trigger_number_raw_hits ; delete  trigger_number_digitized_hits ; delete  trigger_number_raw_hits_OD ; delete  trigger_number_digitized_hits_OD ; delete  trigger_number_times ;
 
@@ -1105,7 +1162,7 @@ std::string number_with_digits(int i, int n){
 
 bool is_impact_horizontal_plane(double x, double y, double z,
 				double ux, double uy, double uz,
-				double R, double zplane,
+				double R, double zplane, double E,
 				double * impact_time, double *impact_x, double *impact_y, double *impact_z){
 
   bool is = false;
@@ -1118,7 +1175,12 @@ bool is_impact_horizontal_plane(double x, double y, double z,
   *impact_time = time;
   *impact_x = x_plane;
   *impact_y = y_plane;
-  *impact_z = z_plane;
+  *impact_z = z_plane;	
+  double path_length = sqrt(pow(x - x_plane,2) + pow(y - y_plane,2) + pow(z - z_plane,2));
+  double dEdx = 400.e-2;// MeV/cm, on the safe side
+  double possible_length = E/dEdx;
+  if( path_length > possible_length )
+    return is;
   if( time > 0. ){ // crossing happens after muon is born
     double r_plane = sqrt(pow(x_plane,2) + pow(y_plane,2));
     //    std::cout << " x_plane " << x_plane << " y_plane " << y_plane << " r_plane " << r_plane << std::endl;
@@ -1135,7 +1197,7 @@ bool is_impact_horizontal_plane(double x, double y, double z,
 
 bool is_impact_side(double x, double y, double z,
 		    double ux, double uy, double uz,
-		    double R, double H,
+		    double R, double H, double E,
 		    double * impact_time, double *impact_x, double *impact_y, double *impact_z){
 
   bool is = false;
@@ -1213,6 +1275,11 @@ bool is_impact_side(double x, double y, double z,
   if( z_side > H )
     return is;
   
+  double path_length = sqrt(pow(x - x_side,2) + pow(y - y_side,2) + pow(z - z_side,2));
+  double dEdx = 400.e-2;// MeV/cm, on the safe side
+  double possible_length = E/dEdx;
+  if( path_length > possible_length )
+    return is;
 
   is = true;
   //  std::cout << " is " << is << std::endl;
