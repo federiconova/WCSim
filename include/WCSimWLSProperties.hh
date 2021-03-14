@@ -55,4 +55,31 @@ class EljenEJ286 : public WCSimWLSProperties{
   void SethEm();
 };
 
+class Kuraray : public WCSimWLSProperties{
+
+ public:
+  Kuraray();
+  ~Kuraray();
+
+ public:
+  G4String  GetWLSPlateName();
+  G4int     GetNumEntries();
+  G4double* GetPhotonWL();
+  G4double* GetPhotonEnergy();
+  G4double* GetRIndex();
+
+  G4int     GetNumEntries_ABS();
+  G4double* GetPhotonEnergy_ABS();
+  G4double* GetAbs();
+
+  G4int     GetNumEntries_EM();
+  G4double* GetPhotonEnergy_EM();
+  G4double* GetEm();
+
+  void SetgAbs();
+  void SetgEm();
+
+  void SethEm();
+};
+
 #endif //WCSIM_WCSIMWLSPROPERTIES_HH
