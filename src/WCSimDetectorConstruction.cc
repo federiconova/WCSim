@@ -419,6 +419,10 @@ WCSimWLSProperties *WCSimDetectorConstruction::CreateWLSObject(G4String WLSType)
     WCSimWLSProperties* WLS = new Kuraray;
     WCSimDetectorConstruction::SetWLSPointer(WLS);
     return WLS;
+  }else if (WLSType == "Lablogic"){
+    WCSimWLSProperties* WLS = new Lablogic;
+    WCSimDetectorConstruction::SetWLSPointer(WLS);
+    return WLS;
   }
 
   else { G4cout << WLSType << " is not a recognized WLS Type. Exiting WCSim." << G4endl; exit(1);}

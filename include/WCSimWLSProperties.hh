@@ -82,4 +82,31 @@ class Kuraray : public WCSimWLSProperties{
   void SethEm();
 };
 
+class Lablogic : public WCSimWLSProperties{
+
+ public:
+  Lablogic();
+  ~Lablogic();
+
+ public:
+  G4String  GetWLSPlateName();
+  G4int     GetNumEntries();
+  G4double* GetPhotonWL();
+  G4double* GetPhotonEnergy();
+  G4double* GetRIndex();
+
+  G4int     GetNumEntries_ABS();
+  G4double* GetPhotonEnergy_ABS();
+  G4double* GetAbs();
+
+  G4int     GetNumEntries_EM();
+  G4double* GetPhotonEnergy_EM();
+  G4double* GetEm();
+
+  void SetgAbs();
+  void SetgEm();
+
+  void SethEm();
+};
+
 #endif //WCSIM_WCSIMWLSPROPERTIES_HH
