@@ -421,7 +421,7 @@ G4double* Kuraray::GetPhotonEnergy(){
 // ###################### //
 
 G4double* Kuraray::GetRIndex(){
-  G4double kuraray_rindex_vs_energy[nEntries_WLS_rindex];
+  static G4double kuraray_rindex_vs_energy[nEntries_WLS_rindex];
   for(int i=0; i<nEntries_WLS_rindex; i++)
     kuraray_rindex_vs_energy[i] = 1.49;
   return kuraray_rindex_vs_energy;

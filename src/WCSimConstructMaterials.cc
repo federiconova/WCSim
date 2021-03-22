@@ -915,7 +915,11 @@ void WCSimDetectorConstruction::ConstructMaterials()
   // OpWaterWLSSurface->SetSigmaAlpha(0.1); // TODO: What's this?
 
   // MATERIAL properties
+#if 1
   EljenEJ286 *WLSProps = new EljenEJ286();
+#else
+  Kuraray *WLSProps = new Kuraray();
+#endif
   // Define normal reflectivity from Fresnel equations
   const G4int nEntries_transmittance = 33;
   G4double WLS_transmittance_vs_energy[nEntries_transmittance] =
