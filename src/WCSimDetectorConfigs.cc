@@ -314,7 +314,7 @@ void WCSimDetectorConstruction::SetHyperKWithODGeometry()
   G4String WLSType = "EljenEJ286";
 #else
   G4String WLSType = "Kuraray";
-  G4String WLSType = "Lablogic";
+  //G4String WLSType = "Lablogic";
 #endif
   isWLSFilled = true;
   BuildCladding = true;

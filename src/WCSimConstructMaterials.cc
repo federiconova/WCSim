@@ -919,7 +919,7 @@ void WCSimDetectorConstruction::ConstructMaterials()
   EljenEJ286 *WLSProps = new EljenEJ286();
 #else
   Kuraray *WLSProps = new Kuraray();
-  Lablogic *WLSProps = new Lablogic();
+  //Lablogic *WLSProps = new Lablogic();
 #endif
   // Define normal reflectivity from Fresnel equations
   const G4int nEntries_transmittance = 33;
