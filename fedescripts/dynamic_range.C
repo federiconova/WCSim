@@ -307,19 +307,36 @@ int main(){
   h_charge.SetLineColor(kBlack);
 
   double tmax = 4000.;
+  double time_offset = 950.; // ns
   TH1F h_hit_time("h_hit_time","h_hit_time; hit time [ns]",
-		  2000,-0.5,tmax);
+		  2000,-0.5-time_offset,tmax-time_offset);
   h_hit_time.SetLineWidth(2);
   h_hit_time.SetLineColor(kBlack);
 
+  double speedlight=0.3/1.33; // m/ns
+  TH1F h_pathlength("h_pathlength","h_pathlength; path length [m]",
+		    2000,(-0.5-time_offset)*speedlight,(tmax-time_offset)*speedlight);
+  h_pathlength.SetLineWidth(2);
+  h_pathlength.SetLineColor(kBlack);
+
+  TH1F h_pathlength_top("h_pathlength_top","h_pathlength_top; path length [m]",
+		    2000,(-0.5-time_offset)*speedlight,(tmax-time_offset)*speedlight);
+  h_pathlength_top.SetLineWidth(2);
+  h_pathlength_top.SetLineColor(kBlack);
+
+  TH1F h_pathlength_side("h_pathlength_side","h_pathlength_side; path length [m]",
+		    2000,(-0.5-time_offset)*speedlight,(tmax-time_offset)*speedlight);
+  h_pathlength_side.SetLineWidth(2);
+  h_pathlength_side.SetLineColor(kBlack);
+
   double n_hits_limit = 300.;
   TH1F h_hit_time_few_nhits("h_hit_time_few_nhits",Form("nhits < %.0f; hit time [ns]",n_hits_limit),
-		  2000,-0.5,tmax);
+		  2000,-0.5-time_offset,tmax-time_offset);
   h_hit_time_few_nhits.SetLineWidth(2);
   h_hit_time_few_nhits.SetLineColor(kBlue);
 
   TH1F h_hit_time_many_nhits("h_hit_time_many_nhits",Form("nhits > %.0f; hit time [ns]",n_hits_limit),
-		  2000,-0.5,tmax);
+		  2000,-0.5-time_offset,tmax-time_offset);
   h_hit_time_many_nhits.SetLineWidth(2);
   h_hit_time_many_nhits.SetLineColor(kRed);
 
@@ -814,8 +831,13 @@ int main(){
 	total_charge += charge;
 	h_charge.Fill(charge);
 
-	hit_time = (digitized_hit_OD_time->at(itrigger)).at(idigitizedhit);
+	hit_time = (digitized_hit_OD_time->at(itrigger)).at(idigitizedhit)-time_offset;
 	h_hit_time.Fill(hit_time);
+	h_pathlength.Fill(hit_time*speedlight);
+	if( impact_top )
+	  h_pathlength_top.Fill(hit_time*speedlight);
+	if( impact_side )
+	  h_pathlength_side.Fill(hit_time*speedlight);
 
 	h_digitized_hit_OD_Q.Fill(charge);
 	if( pmt_location_OD == 5 ){
@@ -958,7 +980,7 @@ int main(){
 	  all_pmts_tree_OD->GetEntry(tube_id - 1);
 
 	  distance_pmt_impact = sqrt(pow(pmt_x_OD - impact_x,2) + pow(pmt_y_OD - impact_y,2) + pow(pmt_z_OD - impact_z,2));
-	  hit_time = (digitized_hit_OD_time->at(itrigger)).at(idigitizedhit);
+	  hit_time = (digitized_hit_OD_time->at(itrigger)).at(idigitizedhit)-time_offset;
 	  
 	  if( nhits_all_physics < n_hits_limit ){
 	    h_distance_pmt_impact_few_nhits.Fill(distance_pmt_impact);
@@ -1048,6 +1070,9 @@ int main(){
   h_hit_time.Write();
   h_hit_time_few_nhits.Write();
   h_hit_time_many_nhits.Write();
+  h_pathlength.Write();
+  h_pathlength_top.Write();
+  h_pathlength_side.Write();
   h_total_charge.Write();
   h_n_hits_vs_radius.Write();
   h_distance_pmt_impact.Write();
