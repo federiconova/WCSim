@@ -62,14 +62,25 @@ int main(){
   geom_tree->SetBranchAddress("number_of_pmts_OD",&number_of_pmts_OD);
   geom_tree->GetEntry(0);
   detector_radius = 3800.;
-  double OD_radius = 3300.;
-  double OD_height = 3400.;
+  // OD PMT side radius: 3300
+  // so water side radius: 3400                                                                                                                                      
+  // muon start max radius 3500
+  // so side muons start out of water
+  // OD PMT z max: 3350
+  // so water z max: 3550
+  // vtx z max: 3700
+  // so top muons start out of water
+  double ID_radius = 3250.;
+  double ID_height = 3300.;
+  double OD_radius = 3400.;
+  double OD_height = 3550.;
   std::clog << " detector_length " << detector_length << " detector_radius " << detector_radius << " pmt_radius " << pmt_radius << " number_of_pmts " << number_of_pmts << " number_of_pmts_OD " << number_of_pmts_OD << std::endl;
 
   double r_limit=detector_radius;
   double z_limit=detector_length/2.;
   double z_limit_with_source = 4400.;
   double r_limit_with_source = 5200.;
+  double pi = acos(-1.);
 
   // all pmts tree
   TTree * all_pmts_tree = (TTree*)f->Get("all_pmts_tree");
@@ -446,6 +457,10 @@ int main(){
   h_distance_pmt_impact_many_nhits.SetLineWidth(2);
   h_distance_pmt_impact_many_nhits.SetLineColor(kRed);
 
+  TH1F h_distance_pmt_center_of_mass("h_distance_pmt_center_of_mass","distance PMT - center of mass; distance PMT - center of mass [deg]",100,1,-1);
+  h_distance_pmt_center_of_mass.SetLineWidth(2);
+  h_distance_pmt_center_of_mass.SetLineColor(kBlack);
+
   TH3F *h_muon_start_x_y_z_impact_few_nhits = new TH3F("h_muon_start_x_y_z_impact_few_nhits",Form("when nhits < %.0f",n_hits_limit),
 						       nbins_x,-(r_limit*1.3),(r_limit*1.3),
 						       nbins_y,-(r_limit*1.3),(r_limit*1.3),
@@ -464,10 +479,16 @@ int main(){
 
   double cluster_radius_1=800.;  // cm
   double cluster_radius_2=1600.;
+  double cluster_radius_cm=45.;  // cm
   TH1F h_nhits_OD_cluster_1("h_nhits_OD_cluster_1",Form("cluster (< %.0f); n OD hits in cluster",cluster_radius_1),500,min_nhits,max_nhits);
   h_nhits_OD_cluster_1.SetLineWidth(2);
   h_nhits_OD_cluster_1.SetLineColor(kBlack);
   h_nhits_OD_cluster_1.SetFillColor(kBlack);
+
+  TH1F h_nhits_OD_cluster_1_center_of_mass("h_nhits_OD_cluster_1_center_of_mass",Form("cluster (< %.0f); n OD hits in cluster",cluster_radius_1),500,min_nhits,max_nhits);
+  h_nhits_OD_cluster_1_center_of_mass.SetLineWidth(2);
+  h_nhits_OD_cluster_1_center_of_mass.SetLineColor(kBlack);
+  h_nhits_OD_cluster_1_center_of_mass.SetFillColor(kBlack);
 
   double min_npes=0;
   double max_npes=4000;
@@ -502,6 +523,78 @@ int main(){
   h_muon_start_x_y_z_impact->SetFillColor(kBlack);
   h_muon_start_x_y_z_impact->SetMarkerColor(kBlue);
   h_muon_start_x_y_z_impact->SetMarkerStyle(2);
+
+  TH1F *h_muon_theta_impact = new TH1F("h_muon_theta_impact","h_muon_theta_impact",nbins_x,0.,180.);
+  h_muon_theta_impact->SetLineColor(kBlack);
+  h_muon_theta_impact->SetLineWidth(2);
+
+  TH1F *h_muon_phi_impact = new TH1F("h_muon_phi_impact","h_muon_phi_impact",nbins_x,-180.,180.);
+  h_muon_phi_impact->SetLineColor(kBlack);
+  h_muon_phi_impact->SetLineWidth(2);
+
+  TH1F *h_muon_theta_vertex = new TH1F("h_muon_theta_vertex","MC vertex; #theta [deg]",nbins_x,0.,180.);
+  h_muon_theta_vertex->SetLineColor(kBlue);
+  h_muon_theta_vertex->SetLineWidth(2);
+
+  TH1F *h_muon_phi_vertex = new TH1F("h_muon_phi_vertex","MC vertex;#phi [deg]",nbins_x,-180.,180.);
+  h_muon_phi_vertex->SetLineColor(kBlue);
+  h_muon_phi_vertex->SetLineWidth(2);
+
+  TH1F *h_muon_center_of_mass_theta = new TH1F("h_muon_center_of_mass_theta","hits center of mass; #theta",nbins_x,0.,180.);
+  h_muon_center_of_mass_theta->SetLineColor(kBlack);
+  h_muon_center_of_mass_theta->SetLineWidth(2);
+
+  TH1F *h_muon_center_of_mass_phi = new TH1F("h_muon_center_of_mass_phi","hits center of mass; #phi",nbins_x,-180.,180.);
+  h_muon_center_of_mass_phi->SetLineColor(kBlack);
+  h_muon_center_of_mass_phi->SetLineWidth(2);
+
+  TH1F *h_muon_center_of_mass_theta_impact_residual = new TH1F("h_muon_center_of_mass_theta_impact_residual","h_muon_center_of_mass_theta_impact_residual",nbins_x,-180.,180.);
+  h_muon_center_of_mass_theta_impact_residual->SetLineColor(kBlack);
+  h_muon_center_of_mass_theta_impact_residual->SetLineWidth(2);
+
+  TH1F *h_muon_center_of_mass_phi_impact_residual = new TH1F("h_muon_center_of_mass_phi_impact_residual","h_muon_center_of_mass_phi_impact_residual",nbins_x,-180.,180.);
+  h_muon_center_of_mass_phi_impact_residual->SetLineColor(kBlack);
+  h_muon_center_of_mass_phi_impact_residual->SetLineWidth(2);
+
+  TH2F *h_muon_theta_impact_scatter = new TH2F("h_muon_theta_impact_scatter","h_muon_theta_impact_scatter;MC;center of mass",nbins_x,0.,180.,nbins_x,0.,180.);
+  h_muon_theta_impact_scatter->SetLineColor(kBlack);
+  h_muon_theta_impact_scatter->SetLineWidth(2);
+
+  TH2F *h_muon_phi_impact_scatter = new TH2F("h_muon_phi_impact_scatter","h_muon_phi_impact_scatter;MC;center of mass",nbins_x,-180.,180.,nbins_x,-180.,180.);
+  h_muon_phi_impact_scatter->SetLineColor(kBlack);
+  h_muon_phi_impact_scatter->SetLineWidth(2);
+
+  TH1F *h_muon_center_of_mass_vertex_theta_residual = new TH1F("h_muon_center_of_mass_vertex_theta_residual","#theta (cm - vertex)",nbins_x,-180.,180.);
+  h_muon_center_of_mass_vertex_theta_residual->SetLineColor(kRed);
+  h_muon_center_of_mass_vertex_theta_residual->SetLineWidth(2);
+
+  TH1F *h_muon_center_of_mass_vertex_theta_residual_few_nhits = new TH1F("h_muon_center_of_mass_vertex_theta_residual_few_nhits","#theta (cm - vertex)",nbins_x,-180.,180.);
+  h_muon_center_of_mass_vertex_theta_residual_few_nhits->SetLineColor(kRed);
+  h_muon_center_of_mass_vertex_theta_residual_few_nhits->SetLineWidth(2);
+
+  TH1F *h_muon_center_of_mass_vertex_theta_residual_many_nhits = new TH1F("h_muon_center_of_mass_vertex_theta_residual_many_nhits","#theta (cm - vertex)",nbins_x,-180.,180.);
+  h_muon_center_of_mass_vertex_theta_residual_many_nhits->SetLineColor(kRed);
+  h_muon_center_of_mass_vertex_theta_residual_many_nhits->SetLineWidth(2);
+
+  TH1F *h_muon_center_of_mass_vertex_phi_residual = new TH1F("h_muon_center_of_mass_vertex_phi_residual","#phi (cm - vertex)",nbins_x,-180.,180.);
+  h_muon_center_of_mass_vertex_phi_residual->SetLineColor(kBlack);
+  h_muon_center_of_mass_vertex_phi_residual->SetLineWidth(2);
+
+  TH2F *h_muon_center_of_mass_vertex_theta_scatter = new TH2F("h_muon_center_of_mass_vertex_theta_scatter","h_muon_center_of_mass_vertex_theta_scatter;MC;center of mass",nbins_x,0.,180.,nbins_x,0.,180.);
+  h_muon_center_of_mass_vertex_theta_scatter->SetLineColor(kBlack);
+  h_muon_center_of_mass_vertex_theta_scatter->SetLineWidth(2);
+
+  TH2F *h_muon_center_of_mass_vertex_phi_scatter = new TH2F("h_muon_center_of_mass_vertex_phi_scatter","h_muon_center_of_mass_vertex_phi_scatter;MC;center of mass",nbins_x,-180.,180.,nbins_x,-180.,180.);
+  h_muon_center_of_mass_vertex_phi_scatter->SetLineColor(kBlack);
+  h_muon_center_of_mass_vertex_phi_scatter->SetLineWidth(2);
+
+  TH2F *h_muon_center_of_mass_vertex_theta_scatter_few_nhits = new TH2F("h_muon_center_of_mass_vertex_theta_scatter_few_nhits","h_muon_center_of_mass_vertex_theta_scatter_few_nhits;MC;center of mass",nbins_x,0.,180.,nbins_x,0.,180.);
+  h_muon_center_of_mass_vertex_theta_scatter_few_nhits->SetLineColor(kBlack);
+  h_muon_center_of_mass_vertex_theta_scatter_few_nhits->SetLineWidth(2);
+
+  TH2F *h_muon_center_of_mass_vertex_theta_scatter_many_nhits = new TH2F("h_muon_center_of_mass_vertex_theta_scatter_many_nhits","h_muon_center_of_mass_vertex_theta_scatter_many_nhits;MC;center of mass",nbins_x,0.,180.,nbins_x,0.,180.);
+  h_muon_center_of_mass_vertex_theta_scatter_many_nhits->SetLineColor(kBlack);
+  h_muon_center_of_mass_vertex_theta_scatter_many_nhits->SetLineWidth(2);
 
   TH3F *h_muon_start_x_y_z_impact_top = new TH3F("h_muon_start_x_y_z_impact_top","h_muon_start_x_y_z_impact_top",
 				       		 nbins_x,-(r_limit*1.3),(r_limit*1.3),
@@ -676,10 +769,12 @@ int main(){
   double hit_time;
   int modulo = 100;
   double distance_pmt_impact;
+  double distance_pmt_cm;
   double nhits_OD_cluster_1;
   double npes_OD_cluster_1;
   double nhits_OD_cluster_2;
   double npes_OD_cluster_2;
+  double nhits_OD_cluster_1_center_of_mass;
   double muon_energy;
   int muon_pdg_id = 13;
 
@@ -697,10 +792,18 @@ int main(){
       bool impact_bottom = false;
       bool impact_side = false;
       bool impact = false;
+      bool OD_impact_top = false;
+      bool OD_impact_bottom = false;
+      bool OD_impact_side = false;
+      bool OD_impact = false;
       double impact_top_time,  impact_top_x,  impact_top_y,  impact_top_z;
       double impact_bottom_time,  impact_bottom_x,  impact_bottom_y,  impact_bottom_z;
       double impact_side_time,  impact_side_x,  impact_side_y,  impact_side_z;
       double impact_time,  impact_x,  impact_y,  impact_z;
+      double OD_impact_top_time,  OD_impact_top_x,  OD_impact_top_y,  OD_impact_top_z;
+      double OD_impact_bottom_time,  OD_impact_bottom_x,  OD_impact_bottom_y,  OD_impact_bottom_z;
+      double OD_impact_side_time,  OD_impact_side_x,  OD_impact_side_y,  OD_impact_side_z;
+      double OD_impact_time,  OD_impact_x,  OD_impact_y,  OD_impact_z;
 
       for(int itrack=0; itrack<trigger_ntrack->at(itrigger); itrack++){
 	// loop on tracks in the event
@@ -733,16 +836,16 @@ int main(){
 
 	  impact_top = is_impact_horizontal_plane(track_start_x->at(itrigger).at(itrack),track_start_y->at(itrigger).at(itrack),track_start_z->at(itrigger).at(itrack),
 						  track_ux->at(itrigger).at(itrack),track_uy->at(itrigger).at(itrack),track_uz->at(itrigger).at(itrack),
-						  OD_radius, OD_height, muon_energy,
+						  ID_radius, ID_height, muon_energy,
 						     & impact_top_time, & impact_top_x, & impact_top_y, & impact_top_z);
 	  impact_bottom = is_impact_horizontal_plane(track_start_x->at(itrigger).at(itrack),track_start_y->at(itrigger).at(itrack),track_start_z->at(itrigger).at(itrack),
 						  track_ux->at(itrigger).at(itrack),track_uy->at(itrigger).at(itrack),track_uz->at(itrigger).at(itrack),
-						     OD_radius, -OD_height, muon_energy,
+						     ID_radius, -ID_height, muon_energy,
 						     & impact_bottom_time, & impact_bottom_x, & impact_bottom_y, & impact_bottom_z);
 	  if( ! impact_top ) // muons always move down, so if they go through the top the impact point is there (even if later they cross the side)
 	    impact_side = is_impact_side(track_start_x->at(itrigger).at(itrack),track_start_y->at(itrigger).at(itrack),track_start_z->at(itrigger).at(itrack),
 					 track_ux->at(itrigger).at(itrack),track_uy->at(itrigger).at(itrack),track_uz->at(itrigger).at(itrack),
-					 OD_radius, OD_height, muon_energy,
+					 ID_radius, ID_height, muon_energy,
 					 & impact_side_time, & impact_side_x, & impact_side_y, & impact_side_z);
 
 	  if( impact_top && impact_bottom ) impact_bottom = false;
@@ -752,6 +855,29 @@ int main(){
 	    else impact_bottom = false;
 	  }
 	  if( impact_top || impact_side || impact_bottom ) impact = true;
+
+
+	  OD_impact_top = is_impact_horizontal_plane(track_start_x->at(itrigger).at(itrack),track_start_y->at(itrigger).at(itrack),track_start_z->at(itrigger).at(itrack),
+						  track_ux->at(itrigger).at(itrack),track_uy->at(itrigger).at(itrack),track_uz->at(itrigger).at(itrack),
+						  OD_radius, OD_height, muon_energy,
+						     & OD_impact_top_time, & OD_impact_top_x, & OD_impact_top_y, & OD_impact_top_z);
+	  OD_impact_bottom = is_impact_horizontal_plane(track_start_x->at(itrigger).at(itrack),track_start_y->at(itrigger).at(itrack),track_start_z->at(itrigger).at(itrack),
+						  track_ux->at(itrigger).at(itrack),track_uy->at(itrigger).at(itrack),track_uz->at(itrigger).at(itrack),
+						     OD_radius, -OD_height, muon_energy,
+						     & OD_impact_bottom_time, & OD_impact_bottom_x, & OD_impact_bottom_y, & OD_impact_bottom_z);
+	  if( ! OD_impact_top ) // muons always move down, so if they go through the top the impact point is there (even if later they cross the side)
+	    OD_impact_side = is_impact_side(track_start_x->at(itrigger).at(itrack),track_start_y->at(itrigger).at(itrack),track_start_z->at(itrigger).at(itrack),
+					 track_ux->at(itrigger).at(itrack),track_uy->at(itrigger).at(itrack),track_uz->at(itrigger).at(itrack),
+					 OD_radius, OD_height, muon_energy,
+					 & OD_impact_side_time, & OD_impact_side_x, & OD_impact_side_y, & OD_impact_side_z);
+
+	  if( OD_impact_top && OD_impact_bottom ) OD_impact_bottom = false;
+	  if( OD_impact_top && OD_impact_side ) OD_impact_side = false;
+	  if( OD_impact_side && OD_impact_bottom ){
+	    if( OD_impact_bottom_time < OD_impact_side_time ) OD_impact_side = false;
+	    else OD_impact_bottom = false;
+	  }
+	  if( OD_impact_top || OD_impact_side || OD_impact_bottom ) OD_impact = true;
 
 	  if( impact ){
 	    h_muon_start_x_y_z_impact->Fill(track_start_x->at(itrigger).at(itrack),track_start_y->at(itrigger).at(itrack),track_start_z->at(itrigger).at(itrack));
@@ -780,13 +906,15 @@ int main(){
 	    h_muon_impact_x_y_z->Fill(impact_x, impact_y, impact_z);
 	    h_muon_impact_vs_start_x->Fill(track_start_x->at(itrigger).at(itrack),impact_x);
 	    h_muon_impact_vs_start_y->Fill(track_start_y->at(itrigger).at(itrack),impact_y);
-	    h_muon_impact_vs_start_z->Fill(track_start_z->at(itrigger).at(itrack),impact_z);
+	    h_muon_impact_vs_start_z->Fill(impact_z,impact_z);
 
+	    h_muon_phi_impact->Fill(180./pi*atan2(impact_y,impact_x));
+	    h_muon_theta_impact->Fill(180./pi*atan2(sqrt(pow(impact_x,2) + pow(impact_y,2)),impact_z));
 
 	  }
 	}
       }
-
+    
       for(int ivertex=0; ivertex<trigger_nvertex->at(itrigger); ivertex++){
 	// loop on vertices in the event
 
@@ -803,9 +931,8 @@ int main(){
 	vtx_radius = sqrt(vtx_radius);
 	h_n_hits_vs_radius.Fill(vtx_radius, trigger_number_digitized_hits_OD->at(itrigger));
 
-
       }
-
+    
       int nhits_top = 0;
       int nhits_bottom = 0;
       int nhits_side = 0;
@@ -819,6 +946,11 @@ int main(){
       npes_OD_cluster_1 = 0;
       nhits_OD_cluster_2 = 0;
       npes_OD_cluster_2 = 0;
+      nhits_OD_cluster_1_center_of_mass = 0;
+
+      double cm_x = 0.;
+      double cm_y = 0.;
+      double cm_z = 0.;
 
 
       for(size_t idigitizedhit=0; idigitizedhit<(digitized_hit_OD_tube_id->at(itrigger)).size(); idigitizedhit++){
@@ -834,6 +966,11 @@ int main(){
 	hit_time = (digitized_hit_OD_time->at(itrigger)).at(idigitizedhit)-time_offset;
 	h_hit_time.Fill(hit_time);
 	h_pathlength.Fill(hit_time*speedlight);
+
+	cm_x += pmt_x_OD;
+	cm_y += pmt_y_OD;
+	cm_z += pmt_z_OD;
+
 	if( impact_top )
 	  h_pathlength_top.Fill(hit_time*speedlight);
 	if( impact_side )
@@ -910,6 +1047,27 @@ int main(){
       h_npes_vs_digitized_nhits.Fill(nhits_all, total_charge);
       h_nhits_vs_muon_energy.Fill(muon_energy,nhits_all);
 
+      double phi_vertex = atan2(vtx_y,vtx_x);
+      double theta_vertex = atan2(sqrt(pow(vtx_x,2) + pow(vtx_y,2)),vtx_z);
+      double phi_cm = atan2(cm_y,cm_x);
+      double theta_cm = atan2(sqrt(pow(cm_x,2) + pow(cm_y,2)),cm_z);
+      if( OD_impact ){
+
+
+	h_muon_phi_vertex->Fill(180./pi*phi_vertex);
+	h_muon_theta_vertex->Fill(180./pi*theta_vertex);
+
+	h_muon_center_of_mass_phi->Fill(180./pi*phi_cm);
+	h_muon_center_of_mass_theta->Fill(180./pi*theta_cm);
+      
+	h_muon_center_of_mass_vertex_phi_residual->Fill(180./pi*(phi_cm - phi_vertex));
+	h_muon_center_of_mass_vertex_theta_residual->Fill(180./pi*(theta_cm - theta_vertex));
+      
+	h_muon_center_of_mass_vertex_phi_scatter->Fill(180./pi*phi_vertex,180./pi*phi_cm);
+	h_muon_center_of_mass_vertex_theta_scatter->Fill(180./pi*theta_vertex,180./pi*theta_cm);
+
+      }
+
       if( impact ){
 	h_digitized_nhits_top_physics_tubes.Fill(nhits_top_physics);
 	h_digitized_nhits_side_physics_tubes.Fill(nhits_side_physics);
@@ -924,6 +1082,20 @@ int main(){
 	  h_digitized_nhits_physics_tubes_impact_many_nhits.Fill(nhits_all_physics);
 	}
 
+	h_muon_center_of_mass_phi_impact_residual->Fill(180./pi*(phi_cm - atan2(impact_y,impact_x)));
+	h_muon_center_of_mass_theta_impact_residual->Fill(180./pi*(theta_cm - atan2(sqrt(pow(impact_x,2) + pow(impact_y,2)),impact_z)));
+
+	h_muon_phi_impact_scatter->Fill(180./pi*atan2(impact_y,impact_x),180./pi*phi_cm);
+	h_muon_theta_impact_scatter->Fill(180./pi*atan2(sqrt(pow(impact_x,2) + pow(impact_y,2)),impact_z),180./pi*theta_cm);
+
+	if( nhits_all_physics < n_hits_limit ){
+	  h_muon_center_of_mass_vertex_theta_scatter_few_nhits->Fill(180./pi*theta_vertex,180./pi*theta_cm);
+	  h_muon_center_of_mass_vertex_theta_residual_few_nhits->Fill(180./pi*(theta_cm - theta_vertex));
+	}
+	else{
+	  h_muon_center_of_mass_vertex_theta_scatter_many_nhits->Fill(180./pi*theta_vertex,180./pi*theta_cm);
+	  h_muon_center_of_mass_vertex_theta_residual_many_nhits->Fill(180./pi*(theta_cm - theta_vertex));
+	}
 	if( nhits_OD_cluster_1 == 0 ){
 	  std::cout << " event " << ievent << " of " << primary_events_tree->GetEntries() << std::endl;
 	  std::cout << " impact " << impact << " impact_top " << impact_top << " impact_side " << impact_side << " impact_bottom " << impact_bottom << std::endl;
@@ -972,7 +1144,6 @@ int main(){
 	  }
 	}
 
-	// qqq
 	for(size_t idigitizedhit=0; idigitizedhit<(digitized_hit_OD_tube_id->at(itrigger)).size(); idigitizedhit++){
 	  // loop on digitized hits in the trigger
 	  
@@ -991,8 +1162,25 @@ int main(){
 	    h_hit_time_many_nhits.Fill(hit_time);
 	  }
 	}
-      // qqq
       }
+      if( OD_impact ){
+	for(size_t idigitizedhit=0; idigitizedhit<(digitized_hit_OD_tube_id->at(itrigger)).size(); idigitizedhit++){
+	  // loop on digitized hits in the trigger
+	  
+	  tube_id = (digitized_hit_OD_tube_id->at(itrigger)).at(idigitizedhit);
+	  all_pmts_tree_OD->GetEntry(tube_id - 1);
+
+	  double phi_PMT = atan2(pmt_y_OD,pmt_x_OD);
+	  double theta_PMT = atan2(sqrt(pow(pmt_x_OD,2) + pow(pmt_y_OD,2)),pmt_z_OD);
+	  distance_pmt_cm = sin(theta_PMT)*sin(theta_cm)*cos(phi_PMT-phi_cm) + cos(theta_PMT)*cos(theta_cm);
+	  h_distance_pmt_center_of_mass.Fill(180./pi*acos(distance_pmt_cm));
+	  if( distance_pmt_cm <= cluster_radius_cm ){
+	    nhits_OD_cluster_1_center_of_mass ++;
+	  }
+	}
+	h_nhits_OD_cluster_1_center_of_mass.Fill(nhits_OD_cluster_1_center_of_mass);
+      }
+
 
     }
   }
@@ -1053,6 +1241,17 @@ int main(){
   }
 
 
+  TH1F h_nhits_cluster_1_center_of_mass_efficiency("h_nhits_cluster_1_center_of_mass_efficiency",Form("cluster (< %.0f); threshold [nhits]; efficiency",cluster_radius_1),h_nhits_OD_cluster_1_center_of_mass.GetNbinsX(),h_nhits_OD_cluster_1_center_of_mass.GetXaxis()->GetXmin(),h_nhits_OD_cluster_1_center_of_mass.GetXaxis()->GetXmax());
+  h_nhits_cluster_1_center_of_mass_efficiency.SetLineColor(h_nhits_OD_cluster_1_center_of_mass.GetLineColor());
+  h_nhits_cluster_1_center_of_mass_efficiency.SetLineWidth(2);
+  double nhits_integral_center_of_mass = h_nhits_OD_cluster_1_center_of_mass.Integral();
+  for(int i=1; i<=h_nhits_OD_cluster_1_center_of_mass.GetNbinsX(); i++){
+    double local_integral = h_nhits_OD_cluster_1_center_of_mass.Integral(i,h_nhits_OD_cluster_1_center_of_mass.GetNbinsX());
+    double nhits_ratio = local_integral/nhits_integral_center_of_mass;
+    h_nhits_cluster_1_center_of_mass_efficiency.SetBinContent(i,nhits_ratio);
+  }
+
+
   of->cd();
   PMT_x_y_z.Write();
   PMT_OD_x_y_z.Write();
@@ -1078,10 +1277,12 @@ int main(){
   h_distance_pmt_impact.Write();
   h_distance_pmt_impact_few_nhits.Write();
   h_distance_pmt_impact_many_nhits.Write();
+  h_distance_pmt_center_of_mass.Write();
   h_nhits_OD_cluster_1.Write();
   h_npes_OD_cluster_1.Write();
   h_nhits_OD_cluster_2.Write();
   h_npes_OD_cluster_2.Write();
+  h_nhits_OD_cluster_1_center_of_mass.Write();
   h_digitized_n_photons_ids.Write();
   h_digitized_photons_id0.Write();
   h_digitized_nhits_top_tubes.Write();
@@ -1111,6 +1312,24 @@ int main(){
   h_muon_start_z_impact_few_nhits->Write();
   h_muon_start_z_impact_many_nhits->Write();
   h_muon_start_x_y_z_impact->Write();
+  h_muon_phi_vertex->Write();
+  h_muon_theta_vertex->Write();
+  h_muon_phi_impact->Write();
+  h_muon_theta_impact->Write();
+  h_muon_center_of_mass_phi->Write();
+  h_muon_center_of_mass_theta->Write();
+  h_muon_center_of_mass_phi_impact_residual->Write();
+  h_muon_center_of_mass_theta_impact_residual->Write();
+  h_muon_phi_impact_scatter->Write();
+  h_muon_theta_impact_scatter->Write();
+  h_muon_center_of_mass_vertex_phi_residual->Write();
+  h_muon_center_of_mass_vertex_theta_residual->Write();
+  h_muon_center_of_mass_vertex_theta_residual_few_nhits->Write();
+  h_muon_center_of_mass_vertex_theta_residual_many_nhits->Write();
+  h_muon_center_of_mass_vertex_phi_scatter->Write();
+  h_muon_center_of_mass_vertex_theta_scatter->Write();
+  h_muon_center_of_mass_vertex_theta_scatter_few_nhits->Write();
+  h_muon_center_of_mass_vertex_theta_scatter_many_nhits->Write();
   h_muon_start_x_y_z_impact_top->Write();
   h_muon_start_x_y_z_impact_side->Write();
   h_muon_start_x_y_z_impact_bottom->Write();
@@ -1143,6 +1362,7 @@ int main(){
   h_nhits_cluster_2_efficiency.Write();
   h_npes_cluster_1_efficiency.Write();
   h_npes_cluster_2_efficiency.Write();
+  h_nhits_cluster_1_center_of_mass_efficiency.Write();
 
 
   delete trigger_number ; delete  trigger_date ; delete  trigger_mode ; delete  trigger_vtxvol ; delete  trigger_vec_rec_number ; delete  trigger_jmu ; delete  trigger_jp ; delete  trigger_npar ; delete  trigger_ntrack ; delete  trigger_number_raw_hits ; delete  trigger_number_digitized_hits ; delete  trigger_number_raw_hits_OD ; delete  trigger_number_digitized_hits_OD ; delete  trigger_number_times ;
