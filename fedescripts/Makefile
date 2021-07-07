@@ -37,13 +37,17 @@ PLOTTREES    = plot_tree.$(SrcSuf)
 DYNAMICRANGEO    = dynamic_range.$(ObjSuf)
 DYNAMICRANGES    = dynamic_range.$(SrcSuf)
 
+MASKINGO    = masking.$(ObjSuf)
+MASKINGS    = masking.$(SrcSuf)
+
 EXECUTABLECREATETREE         = create_tree$(ExeSuf)
 EXECUTABLEPLOTTREE         = plot_tree$(ExeSuf)
 EXECUTABLEDYNAMICRANGE         = dynamic_range$(ExeSuf)
+EXECUTABLEMASKING         = masking$(ExeSuf)
 
-OBJS          = $(EVENTO) $(CREATETREEO) $(PLOTTREEO) $(DYNAMICRANGEO) 
+OBJS          = $(EVENTO) $(CREATETREEO) $(PLOTTREEO) $(DYNAMICRANGEO)  $(MASKINGO) 
 
-PROGRAMS      = $(EXECUTABLECREATETREE) $(EXECUTABLEPLOTTREE) $(EXECUTABLEDYNAMICRANGE) 
+PROGRAMS      = $(EXECUTABLECREATETREE) $(EXECUTABLEPLOTTREE) $(EXECUTABLEDYNAMICRANGE)  $(EXECUTABLEMASKING) 
 
 ifeq ($(ARCH),aix5)
 MAKESHARED    = /usr/vacpp/bin/makeC++SharedLib
@@ -94,11 +98,16 @@ $(EXECUTABLEDYNAMICRANGE):       $(DYNAMICRANGEO)
 		@echo "$@ done"
 
 
+$(EXECUTABLEMASKING):       $(MASKINGO)
+		$(LD) $(LDFLAGS) $(MASKINGO) $(LIBS) $(OutPutOpt)$@
+		@echo "$@ done"
+
+
 clean:
-		@rm -f $(EXECUTABLECREATETREE) $(EXECUTABLEPLOTTREE) $(EXECUTABLEDYNAMICRANGE) $(PROGRAMS)  $(OBJS) core *Dict.*
+		@rm -f $(EXECUTABLECREATETREE) $(EXECUTABLEPLOTTREE) $(EXECUTABLEDYNAMICRANGE) $(EXECUTABLEMASKING) $(PROGRAMS)  $(OBJS) core *Dict.*
 
 distclean:      clean
-		@rm -f $(EXECUTABLECREATETREE) $(EXECUTABLEPLOTTREE) $(EXECUTABLEDYNAMICRANGE) $(PROGRAMS) $(EVENTSO) $(EVENTLIB) *Dict.* *.def *.exp \
+		@rm -f $(EXECUTABLECREATETREE) $(EXECUTABLEPLOTTREE) $(EXECUTABLEDYNAMICRANGE) $(EXECUTABLEMASKING) $(PROGRAMS) $(EVENTSO) $(EVENTLIB) *Dict.* *.def *.exp \
 		   *.root *.ps *.so *.lib *.dll *.d *.log .def \
 		   *.pcm
 
@@ -110,6 +119,7 @@ Event.$(ObjSuf): Event.h
 create_tree.$(ObjSuf): Event.h
 plot_tree.$(ObjSuf): Event.h
 dynamic_range.$(ObjSuf): Event.h
+masking.$(ObjSuf): Event.h
 
 EventDict.$(SrcSuf): Event.h EventLinkDef.h
 	@echo "Generating dictionary $@..."
