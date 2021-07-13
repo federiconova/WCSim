@@ -361,9 +361,14 @@ int main(){
   h_pathlength_side.SetLineColor(kBlack);
 
   TH1F h_muon_topology_true("h_muon_topology_true","muon topology true",
-			    n_muon_topologies, 0, n_muon_topologies-1);
+			    n_muon_topologies, -0.5, n_muon_topologies-0.5);
   h_muon_topology_true.SetLineWidth(2);
   h_muon_topology_true.SetLineColor(kBlue);
+
+  TH1F h_muon_n_intersections_OD_true("h_muon_n_intersections_OD_true","muon n intersections OD true",
+				      10,-0.5,9.5);
+  h_muon_n_intersections_OD_true.SetLineWidth(2);
+  h_muon_n_intersections_OD_true.SetLineColor(kBlue);
 
   double n_hits_limit = 300.;
   TH1F h_hit_time_few_nhits("h_hit_time_few_nhits",Form("nhits < %.0f; hit time [ns]",n_hits_limit),
@@ -906,6 +911,7 @@ int main(){
 	  if( n_intersections_OD == 0  && is_muon_crossing_ID ) muon_topology_true = 4;
 
 	  h_muon_topology_true.Fill(muon_topology_true);
+	  h_muon_n_intersections_OD_true.Fill(n_intersections_OD);
 
 	  impact_top = is_impact_horizontal_plane(track_start_x->at(itrigger).at(itrack),track_start_y->at(itrigger).at(itrack),track_start_z->at(itrigger).at(itrack),
 						  track_ux->at(itrigger).at(itrack),track_uy->at(itrigger).at(itrack),track_uz->at(itrigger).at(itrack),
@@ -1359,6 +1365,7 @@ int main(){
   PMT_OD_x_y.Write();
   PMT_OD_z.Write();
   h_muon_topology_true.Write();
+  h_muon_n_intersections_OD_true.Write();
   h_digitized_hit_OD_Q.Write();
   h_digitized_hit_OD_Q_top_tubes.Write();
   h_digitized_hit_OD_Q_side_tubes.Write();
@@ -1696,10 +1703,22 @@ bool is_impact_side(double x, double y, double z,
 bool is_crossing_horizontal_plane(double x0, double y0, double z0,
 				  double x1, double y1, double z1,
 				  double R, double zplane){
+  bool upwards_track = true;
+  if( z1 > z0 ){
+    // weird: the track is going up instead of down; it's not a cosmic muon?
+    upwards_track = false;
+  }
+
+
 
   // make sure muon starts above zplane and stops below zplane
-  if( zplane > z0 ) return false;
-  if( zplane < z1 ) return false;
+  if( upwards_track ){
+    if( zplane > z0 ) return false;
+    if( zplane < z1 ) return false;
+  }else{
+    if( zplane > z1 ) return false;
+    if( zplane < z0 ) return false;
+  }
 
   //  x(z)  =  x0 + [(x1 - x0)/(z1 - z0)]*(z - z0)
   //  y(z)  =  y0 + [(y1 - y0)/(z1 - z0)]*(z - z0)
@@ -1724,28 +1743,28 @@ void is_crossing_cylindrical_shell_side(double x0, double y0, double z0,
   * n_intersections_out = 0;
   * crosses_in = false;
 
-  // make sure muon is not all above cylinder
-  if( ztop < z1 ) return;
+  double zhigh = z0;
+  double zlow = z1;
 
+  if( z1 > z0 ){
+    // weird: the track is going up instead of down; it's not a cosmic muon?
+    zhigh = z1;
+    zlow = z0;
+  }
+
+  // make sure muon is not all above cylinder
+  if( ztop < zlow ) return;
   // make sure muon is not all below cylinder
-  if( zbottom > z0 ) return;
+  if( zbottom > zhigh ) return;
 
   double dx = x1 - x0;
   double dy = y1 - y0;
   double dr = sqrt(pow(dx,2) + pow(dy, 2));
   double D = x0*y1 - x1*y0;
-  double discriminant = pow(Rout*dr,2) - pow(D,2);
 
+  double discriminant = pow(Rout*dr,2) - pow(D,2);
   // no intersection or tangency between muon and outer circle
   if( discriminant <= 0 ) return;
-
-  bool crosses_inner_circle = false;
-
-  double discriminant_in = pow(Rin*dr,2) - pow(D,2);
-  // intersection or tangency between muon and inner circle
-  if( discriminant_in > 0 ) crosses_inner_circle = true;
-
-  bool crosses_outer_circle = false;
 
   int n_intersections = 0;
 
@@ -1755,8 +1774,8 @@ void is_crossing_cylindrical_shell_side(double x0, double y0, double z0,
   if( 
      zc1 < ztop 
      && zc1 > zbottom 
-     && zc1 < z0 
-     && zc1 > z1 ){
+     && zc1 < zhigh 
+     && zc1 > zlow ){
     n_intersections ++;
   }
 
@@ -1766,10 +1785,35 @@ void is_crossing_cylindrical_shell_side(double x0, double y0, double z0,
   if( 
      zc2 < ztop 
      && zc2 > zbottom 
-     && zc2 < z0 
-     && zc2 > z1 ){
+     && zc2 < zhigh 
+     && zc2 > zlow ){
     n_intersections ++;
   }
+
+  bool crosses_inner_circle = false;
+  double discriminant_in = pow(Rin*dr,2) - pow(D,2);
+  // intersection or tangency between muon and inner circle
+  if( discriminant_in > 0 ){
+    double xc1_in = (D*dy + (dy/fabs(dy))*dx*sqrt(discriminant_in))/pow(dr,2);
+    double zc1_in = z0 + (z1 - z0)/(x1 - x0)*(xc1_in - x0);
+    if( 
+       zc1_in < ztop 
+       && zc1_in > zbottom 
+       && zc1_in < zhigh 
+       && zc1_in > zlow ){
+      crosses_inner_circle = true;
+    }
+    double xc2_in = (D*dy - (dy/fabs(dy))*dx*sqrt(discriminant_in))/pow(dr,2);
+    double zc2_in = z0 + (z1 - z0)/(x1 - x0)*(xc2_in - x0);
+    if( 
+       zc2_in < ztop 
+       && zc2_in > zbottom 
+       && zc2_in < zhigh 
+       && zc2_in > zlow ){
+      crosses_inner_circle = true;
+    }
+  }
+
 
   *n_intersections_out = n_intersections;
 
