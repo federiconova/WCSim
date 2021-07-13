@@ -57,6 +57,7 @@ int main(){
   int itrigger = 0;
 
   const int n_muon_topologies = 6;
+  std::string topology_name[n_muon_topologies]={"OD ID OD","OD ID","OD OD","OD","ID",""};
   int muon_topology_true; 
   int muon_topology_reco; 
   // -1 -> muon misses tank
@@ -494,7 +495,7 @@ int main(){
 
   TH1F * h_distance_pmt_center_of_mass_by_topology[n_muon_topologies];
   for(int i=0; i<n_muon_topologies; i++){
-    h_distance_pmt_center_of_mass_by_topology[i] = new TH1F(Form("h_distance_pmt_center_of_mass_topology_%d",i),Form("topology %d; distance PMT - center of mass [deg]",i),100,1,-1);
+    h_distance_pmt_center_of_mass_by_topology[i] = new TH1F(Form("h_distance_pmt_center_of_mass_topology_%d",i),Form("%s; distance PMT - center of mass [deg]",topology_name[i].c_str()),100,1,-1);
     h_distance_pmt_center_of_mass_by_topology[i]->SetLineWidth(2);
     h_distance_pmt_center_of_mass_by_topology[i]->SetLineColor(i+1);
   }
@@ -542,10 +543,10 @@ int main(){
 
   TH1F * h_nhits_OD_cluster_1_center_of_mass_by_topology[n_muon_topologies];
   for(int i=0; i<n_muon_topologies; i++){
-    h_nhits_OD_cluster_1_center_of_mass_by_topology[i] = new TH1F(Form("h_nhits_OD_cluster_1_center_of_mass_topology_%d",i),Form("cluster (< %.0f) topology %d; n OD hits in cluster",cluster_radius_cm, i),500,min_nhits,max_nhits);
+    h_nhits_OD_cluster_1_center_of_mass_by_topology[i] = new TH1F(Form("h_nhits_OD_cluster_1_center_of_mass_topology_%d",i),Form("cluster (< %.0f) %s; n OD hits in cluster",cluster_radius_cm, topology_name[i].c_str()),500,min_nhits,max_nhits);
     h_nhits_OD_cluster_1_center_of_mass_by_topology[i]->SetLineWidth(2);
     h_nhits_OD_cluster_1_center_of_mass_by_topology[i]->SetLineColor(i+1);
-    h_nhits_OD_cluster_1_center_of_mass_by_topology[i]->SetFillColor(i+1);
+    //    h_nhits_OD_cluster_1_center_of_mass_by_topology[i]->SetFillColor(i+1);
   }
 
   double min_npes=0;
@@ -1400,7 +1401,7 @@ int main(){
 
   TH1F * h_nhits_cluster_1_center_of_mass_by_topology_efficiency[n_muon_topologies];
   for(int j=0; j<n_muon_topologies; j++){
-    h_nhits_cluster_1_center_of_mass_by_topology_efficiency[j] = new TH1F(Form("h_nhits_cluster_1_center_of_mass_topology_%d_efficiency",j),Form("cluster (< %.0f) topology %d; threshold [nhits]; efficiency",cluster_radius_cm,j),h_nhits_OD_cluster_1_center_of_mass_by_topology[j]->GetNbinsX(),h_nhits_OD_cluster_1_center_of_mass_by_topology[j]->GetXaxis()->GetXmin(),h_nhits_OD_cluster_1_center_of_mass_by_topology[j]->GetXaxis()->GetXmax());
+    h_nhits_cluster_1_center_of_mass_by_topology_efficiency[j] = new TH1F(Form("h_nhits_cluster_1_center_of_mass_topology_%d_efficiency",j),Form("cluster (< %.0f) %s; threshold [nhits]; efficiency",cluster_radius_cm,topology_name[j].c_str()),h_nhits_OD_cluster_1_center_of_mass_by_topology[j]->GetNbinsX(),h_nhits_OD_cluster_1_center_of_mass_by_topology[j]->GetXaxis()->GetXmin(),h_nhits_OD_cluster_1_center_of_mass_by_topology[j]->GetXaxis()->GetXmax());
     h_nhits_cluster_1_center_of_mass_by_topology_efficiency[j]->SetLineColor(h_nhits_OD_cluster_1_center_of_mass_by_topology[j]->GetLineColor());
     h_nhits_cluster_1_center_of_mass_by_topology_efficiency[j]->SetLineWidth(2);
     double nhits_integral_center_of_mass = h_nhits_OD_cluster_1_center_of_mass_by_topology[j]->Integral();
