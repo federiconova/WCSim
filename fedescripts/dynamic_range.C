@@ -35,8 +35,8 @@ bool is_crossing_horizontal_plane(double x0, double y0, double z0,
 
 void is_crossing_cylindrical_shell_side(double x0, double y0, double z0,
 					double x1, double y1, double z1,
-					double Rout, double Rin, double ztop, double zbottom,
-					int * n_intersections_out, bool * crosses_in);
+					double Rout, double ztop, double zbottom,
+					int * n_intersections_out);
 
 int n_digits = 5;
 double time_bin_size = 10.; // ns
@@ -57,15 +57,11 @@ int main(){
   int itrigger = 0;
 
   const int n_muon_topologies = 6;
-  std::string topology_name[n_muon_topologies]={"OD ID OD","OD ID","OD OD","OD","ID",""};
+  std::string topology_name[n_muon_topologies]={"OD(2) ID(2)","OD(1) ID(2)","OD(1) ID(1)","OD(2) ID(0)","OD(1) ID(0)","OD(0) ID(1)"};
   int muon_topology_true; 
   int muon_topology_reco; 
+  // -2 -> unknown
   // -1 -> muon misses tank
-  // 0 -> muon OD, ID, OD
-  // 1 -> muon OD, ID
-  // 2 -> muon OD, OD
-  // 3 -> muon OD decay
-  // 4 -> muon ID, subcerenkov, decay in OD
 
   bool true_muon_enters_OD_top;
 
@@ -363,7 +359,7 @@ int main(){
   h_pathlength_side.SetLineColor(kBlack);
 
   TH1F h_muon_topology_true("h_muon_topology_true","muon topology true; topology (true)",
-			    n_muon_topologies+1, -2.5, n_muon_topologies-1.5);
+			    n_muon_topologies+2, -2.5, n_muon_topologies-0.5);
   h_muon_topology_true.SetLineWidth(2);
   h_muon_topology_true.SetLineColor(kBlack);
 
@@ -371,6 +367,11 @@ int main(){
 				      10,-0.5,9.5);
   h_muon_n_intersections_OD_true.SetLineWidth(2);
   h_muon_n_intersections_OD_true.SetLineColor(kBlack);
+
+  TH1F h_muon_n_intersections_ID_true("h_muon_n_intersections_ID_true","muon n intersections ID true; n ID intersections",
+				      10,-0.5,9.5);
+  h_muon_n_intersections_ID_true.SetLineWidth(2);
+  h_muon_n_intersections_ID_true.SetLineColor(kBlack);
 
   double n_hits_limit = 300.;
   TH1F h_hit_time_few_nhits("h_hit_time_few_nhits",Form("nhits < %.0f; hit time [ns]",n_hits_limit),
@@ -731,6 +732,26 @@ int main(){
   h_muon_stop_x_y_z->SetMarkerColor(kBlue);
   h_muon_stop_x_y_z->SetMarkerStyle(2);
 
+  TH3F * h_muon_stop_x_y_z_by_topology[n_muon_topologies];
+  TH2F * h_muon_stop_x_y_by_topology[n_muon_topologies];
+  TH1F * h_muon_stop_z_by_topology[n_muon_topologies];
+  for(int i=0; i<n_muon_topologies; i++){
+    h_muon_stop_x_y_z_by_topology[i] = new TH3F(Form("h_muon_stop_x_y_z_topology_%d",i),Form("%s",topology_name[i].c_str()),
+				       		 nbins_x,-(r_limit*1.3),(r_limit*1.3),
+						nbins_y,-(r_limit*1.3),(r_limit*1.3),
+						nbins_z,-(z_limit*2),z_limit*1.3);
+    h_muon_stop_x_y_z_by_topology[i]->SetMarkerStyle(2);
+    h_muon_stop_x_y_z_by_topology[i]->SetMarkerColor(i+1);
+    h_muon_stop_x_y_by_topology[i] = new TH2F(Form("h_muon_stop_x_y_topology_%d",i),Form("%s",topology_name[i].c_str()),
+				       		 nbins_x,-(r_limit*1.3),(r_limit*1.3),
+						nbins_y,-(r_limit*1.3),(r_limit*1.3));
+    h_muon_stop_x_y_by_topology[i]->SetMarkerStyle(6);
+    h_muon_stop_x_y_by_topology[i]->SetMarkerColor(i+1);
+    h_muon_stop_z_by_topology[i] = new TH1F(Form("h_muon_stop_z_topology_%d",i),Form("%s",topology_name[i].c_str()), nbins_z,-(z_limit*2),(z_limit*1.3));
+    h_muon_stop_z_by_topology[i]->SetLineWidth(2);
+    h_muon_stop_z_by_topology[i]->SetLineColor(i+1);
+  }
+
   TH2F *h_muon_stop_x_y = new TH2F("h_muon_stop_x_y","h_muon_stop_x_y",
 				     nbins_x,-(r_limit*1.3),(r_limit*1.3),
 				       nbins_y,-(r_limit*1.3),(r_limit*1.3));
@@ -912,27 +933,57 @@ int main(){
 										);
 
 	  int n_intersections_out;
-	  bool is_muon_crossing_ID;
 	  is_crossing_cylindrical_shell_side(track_start_x->at(itrigger).at(itrack),track_start_y->at(itrigger).at(itrack),track_start_z->at(itrigger).at(itrack),
 										track_stop_x->at(itrigger).at(itrack),track_stop_y->at(itrigger).at(itrack),track_stop_z->at(itrigger).at(itrack),
-					     OD_radius, ID_radius, OD_height, - OD_height,
-					     &n_intersections_out, &is_muon_crossing_ID);
+					     OD_radius, OD_height, - OD_height,
+					     &n_intersections_out);
 
 	  int n_intersections_OD = 0;
 	  if( is_muon_crossing_OD_top ) n_intersections_OD++;
 	  if( is_muon_crossing_OD_bottom ) n_intersections_OD++;
 	  n_intersections_OD += n_intersections_out;
 
+
+
+	  bool is_muon_crossing_ID_top = is_crossing_horizontal_plane(track_start_x->at(itrigger).at(itrack),track_start_y->at(itrigger).at(itrack),track_start_z->at(itrigger).at(itrack),
+										track_stop_x->at(itrigger).at(itrack),track_stop_y->at(itrigger).at(itrack),track_stop_z->at(itrigger).at(itrack),
+										ID_radius, ID_height
+										);
+
+	  bool is_muon_crossing_ID_bottom = is_crossing_horizontal_plane(track_start_x->at(itrigger).at(itrack),track_start_y->at(itrigger).at(itrack),track_start_z->at(itrigger).at(itrack),
+										track_stop_x->at(itrigger).at(itrack),track_stop_y->at(itrigger).at(itrack),track_stop_z->at(itrigger).at(itrack),
+										ID_radius, -ID_height
+										);
+	  int n_intersections_in;
+	  is_crossing_cylindrical_shell_side(track_start_x->at(itrigger).at(itrack),track_start_y->at(itrigger).at(itrack),track_start_z->at(itrigger).at(itrack),
+										track_stop_x->at(itrigger).at(itrack),track_stop_y->at(itrigger).at(itrack),track_stop_z->at(itrigger).at(itrack),
+					     ID_radius, ID_height, - ID_height,
+					     &n_intersections_in);
+
+	  int n_intersections_ID = 0;
+	  if( is_muon_crossing_ID_top ) n_intersections_ID++;
+	  if( is_muon_crossing_ID_bottom ) n_intersections_ID++;
+	  n_intersections_ID += n_intersections_in;
+
+
 	  muon_topology_true = -2;
-	  if( n_intersections_OD == 0  && !is_muon_crossing_ID ) muon_topology_true = -1;
-	  if( n_intersections_OD == 2  && is_muon_crossing_ID ) muon_topology_true = 0;
-	  if( n_intersections_OD == 1  && is_muon_crossing_ID ) muon_topology_true = 1;
-	  if( n_intersections_OD == 2  && !is_muon_crossing_ID ) muon_topology_true = 2;
-	  if( n_intersections_OD == 1  && !is_muon_crossing_ID ) muon_topology_true = 3;
-	  if( n_intersections_OD == 0  && is_muon_crossing_ID ) muon_topology_true = 4;
+	  if( n_intersections_OD == 0  && n_intersections_ID == 0 ) muon_topology_true = -1;
+	  if( n_intersections_OD == 2  && n_intersections_ID == 2 ) muon_topology_true = 0;
+	  if( n_intersections_OD == 1  && n_intersections_ID == 2 ) muon_topology_true = 1;
+	  if( n_intersections_OD == 1  && n_intersections_ID == 1 ) muon_topology_true = 2;
+	  if( n_intersections_OD == 2  && n_intersections_ID == 0 ) muon_topology_true = 3;
+	  if( n_intersections_OD == 1  && n_intersections_ID == 0 ) muon_topology_true = 4;
+	  if( n_intersections_OD == 0  && n_intersections_ID == 1 ) muon_topology_true = 5;
 
 	  h_muon_topology_true.Fill(muon_topology_true);
 	  h_muon_n_intersections_OD_true.Fill(n_intersections_OD);
+	  h_muon_n_intersections_ID_true.Fill(n_intersections_ID);
+
+	  if( muon_topology_true >= 0 ){
+	    h_muon_stop_x_y_z_by_topology[muon_topology_true]->Fill(track_stop_x->at(itrigger).at(itrack),track_stop_y->at(itrigger).at(itrack),track_stop_z->at(itrigger).at(itrack));
+	    h_muon_stop_x_y_by_topology[muon_topology_true]->Fill(track_stop_x->at(itrigger).at(itrack),track_stop_y->at(itrigger).at(itrack));
+	    h_muon_stop_z_by_topology[muon_topology_true]->Fill(track_stop_z->at(itrigger).at(itrack));
+	  }
 
 	  impact_top = is_impact_horizontal_plane(track_start_x->at(itrigger).at(itrack),track_start_y->at(itrigger).at(itrack),track_start_z->at(itrigger).at(itrack),
 						  track_ux->at(itrigger).at(itrack),track_uy->at(itrigger).at(itrack),track_uz->at(itrigger).at(itrack),
@@ -1421,6 +1472,7 @@ int main(){
   PMT_OD_z.Write();
   h_muon_topology_true.Write();
   h_muon_n_intersections_OD_true.Write();
+  h_muon_n_intersections_ID_true.Write();
   h_digitized_hit_OD_Q.Write();
   h_digitized_hit_OD_Q_top_tubes.Write();
   h_digitized_hit_OD_Q_side_tubes.Write();
@@ -1444,6 +1496,11 @@ int main(){
   h_distance_pmt_center_of_mass.Write();
   for(int i=0; i<n_muon_topologies; i++)
     h_distance_pmt_center_of_mass_by_topology[i]->Write();
+  for(int i=0; i<n_muon_topologies; i++){
+    h_muon_stop_x_y_z_by_topology[i]->Write();
+    h_muon_stop_x_y_by_topology[i]->Write();
+    h_muon_stop_z_by_topology[i]->Write();
+  }
   h_nhits_OD_cluster_1.Write();
   h_npes_OD_cluster_1.Write();
   h_nhits_OD_cluster_2.Write();
@@ -1797,12 +1854,11 @@ bool is_crossing_horizontal_plane(double x0, double y0, double z0,
 
 void is_crossing_cylindrical_shell_side(double x0, double y0, double z0,
 					double x1, double y1, double z1,
-					double Rout, double Rin, double ztop, double zbottom,
-					int * n_intersections_out, bool * crosses_in){
+					double Rout, double ztop, double zbottom,
+					int * n_intersections_out){
 
 
   * n_intersections_out = 0;
-  * crosses_in = false;
 
   double zhigh = z0;
   double zlow = z1;
@@ -1851,34 +1907,8 @@ void is_crossing_cylindrical_shell_side(double x0, double y0, double z0,
     n_intersections ++;
   }
 
-  bool crosses_inner_circle = false;
-  double discriminant_in = pow(Rin*dr,2) - pow(D,2);
-  // intersection or tangency between muon and inner circle
-  if( discriminant_in > 0 ){
-    double xc1_in = (D*dy + (dy/fabs(dy))*dx*sqrt(discriminant_in))/pow(dr,2);
-    double zc1_in = z0 + (z1 - z0)/(x1 - x0)*(xc1_in - x0);
-    if( 
-       zc1_in < ztop 
-       && zc1_in > zbottom 
-       && zc1_in < zhigh 
-       && zc1_in > zlow ){
-      crosses_inner_circle = true;
-    }
-    double xc2_in = (D*dy - (dy/fabs(dy))*dx*sqrt(discriminant_in))/pow(dr,2);
-    double zc2_in = z0 + (z1 - z0)/(x1 - x0)*(xc2_in - x0);
-    if( 
-       zc2_in < ztop 
-       && zc2_in > zbottom 
-       && zc2_in < zhigh 
-       && zc2_in > zlow ){
-      crosses_inner_circle = true;
-    }
-  }
-
-
   *n_intersections_out = n_intersections;
 
-  *crosses_in = crosses_inner_circle;
 
   return;
 }
