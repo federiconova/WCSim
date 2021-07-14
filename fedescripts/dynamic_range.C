@@ -38,6 +38,9 @@ void is_crossing_cylindrical_shell_side(double x0, double y0, double z0,
 					double Rout, double ztop, double zbottom,
 					int * n_intersections_out);
 
+int point_position(double x0, double y0, double z0,
+		   double Rout, double zout, double Rin, double zin);
+
 int n_digits = 5;
 double time_bin_size = 10.; // ns
 double _time_min=150.;
@@ -495,10 +498,17 @@ int main(){
   h_distance_pmt_center_of_mass.SetLineColor(kBlack);
 
   TH1F * h_distance_pmt_center_of_mass_by_topology[n_muon_topologies];
+  TH1D * h_muon_stop_by_tooplogy[n_muon_topologies];
   for(int i=0; i<n_muon_topologies; i++){
     h_distance_pmt_center_of_mass_by_topology[i] = new TH1F(Form("h_distance_pmt_center_of_mass_topology_%d",i),Form("%s; distance PMT - center of mass [deg]",topology_name[i].c_str()),100,1,-1);
     h_distance_pmt_center_of_mass_by_topology[i]->SetLineWidth(2);
     h_distance_pmt_center_of_mass_by_topology[i]->SetLineColor(i+1);
+    h_muon_stop_by_tooplogy[i] = new TH1D(Form("h_muon_stop_by_topology_%d",i),Form("%s",topology_name[i].c_str()),3,-0.5,2.5);
+    h_muon_stop_by_tooplogy[i]->SetLineWidth(2);
+    h_muon_stop_by_tooplogy[i]->SetLineColor(i+1);
+    h_muon_stop_by_tooplogy[i]->GetXaxis()->SetBinLabel(1,"OD");
+    h_muon_stop_by_tooplogy[i]->GetXaxis()->SetBinLabel(2,"ID");
+    h_muon_stop_by_tooplogy[i]->GetXaxis()->SetBinLabel(3,"out of tank");
   }
 
 
@@ -983,6 +993,10 @@ int main(){
 	    h_muon_stop_x_y_z_by_topology[muon_topology_true]->Fill(track_stop_x->at(itrigger).at(itrack),track_stop_y->at(itrigger).at(itrack),track_stop_z->at(itrigger).at(itrack));
 	    h_muon_stop_x_y_by_topology[muon_topology_true]->Fill(track_stop_x->at(itrigger).at(itrack),track_stop_y->at(itrigger).at(itrack));
 	    h_muon_stop_z_by_topology[muon_topology_true]->Fill(track_stop_z->at(itrigger).at(itrack));
+	    h_muon_stop_by_tooplogy[muon_topology_true]->Fill(point_position(
+									     track_stop_x->at(itrigger).at(itrack),track_stop_y->at(itrigger).at(itrack),track_stop_z->at(itrigger).at(itrack),
+									     OD_radius, OD_height, ID_radius, ID_height
+									     ));
 	  }
 
 	  impact_top = is_impact_horizontal_plane(track_start_x->at(itrigger).at(itrack),track_start_y->at(itrigger).at(itrack),track_start_z->at(itrigger).at(itrack),
@@ -1500,6 +1514,7 @@ int main(){
     h_muon_stop_x_y_z_by_topology[i]->Write();
     h_muon_stop_x_y_by_topology[i]->Write();
     h_muon_stop_z_by_topology[i]->Write();
+    h_muon_stop_by_tooplogy[i]->Write();
   }
   h_nhits_OD_cluster_1.Write();
   h_npes_OD_cluster_1.Write();
@@ -1911,6 +1926,21 @@ void is_crossing_cylindrical_shell_side(double x0, double y0, double z0,
 
 
   return;
+}
+
+int point_position(double x0, double y0, double z0,
+		   double Rout, double zout, double Rin, double zin){
+
+  double r= sqrt(pow(x0,2) + pow(y0,2));
+
+  if( r < Rin && fabs(z0) < zin )
+    return 1;
+
+  if( r < Rout && fabs(z0) < zout )
+    return 0;
+
+  return 2;
+
 }
 
 
