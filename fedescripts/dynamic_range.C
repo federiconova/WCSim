@@ -61,7 +61,7 @@ int main(){
 
   const int n_muon_topologies = 6;
   std::string topology_name[n_muon_topologies]={"OD(2) ID(2)","OD(1) ID(2)","OD(1) ID(1)","OD(2) ID(0)","OD(1) ID(0)","OD(0) ID(1)"};
-  int topology_color[n_muon_topologies]={1,2,3,4,6,7};
+  int topology_color[n_muon_topologies]={1,2,3,4,6,94};
   int muon_topology_true; 
   int muon_topology_reco; 
   // -2 -> unknown
