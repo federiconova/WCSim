@@ -372,6 +372,16 @@ int main(){
     h_muon_topology_true.GetXaxis()->SetBinLabel(i+3,topology_name[i].c_str());
 
 
+  TH1F h_muon_topology_true_no_misses("h_muon_topology_true_no_misses","muon topology true; topology (true)",
+			    n_muon_topologies+2, -2.5, n_muon_topologies-0.5);
+  h_muon_topology_true_no_misses.SetLineWidth(3);
+  h_muon_topology_true_no_misses.SetLineColor(kBlack);
+  h_muon_topology_true_no_misses.GetXaxis()->SetBinLabel(1,"unknown");
+  h_muon_topology_true_no_misses.GetXaxis()->SetBinLabel(2,"OD(0) ID(0)");
+  for(int i=0; i<n_muon_topologies; i++)
+    h_muon_topology_true_no_misses.GetXaxis()->SetBinLabel(i+3,topology_name[i].c_str());
+
+
   TH1F h_muon_n_intersections_OD_true("h_muon_n_intersections_OD_true","muon n intersections OD true; n OD intersections",
 				      10,-0.5,9.5);
   h_muon_n_intersections_OD_true.SetLineWidth(3);
@@ -452,7 +462,7 @@ int main(){
     h_digitized_nhits_all_tubes_by_topology[i] = new TH1F(Form("h_digitized_nhits_all_tubes_topology_%d",i),Form("%s; n of OD hits",topology_name[i].c_str()),100,min_nhits,max_nhits);
     h_digitized_nhits_all_tubes_by_topology[i]->SetLineWidth(3);
     h_digitized_nhits_all_tubes_by_topology[i]->SetLineColor(topology_color[i]);
-    h_digitized_nhits_zoom_all_tubes_by_topology[i] = new TH1F(Form("h_digitized_nhits_zoom_all_tubes_topology_%d",i),Form("%s; n of OD hits",topology_name[i].c_str()),500,min_nhits,max_nhits);
+    h_digitized_nhits_zoom_all_tubes_by_topology[i] = new TH1F(Form("h_digitized_nhits_zoom_all_tubes_topology_%d",i),Form("%s; n of OD hits",topology_name[i].c_str()),1000,min_nhits,max_nhits);
     h_digitized_nhits_zoom_all_tubes_by_topology[i]->SetLineWidth(3);
     h_digitized_nhits_zoom_all_tubes_by_topology[i]->SetLineColor(topology_color[i]);
   }
@@ -1011,6 +1021,8 @@ int main(){
 	  if( n_intersections_OD == 0  && n_intersections_ID == 1 ) muon_topology_true = 5;
 
 	  h_muon_topology_true.Fill(muon_topology_true);
+	  if( muon_topology_true != -1 )
+	    h_muon_topology_true_no_misses.Fill(muon_topology_true);
 	  h_muon_n_intersections_OD_true.Fill(n_intersections_OD);
 	  h_muon_n_intersections_ID_true.Fill(n_intersections_ID);
 
@@ -1560,6 +1572,7 @@ int main(){
   PMT_OD_x_y.Write();
   PMT_OD_z.Write();
   h_muon_topology_true.Write();
+  h_muon_topology_true_no_misses.Write();
   h_muon_n_intersections_OD_true.Write();
   h_muon_n_intersections_ID_true.Write();
   h_digitized_hit_OD_Q.Write();
