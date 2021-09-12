@@ -169,6 +169,79 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
 	 	      0);
 
   if(isODConstructed) {
+
+
+
+#if 0 //  collar and skirt
+    //-----------------------------------------------------
+    // Top endcap collar tyvek
+    //-----------------------------------------------------
+
+    G4Tubs *SolidCollarTyvek = new G4Tubs("CollarTyvek",
+										  WCIDRadius,
+										  WCIDRadius + WCODTyvekSheetThickness,
+										  .5 * WCODHeightWaterDepth,  //jl145 - per blueprint
+										  0. * deg,
+										  360. * deg);
+
+    G4LogicalVolume *logicCollarTyvek =
+	  new G4LogicalVolume(SolidCollarTyvek,
+						  G4Material::GetMaterial("Tyvek"),
+						  "CollarTyvek",
+						  0, 0, 0);
+
+    G4VPhysicalVolume *physiCollarTyvek =
+	  new G4PVPlacement(0,
+						G4ThreeVector(0., 0., 0.5*WCIDHeight + 0.5*WCODHeightWaterDepth + WCBlackSheetThickness + WCODDeadSpace +              
+									  WCODTyvekSheetThickness),
+						logicCollarTyvek,
+						"CaveCollarTyvek",
+						logicWCBarrel,
+						false,
+						0);
+
+    G4LogicalSkinSurface *TyvekCollarSurface = new G4LogicalSkinSurface("TyvekCollarSurface", logicCollarTyvek, OpWaterTySurface);
+
+    G4VisAttributes *showTyvekCollar = new G4VisAttributes(green);
+    showTyvekCollar->SetForceWireframe(true);// This line is used to give definition to the rings in OGLSX Visualizer
+    logicCollarTyvek->SetVisAttributes(showTyvekCollar);
+   
+   
+    //-----------------------------------------------------
+    // Bottom endcap skirt tyvek
+    //-----------------------------------------------------
+
+    G4Tubs *SolidSkirtTyvek = new G4Tubs("SkirtTyvek",
+										 WCIDRadius,
+										 WCIDRadius + WCODTyvekSheetThickness,
+										 .5 * WCODHeightWaterDepth,  //jl145 - per blueprint
+										 0. * deg,
+										 360. * deg);
+
+    G4LogicalVolume *logicSkirtTyvek =
+	  new G4LogicalVolume(SolidSkirtTyvek,
+						  G4Material::GetMaterial("Tyvek"),
+						  "SkirtTyvek",
+						  0, 0, 0);
+
+    G4VPhysicalVolume *physiSkirtTyvek =
+	  new G4PVPlacement(0,
+						G4ThreeVector(0., 0., -0.5*WCIDHeight - 0.5*WCODHeightWaterDepth - WCBlackSheetThickness - WCODDeadSpace -              
+									  WCODTyvekSheetThickness),
+						logicSkirtTyvek,
+						"CaveSkirtTyvek",
+						logicWCBarrel,
+						false,
+						0);
+
+    G4LogicalSkinSurface *TyvekSkirtSurface = new G4LogicalSkinSurface("TyvekSkirtSurface", logicSkirtTyvek, OpWaterTySurface);
+
+    G4VisAttributes *showTyvekSkirt = new G4VisAttributes(green);
+    showTyvekSkirt->SetForceWireframe(true);// This line is used to give definition to the rings in OGLSX Visualizer
+    logicSkirtTyvek->SetVisAttributes(showTyvekSkirt);
+#endif
+
+
     //-----------------------------------------------------
     // Cylinder wall's tyvek
     //-----------------------------------------------------
