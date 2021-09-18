@@ -915,7 +915,7 @@ void WCSimDetectorConstruction::ConstructMaterials()
   // OpWaterWLSSurface->SetSigmaAlpha(0.1); // TODO: What's this?
 
   // MATERIAL properties
-#if 1
+#if 0
   EljenEJ286 *WLSProps = new EljenEJ286();
 #else
   Kuraray *WLSProps = new Kuraray();
