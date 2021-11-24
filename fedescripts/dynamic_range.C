@@ -97,6 +97,9 @@ int main(){
   double OD_radius = 3400.;
   double OD_height = 3550.;
   std::clog << " detector_length " << detector_length << " detector_radius " << detector_radius << " pmt_radius " << pmt_radius << " number_of_pmts " << number_of_pmts << " number_of_pmts_OD " << number_of_pmts_OD << std::endl;
+  double collar_center_z = (ID_height + OD_height)/2.;
+  double collar_height_z = (OD_height - ID_height)/2.;
+  std::clog << " collar_center_z " << collar_center_z << " collar_height_z " << collar_height_z << std::endl;
 
   double r_limit=detector_radius;
   double z_limit=detector_length/2.;
@@ -455,6 +458,9 @@ int main(){
   TH1F h_digitized_nhits_all_tubes("h_digitized_nhits_all_tubes","all; n of hits; n of events",100,min_nhits,max_nhits);
   h_digitized_nhits_all_tubes.SetLineWidth(2);
   h_digitized_nhits_all_tubes.SetLineColor(kBlue);
+  TH1F h_digitized_nhits_all_tubes_zoom("h_digitized_nhits_all_tubes_zoom","all; n of hits; n of events",100,0,100);
+  h_digitized_nhits_all_tubes_zoom.SetLineWidth(2);
+  h_digitized_nhits_all_tubes_zoom.SetLineColor(kBlue);
 
   TH1F * h_digitized_nhits_all_tubes_by_topology[n_muon_topologies];
   TH1F * h_digitized_nhits_zoom_all_tubes_by_topology[n_muon_topologies];
@@ -912,6 +918,23 @@ int main(){
   double muon_energy;
   int muon_pdg_id = 13;
 
+  TTree *output_tree = new TTree("output_tree","output tree");
+  int n_intersections_in;
+  int n_intersections_out;
+  bool is_muon_crossing_OD_top;
+  bool is_muon_crossing_OD_bottom;
+  bool is_muon_crossing_ID_top;
+  bool is_muon_crossing_ID_bottom;
+  int n_hits_all_OD_tubes;
+  output_tree->Branch("muon_topology_true",&muon_topology_true,"muon_topology_true/I");
+  output_tree->Branch("is_muon_crossing_OD_top",&is_muon_crossing_OD_top,"is_muon_crossing_OD_top/B");
+  output_tree->Branch("is_muon_crossing_OD_bottom",&is_muon_crossing_OD_bottom,"is_muon_crossing_OD_bottom/B");
+  output_tree->Branch("is_muon_crossing_ID_top",&is_muon_crossing_ID_top,"is_muon_crossing_ID_top/B");
+  output_tree->Branch("is_muon_crossing_ID_bottom",&is_muon_crossing_ID_bottom,"is_muon_crossing_ID_bottom/B");
+  output_tree->Branch("n_intersections_in",&n_intersections_in,"n_intersections_in/I");
+  output_tree->Branch("n_intersections_out",&n_intersections_out,"n_intersections_out/I");
+  output_tree->Branch("n_hits_all_OD_tubes",&n_hits_all_OD_tubes,"n_hits_all_OD_tubes/I");
+
   for(int ievent=0; ievent<primary_events_tree->GetEntries(); ievent++){
 
     if( ievent%modulo == 0 )
@@ -967,17 +990,17 @@ int main(){
 	  h_muon_time.Fill(track_time->at(itrigger).at(itrack));
 	  h_muon_phi.Fill(atan2(track_uy->at(itrigger).at(itrack),track_ux->at(itrigger).at(itrack))*180./acos(-1.));
 
-	  bool is_muon_crossing_OD_top = is_crossing_horizontal_plane(track_start_x->at(itrigger).at(itrack),track_start_y->at(itrigger).at(itrack),track_start_z->at(itrigger).at(itrack),
+	  is_muon_crossing_OD_top = is_crossing_horizontal_plane(track_start_x->at(itrigger).at(itrack),track_start_y->at(itrigger).at(itrack),track_start_z->at(itrigger).at(itrack),
 										track_stop_x->at(itrigger).at(itrack),track_stop_y->at(itrigger).at(itrack),track_stop_z->at(itrigger).at(itrack),
 										OD_radius, OD_height
 										);
 
-	  bool is_muon_crossing_OD_bottom = is_crossing_horizontal_plane(track_start_x->at(itrigger).at(itrack),track_start_y->at(itrigger).at(itrack),track_start_z->at(itrigger).at(itrack),
+	  is_muon_crossing_OD_bottom = is_crossing_horizontal_plane(track_start_x->at(itrigger).at(itrack),track_start_y->at(itrigger).at(itrack),track_start_z->at(itrigger).at(itrack),
 										track_stop_x->at(itrigger).at(itrack),track_stop_y->at(itrigger).at(itrack),track_stop_z->at(itrigger).at(itrack),
 										OD_radius, -OD_height
 										);
 
-	  int n_intersections_out;
+	  n_intersections_out = 0;
 	  is_crossing_cylindrical_shell_side(track_start_x->at(itrigger).at(itrack),track_start_y->at(itrigger).at(itrack),track_start_z->at(itrigger).at(itrack),
 										track_stop_x->at(itrigger).at(itrack),track_stop_y->at(itrigger).at(itrack),track_stop_z->at(itrigger).at(itrack),
 					     OD_radius, OD_height, - OD_height,
@@ -990,16 +1013,16 @@ int main(){
 
 
 
-	  bool is_muon_crossing_ID_top = is_crossing_horizontal_plane(track_start_x->at(itrigger).at(itrack),track_start_y->at(itrigger).at(itrack),track_start_z->at(itrigger).at(itrack),
+	  is_muon_crossing_ID_top = is_crossing_horizontal_plane(track_start_x->at(itrigger).at(itrack),track_start_y->at(itrigger).at(itrack),track_start_z->at(itrigger).at(itrack),
 										track_stop_x->at(itrigger).at(itrack),track_stop_y->at(itrigger).at(itrack),track_stop_z->at(itrigger).at(itrack),
 										ID_radius, ID_height
 										);
 
-	  bool is_muon_crossing_ID_bottom = is_crossing_horizontal_plane(track_start_x->at(itrigger).at(itrack),track_start_y->at(itrigger).at(itrack),track_start_z->at(itrigger).at(itrack),
+	  is_muon_crossing_ID_bottom = is_crossing_horizontal_plane(track_start_x->at(itrigger).at(itrack),track_start_y->at(itrigger).at(itrack),track_start_z->at(itrigger).at(itrack),
 										track_stop_x->at(itrigger).at(itrack),track_stop_y->at(itrigger).at(itrack),track_stop_z->at(itrigger).at(itrack),
 										ID_radius, -ID_height
 										);
-	  int n_intersections_in;
+	  n_intersections_in = 0;
 	  is_crossing_cylindrical_shell_side(track_start_x->at(itrigger).at(itrack),track_start_y->at(itrigger).at(itrack),track_start_z->at(itrigger).at(itrack),
 										track_stop_x->at(itrigger).at(itrack),track_stop_y->at(itrigger).at(itrack),track_stop_z->at(itrigger).at(itrack),
 					     ID_radius, ID_height, - ID_height,
@@ -1248,6 +1271,7 @@ int main(){
       nhits_all = nhits_top + nhits_side + nhits_bottom;
     
       h_digitized_nhits_all_tubes.Fill(nhits_all);
+      h_digitized_nhits_all_tubes_zoom.Fill(nhits_all);
       h_npes_vs_digitized_nhits.Fill(nhits_all, total_charge);
       h_nhits_vs_muon_energy.Fill(muon_energy,nhits_all);
 
@@ -1391,8 +1415,10 @@ int main(){
 	  h_nhits_OD_cluster_1_center_of_mass_many_nhits.Fill(nhits_OD_cluster_1_center_of_mass);
       }
       if( muon_topology_true >= 0 ){
-	h_digitized_nhits_all_tubes_by_topology[muon_topology_true]->Fill((digitized_hit_OD_tube_id->at(itrigger)).size());
-	h_digitized_nhits_zoom_all_tubes_by_topology[muon_topology_true]->Fill((digitized_hit_OD_tube_id->at(itrigger)).size());
+	n_hits_all_OD_tubes = (digitized_hit_OD_tube_id->at(itrigger)).size();
+	h_digitized_nhits_all_tubes_by_topology[muon_topology_true]->Fill(n_hits_all_OD_tubes);
+	h_digitized_nhits_zoom_all_tubes_by_topology[muon_topology_true]->Fill(n_hits_all_OD_tubes);
+	output_tree->Fill();
 	for(size_t idigitizedhit=0; idigitizedhit<(digitized_hit_OD_tube_id->at(itrigger)).size(); idigitizedhit++){
 	  // loop on digitized hits in the trigger
 	  
@@ -1564,9 +1590,21 @@ int main(){
   }
 
 
+  TH1F * h_digitized_nhits_zoom_all_tubes_efficiency = new TH1F("h_digitized_nhits_zoom_all_tubes_efficiency","h_digitized_nhits_zoom_all_tubes_efficiency; threshold [nhits]; efficiency",300,0,300);
+  h_digitized_nhits_zoom_all_tubes_efficiency->SetLineColor(kBlue);
+  h_digitized_nhits_zoom_all_tubes_efficiency->SetLineWidth(3);
+  for(int i=1; i<=h_digitized_nhits_zoom_all_tubes_efficiency->GetNbinsX(); i++){
+    double value = h_digitized_nhits_zoom_all_tubes_efficiency->GetXaxis()->GetBinCenter(i);
+    int ibin = h_digitized_nhits_physics_tubes.GetXaxis()->FindBin(value);
+    double local_integral = h_digitized_nhits_physics_tubes.Integral(ibin,h_digitized_nhits_physics_tubes.GetNbinsX());
+    double nhits_ratio = local_integral/h_digitized_nhits_physics_tubes.Integral();
+    h_digitized_nhits_zoom_all_tubes_efficiency->SetBinContent(i,nhits_ratio);
+    std::cout << " i " << i << " value " << value << " ibin " << ibin << " nhits " << h_digitized_nhits_physics_tubes.GetXaxis()->GetBinCenter(i) << " local_integral " << local_integral << " nhits_ratio " << nhits_ratio << std::endl;
+  }
 
 
   of->cd();
+  output_tree->Write();
   PMT_x_y_z.Write();
   PMT_OD_x_y_z.Write();
   PMT_OD_x_y.Write();
@@ -1621,6 +1659,7 @@ int main(){
   h_digitized_nhits_side_tubes.Write();
   h_digitized_nhits_bottom_tubes.Write();
   h_digitized_nhits_all_tubes.Write();
+  h_digitized_nhits_all_tubes_zoom.Write();
   for(int i=0; i<n_muon_topologies; i++){
     h_digitized_nhits_all_tubes_by_topology[i]->Write();
     h_digitized_nhits_zoom_all_tubes_by_topology[i]->Write();
@@ -1631,6 +1670,7 @@ int main(){
   h_digitized_nhits_physics_tubes.Write();
   h_digitized_nhits_physics_tubes_impact_few_nhits.Write();
   h_digitized_nhits_physics_tubes_impact_many_nhits.Write();
+  h_digitized_nhits_zoom_all_tubes_efficiency->Write();
   h_npes_vs_digitized_nhits.Write();
   h_nhits_vs_muon_energy.Write();
   h_hit_position_top_tubes.Write();
