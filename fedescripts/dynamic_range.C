@@ -488,6 +488,9 @@ int main(){
   TH1F h_digitized_nhits_physics_tubes("h_digitized_nhits_physics_tubes","nonzero; n of hits; n of events",100,1,-1);
   h_digitized_nhits_physics_tubes.SetLineWidth(2);
   h_digitized_nhits_physics_tubes.SetLineColor(kBlue);
+  TH1F h_digitized_nhits_physics_tubes_zoom("h_digitized_nhits_physics_tubes_zoom","nonzero; n of hits; n of events",1000, min_nhits, max_nhits);
+  h_digitized_nhits_physics_tubes_zoom.SetLineWidth(2);
+  h_digitized_nhits_physics_tubes_zoom.SetLineColor(kBlue);
 
   TH1F h_digitized_nhits_physics_tubes_impact_few_nhits("h_digitized_nhits_physics_tubes_impact_few_nhits",Form("nhits < %.0f; n of hits",n_hits_limit),100,0,max_nhits);
   h_digitized_nhits_physics_tubes_impact_few_nhits.SetLineWidth(2);
@@ -1236,17 +1239,17 @@ int main(){
 
 	if( pmt_location_OD == 5 ){
 	  nhits_top ++;
-	  if( impact )
+	  if( OD_impact )
 	    nhits_top_physics ++;
 	}
 	else if( pmt_location_OD == 4 ){
 	  nhits_side ++;
-	  if( impact )
+	  if( OD_impact )
 	    nhits_side_physics ++;
 	}
 	else if( pmt_location_OD == 3 ){
 	  nhits_bottom ++;
-	  if( impact )
+	  if( OD_impact )
 	    nhits_bottom_physics ++;
 	}
 	ibin = h_charge_vs_z.FindBin(pmt_z_OD);
@@ -1294,27 +1297,19 @@ int main(){
 	h_muon_center_of_mass_vertex_phi_scatter->Fill(180./pi*phi_vertex,180./pi*phi_cm);
 	h_muon_center_of_mass_vertex_theta_scatter->Fill(180./pi*theta_vertex,180./pi*theta_cm);
 
-      }
-
-      if( impact ){
 	h_digitized_nhits_top_physics_tubes.Fill(nhits_top_physics);
 	h_digitized_nhits_side_physics_tubes.Fill(nhits_side_physics);
 	h_digitized_nhits_bottom_physics_tubes.Fill(nhits_bottom_physics);
 
 	nhits_all_physics = nhits_top_physics + nhits_side_physics + nhits_bottom_physics;
 	h_digitized_nhits_physics_tubes.Fill(nhits_all_physics);
+	h_digitized_nhits_physics_tubes_zoom.Fill(nhits_all_physics);
 	if( nhits_all_physics < n_hits_limit ){
 	  h_digitized_nhits_physics_tubes_impact_few_nhits.Fill(nhits_all_physics);
 	}
 	else{
 	  h_digitized_nhits_physics_tubes_impact_many_nhits.Fill(nhits_all_physics);
 	}
-
-	h_muon_center_of_mass_phi_impact_residual->Fill(180./pi*(phi_cm - atan2(impact_y,impact_x)));
-	h_muon_center_of_mass_theta_impact_residual->Fill(180./pi*(theta_cm - atan2(sqrt(pow(impact_x,2) + pow(impact_y,2)),impact_z)));
-
-	h_muon_phi_impact_scatter->Fill(180./pi*atan2(impact_y,impact_x),180./pi*phi_cm);
-	h_muon_theta_impact_scatter->Fill(180./pi*atan2(sqrt(pow(impact_x,2) + pow(impact_y,2)),impact_z),180./pi*theta_cm);
 
 	if( nhits_all_physics < n_hits_limit ){
 	  h_muon_center_of_mass_vertex_theta_scatter_few_nhits->Fill(180./pi*theta_vertex,180./pi*theta_cm);
@@ -1326,6 +1321,17 @@ int main(){
 	  h_muon_center_of_mass_vertex_theta_residual_many_nhits->Fill(180./pi*(theta_cm - theta_vertex));
 	  h_muon_center_of_mass_vertex_phi_residual_many_nhits->Fill(180./pi*(phi_cm - phi_vertex));
 	}
+
+      }
+
+      if( impact ){
+
+	h_muon_center_of_mass_phi_impact_residual->Fill(180./pi*(phi_cm - atan2(impact_y,impact_x)));
+	h_muon_center_of_mass_theta_impact_residual->Fill(180./pi*(theta_cm - atan2(sqrt(pow(impact_x,2) + pow(impact_y,2)),impact_z)));
+
+	h_muon_phi_impact_scatter->Fill(180./pi*atan2(impact_y,impact_x),180./pi*phi_cm);
+	h_muon_theta_impact_scatter->Fill(180./pi*atan2(sqrt(pow(impact_x,2) + pow(impact_y,2)),impact_z),180./pi*theta_cm);
+
 	if( nhits_OD_cluster_1 == 0 ){
 	  std::cout << " event " << ievent << " of " << primary_events_tree->GetEntries() << std::endl;
 	  std::cout << " impact " << impact << " impact_top " << impact_top << " impact_side " << impact_side << " impact_bottom " << impact_bottom << std::endl;
@@ -1590,18 +1596,18 @@ int main(){
   }
 
 
-  TH1F * h_digitized_nhits_zoom_all_tubes_efficiency = new TH1F("h_digitized_nhits_zoom_all_tubes_efficiency","h_digitized_nhits_zoom_all_tubes_efficiency; threshold [nhits]; efficiency",300,0,300);
+  TH1F * h_digitized_nhits_zoom_all_tubes_efficiency = new TH1F("h_digitized_nhits_zoom_all_tubes_efficiency","h_digitized_nhits_zoom_all_tubes_efficiency; threshold [nhits]; efficiency",h_digitized_nhits_physics_tubes_zoom.GetNbinsX(),h_digitized_nhits_physics_tubes_zoom.GetXaxis()->GetXmin(),h_digitized_nhits_physics_tubes_zoom.GetXaxis()->GetXmax());
   h_digitized_nhits_zoom_all_tubes_efficiency->SetLineColor(kBlue);
   h_digitized_nhits_zoom_all_tubes_efficiency->SetLineWidth(3);
-  for(int i=1; i<=h_digitized_nhits_zoom_all_tubes_efficiency->GetNbinsX(); i++){
-    double value = h_digitized_nhits_zoom_all_tubes_efficiency->GetXaxis()->GetBinCenter(i);
-    int ibin = h_digitized_nhits_physics_tubes.GetXaxis()->FindBin(value);
-    double local_integral = h_digitized_nhits_physics_tubes.Integral(ibin,h_digitized_nhits_physics_tubes.GetNbinsX());
-    double nhits_ratio = local_integral/h_digitized_nhits_physics_tubes.Integral();
-    h_digitized_nhits_zoom_all_tubes_efficiency->SetBinContent(i,nhits_ratio);
-    std::cout << " i " << i << " value " << value << " ibin " << ibin << " nhits " << h_digitized_nhits_physics_tubes.GetXaxis()->GetBinCenter(i) << " local_integral " << local_integral << " nhits_ratio " << nhits_ratio << std::endl;
-  }
-
+  double the_nhits_integral_center_of_mass = h_digitized_nhits_physics_tubes_zoom.Integral();
+  if( the_nhits_integral_center_of_mass )
+    for(int i=1; i<=h_digitized_nhits_zoom_all_tubes_efficiency->GetNbinsX(); i++){
+      double local_integral = h_digitized_nhits_physics_tubes_zoom.Integral(i,h_digitized_nhits_physics_tubes_zoom.GetNbinsX());
+      double nhits_ratio = local_integral/the_nhits_integral_center_of_mass;
+      h_digitized_nhits_zoom_all_tubes_efficiency->SetBinContent(i,nhits_ratio);
+      //    std::cout << " i " << i << " nhits " << h_digitized_nhits_physics_tubes_zoom.GetXaxis()->GetBinCenter(i) << " local_integral " << local_integral << " nhits_ratio " << nhits_ratio << std::endl;
+    }
+  
 
   of->cd();
   output_tree->Write();
@@ -1668,6 +1674,7 @@ int main(){
   h_digitized_nhits_side_physics_tubes.Write();
   h_digitized_nhits_bottom_physics_tubes.Write();
   h_digitized_nhits_physics_tubes.Write();
+  h_digitized_nhits_physics_tubes_zoom.Write();
   h_digitized_nhits_physics_tubes_impact_few_nhits.Write();
   h_digitized_nhits_physics_tubes_impact_many_nhits.Write();
   h_digitized_nhits_zoom_all_tubes_efficiency->Write();
