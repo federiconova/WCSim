@@ -464,6 +464,9 @@ int main(){
 
   TH1F * h_digitized_nhits_all_tubes_by_topology[n_muon_topologies];
   TH1F * h_digitized_nhits_zoom_all_tubes_by_topology[n_muon_topologies];
+  TH1F * h_digitized_nhits_top_tubes_by_topology[n_muon_topologies];
+  TH1F * h_digitized_nhits_side_tubes_by_topology[n_muon_topologies];
+  TH1F * h_digitized_nhits_bottom_tubes_by_topology[n_muon_topologies];
   for(int i=0; i<n_muon_topologies; i++){
     h_digitized_nhits_all_tubes_by_topology[i] = new TH1F(Form("h_digitized_nhits_all_tubes_topology_%d",i),Form("%s; n of OD hits",topology_name[i].c_str()),100,min_nhits,max_nhits);
     h_digitized_nhits_all_tubes_by_topology[i]->SetLineWidth(3);
@@ -471,6 +474,15 @@ int main(){
     h_digitized_nhits_zoom_all_tubes_by_topology[i] = new TH1F(Form("h_digitized_nhits_zoom_all_tubes_topology_%d",i),Form("%s; n of OD hits",topology_name[i].c_str()),1000,min_nhits,max_nhits);
     h_digitized_nhits_zoom_all_tubes_by_topology[i]->SetLineWidth(3);
     h_digitized_nhits_zoom_all_tubes_by_topology[i]->SetLineColor(topology_color[i]);
+    h_digitized_nhits_top_tubes_by_topology[i] = new TH1F(Form("h_digitized_nhits_top_tubes_topology_%d",i),Form("%s; n of OD hits",topology_name[i].c_str()),100,min_nhits,max_nhits);
+    h_digitized_nhits_top_tubes_by_topology[i]->SetLineWidth(3);
+    h_digitized_nhits_top_tubes_by_topology[i]->SetLineColor(topology_color[i]);
+    h_digitized_nhits_side_tubes_by_topology[i] = new TH1F(Form("h_digitized_nhits_side_tubes_topology_%d",i),Form("%s; n of OD hits",topology_name[i].c_str()),100,min_nhits,max_nhits);
+    h_digitized_nhits_side_tubes_by_topology[i]->SetLineWidth(3);
+    h_digitized_nhits_side_tubes_by_topology[i]->SetLineColor(topology_color[i]);
+    h_digitized_nhits_bottom_tubes_by_topology[i] = new TH1F(Form("h_digitized_nhits_bottom_tubes_topology_%d",i),Form("%s; n of OD hits",topology_name[i].c_str()),100,min_nhits,max_nhits);
+    h_digitized_nhits_bottom_tubes_by_topology[i]->SetLineWidth(3);
+    h_digitized_nhits_bottom_tubes_by_topology[i]->SetLineColor(topology_color[i]);
   }
 
 
@@ -571,16 +583,26 @@ int main(){
 
   double cluster_radius_1=800.;  // cm
   double cluster_radius_2=1600.;
-  double cluster_radius_cm=45.;  // cm
+  double cluster_radius_cm=45.;  // degrees from center of mass
   TH1F h_nhits_OD_cluster_1("h_nhits_OD_cluster_1",Form("cluster (< %.0f); n OD hits in cluster",cluster_radius_1),100,min_nhits,max_nhits);
   h_nhits_OD_cluster_1.SetLineWidth(3);
   h_nhits_OD_cluster_1.SetLineColor(kBlack);
   h_nhits_OD_cluster_1.SetFillColor(kBlack);
 
+  TH1F h_nhits_OD_cluster_1_zoom("h_nhits_OD_cluster_1_zoom",Form("cluster (< %.0f); n OD hits in cluster",cluster_radius_1),100,0,100);
+  h_nhits_OD_cluster_1_zoom.SetLineWidth(3);
+  h_nhits_OD_cluster_1_zoom.SetLineColor(kBlack);
+  h_nhits_OD_cluster_1_zoom.SetFillColor(kBlack);
+
   TH1F h_nhits_OD_cluster_1_center_of_mass("h_nhits_OD_cluster_1_center_of_mass",Form("cluster (< %.0f); n OD hits in cluster",cluster_radius_1),100,min_nhits,max_nhits);
   h_nhits_OD_cluster_1_center_of_mass.SetLineWidth(3);
   h_nhits_OD_cluster_1_center_of_mass.SetLineColor(kBlack);
   h_nhits_OD_cluster_1_center_of_mass.SetFillColor(kBlack);
+
+  TH1F h_nhits_OD_cluster_1_zoom_center_of_mass("h_nhits_OD_cluster_1_zoom_center_of_mass",Form("cluster (< %.0f); n OD hits in cluster",cluster_radius_1),100,0,100);
+  h_nhits_OD_cluster_1_zoom_center_of_mass.SetLineWidth(3);
+  h_nhits_OD_cluster_1_zoom_center_of_mass.SetLineColor(kBlack);
+  h_nhits_OD_cluster_1_zoom_center_of_mass.SetFillColor(kBlack);
 
   TH1F h_nhits_OD_cluster_1_center_of_mass_few_nhits("h_nhits_OD_cluster_1_center_of_mass_few_nhits",Form("cluster (< %.0f); n OD hits in cluster",cluster_radius_1),100,min_nhits,max_nhits);
   h_nhits_OD_cluster_1_center_of_mass_few_nhits.SetLineWidth(3);
@@ -611,6 +633,11 @@ int main(){
   h_npes_OD_cluster_1.SetLineWidth(3);
   h_npes_OD_cluster_1.SetLineColor(kBlack);
   h_npes_OD_cluster_1.SetFillColor(kBlack);
+
+  TH1F h_npes_OD_cluster_1_zoom("h_npes_OD_cluster_1_zoom",Form("cluster (< %.0f); n OD p.e.'s in cluster",cluster_radius_1),100,0,100);
+  h_npes_OD_cluster_1_zoom.SetLineWidth(3);
+  h_npes_OD_cluster_1_zoom.SetLineColor(kBlack);
+  h_npes_OD_cluster_1_zoom.SetFillColor(kBlack);
 
   TH1F h_nhits_OD_cluster_2("h_nhits_OD_cluster_2",Form("cluster (< %.0f); n OD hits in cluster",cluster_radius_2),100,min_nhits,max_nhits);
   h_nhits_OD_cluster_2.SetLineWidth(3);
@@ -1345,6 +1372,8 @@ int main(){
 
 	h_nhits_OD_cluster_1.Fill(nhits_OD_cluster_1);
 	h_npes_OD_cluster_1.Fill(npes_OD_cluster_1);
+	h_nhits_OD_cluster_1_zoom.Fill(nhits_OD_cluster_1);
+	h_npes_OD_cluster_1_zoom.Fill(npes_OD_cluster_1);
 	h_nhits_OD_cluster_2.Fill(nhits_OD_cluster_2);
 	h_npes_OD_cluster_2.Fill(npes_OD_cluster_2);
       
@@ -1415,6 +1444,7 @@ int main(){
 	  }
 	}
 	h_nhits_OD_cluster_1_center_of_mass.Fill(nhits_OD_cluster_1_center_of_mass);
+	h_nhits_OD_cluster_1_zoom_center_of_mass.Fill(nhits_OD_cluster_1_center_of_mass);
 	if( nhits_all_physics < n_hits_limit )
 	  h_nhits_OD_cluster_1_center_of_mass_few_nhits.Fill(nhits_OD_cluster_1_center_of_mass);
 	else
@@ -1424,6 +1454,9 @@ int main(){
 	n_hits_all_OD_tubes = (digitized_hit_OD_tube_id->at(itrigger)).size();
 	h_digitized_nhits_all_tubes_by_topology[muon_topology_true]->Fill(n_hits_all_OD_tubes);
 	h_digitized_nhits_zoom_all_tubes_by_topology[muon_topology_true]->Fill(n_hits_all_OD_tubes);
+	h_digitized_nhits_top_tubes_by_topology[muon_topology_true]->Fill(nhits_top);
+	h_digitized_nhits_side_tubes_by_topology[muon_topology_true]->Fill(nhits_side);
+	h_digitized_nhits_bottom_tubes_by_topology[muon_topology_true]->Fill(nhits_bottom);
 	output_tree->Fill();
 	for(size_t idigitizedhit=0; idigitizedhit<(digitized_hit_OD_tube_id->at(itrigger)).size(); idigitizedhit++){
 	  // loop on digitized hits in the trigger
@@ -1471,6 +1504,17 @@ int main(){
   }
 
 
+  TH1F h_nhits_cluster_1_zoom_efficiency("h_nhits_cluster_1_zoom_efficiency",Form("cluster (< %.0f); threshold [nhits]; efficiency",cluster_radius_1),h_nhits_OD_cluster_1_zoom.GetNbinsX(),h_nhits_OD_cluster_1_zoom.GetXaxis()->GetXmin(),h_nhits_OD_cluster_1_zoom.GetXaxis()->GetXmax());
+  h_nhits_cluster_1_zoom_efficiency.SetLineColor(h_nhits_OD_cluster_1_zoom.GetLineColor());
+  h_nhits_cluster_1_zoom_efficiency.SetLineWidth(2);
+  nhits_integral = h_nhits_OD_cluster_1_zoom.Integral();
+  for(int i=1; i<=h_nhits_OD_cluster_1_zoom.GetNbinsX(); i++){
+    double local_integral = h_nhits_OD_cluster_1_zoom.Integral(i,h_nhits_OD_cluster_1_zoom.GetNbinsX());
+    double nhits_ratio = local_integral/nhits_integral;
+    h_nhits_cluster_1_zoom_efficiency.SetBinContent(i,nhits_ratio);
+  }
+
+
   TH1F h_nhits_cluster_2_efficiency("h_nhits_cluster_2_efficiency",Form("cluster (< %.0f); threshold [nhits]; efficiency",cluster_radius_2),h_nhits_OD_cluster_2.GetNbinsX(),h_nhits_OD_cluster_2.GetXaxis()->GetXmin(),h_nhits_OD_cluster_2.GetXaxis()->GetXmax());
   h_nhits_cluster_2_efficiency.SetLineColor(h_nhits_OD_cluster_2.GetLineColor());
   h_nhits_cluster_2_efficiency.SetLineWidth(2);
@@ -1493,6 +1537,17 @@ int main(){
   }
 
 
+  TH1F h_npes_cluster_1_zoom_efficiency("h_npes_cluster_1_zoom_efficiency",Form("cluster (< %.0f); threshold [npes]; efficiency",cluster_radius_1),h_npes_OD_cluster_1_zoom.GetNbinsX(),h_npes_OD_cluster_1_zoom.GetXaxis()->GetXmin(),h_npes_OD_cluster_1_zoom.GetXaxis()->GetXmax());
+  h_npes_cluster_1_zoom_efficiency.SetLineColor(h_npes_OD_cluster_1_zoom.GetLineColor());
+  h_npes_cluster_1_zoom_efficiency.SetLineWidth(2);
+  npes_integral = h_npes_OD_cluster_1_zoom.Integral();
+  for(int i=1; i<=h_npes_OD_cluster_1_zoom.GetNbinsX(); i++){
+    double local_integral = h_npes_OD_cluster_1_zoom.Integral(i,h_npes_OD_cluster_1_zoom.GetNbinsX());
+    double npes_ratio = local_integral/npes_integral;
+    h_npes_cluster_1_zoom_efficiency.SetBinContent(i,npes_ratio);
+  }
+
+
   TH1F h_npes_cluster_2_efficiency("h_npes_cluster_2_efficiency",Form("cluster (< %.0f); threshold [npes]; efficiency",cluster_radius_2),h_npes_OD_cluster_2.GetNbinsX(),h_npes_OD_cluster_2.GetXaxis()->GetXmin(),h_npes_OD_cluster_2.GetXaxis()->GetXmax());
   h_npes_cluster_2_efficiency.SetLineColor(h_npes_OD_cluster_2.GetLineColor());
   h_npes_cluster_2_efficiency.SetLineWidth(2);
@@ -1512,6 +1567,17 @@ int main(){
     double local_integral = h_nhits_OD_cluster_1_center_of_mass.Integral(i,h_nhits_OD_cluster_1_center_of_mass.GetNbinsX());
     double nhits_ratio = local_integral/nhits_integral_center_of_mass;
     h_nhits_cluster_1_center_of_mass_efficiency.SetBinContent(i,nhits_ratio);
+  }
+
+
+  TH1F h_nhits_cluster_1_zoom_center_of_mass_efficiency("h_nhits_cluster_1_zoom_center_of_mass_efficiency",Form("cluster (< %.0f); threshold [nhits]; efficiency",cluster_radius_1),h_nhits_OD_cluster_1_zoom_center_of_mass.GetNbinsX(),h_nhits_OD_cluster_1_zoom_center_of_mass.GetXaxis()->GetXmin(),h_nhits_OD_cluster_1_zoom_center_of_mass.GetXaxis()->GetXmax());
+  h_nhits_cluster_1_zoom_center_of_mass_efficiency.SetLineColor(h_nhits_OD_cluster_1_zoom_center_of_mass.GetLineColor());
+  h_nhits_cluster_1_zoom_center_of_mass_efficiency.SetLineWidth(2);
+  nhits_integral_center_of_mass = h_nhits_OD_cluster_1_zoom_center_of_mass.Integral();
+  for(int i=1; i<=h_nhits_OD_cluster_1_zoom_center_of_mass.GetNbinsX(); i++){
+    double local_integral = h_nhits_OD_cluster_1_zoom_center_of_mass.Integral(i,h_nhits_OD_cluster_1_zoom_center_of_mass.GetNbinsX());
+    double nhits_ratio = local_integral/nhits_integral_center_of_mass;
+    h_nhits_cluster_1_zoom_center_of_mass_efficiency.SetBinContent(i,nhits_ratio);
   }
 
 
@@ -1650,9 +1716,12 @@ int main(){
   }
   h_nhits_OD_cluster_1.Write();
   h_npes_OD_cluster_1.Write();
+  h_nhits_OD_cluster_1_zoom.Write();
+  h_npes_OD_cluster_1_zoom.Write();
   h_nhits_OD_cluster_2.Write();
   h_npes_OD_cluster_2.Write();
   h_nhits_OD_cluster_1_center_of_mass.Write();
+  h_nhits_OD_cluster_1_zoom_center_of_mass.Write();
   h_nhits_OD_cluster_1_center_of_mass_few_nhits.Write();
   h_nhits_OD_cluster_1_center_of_mass_many_nhits.Write();
   for(int i=0; i<n_muon_topologies; i++){
@@ -1669,6 +1738,9 @@ int main(){
   for(int i=0; i<n_muon_topologies; i++){
     h_digitized_nhits_all_tubes_by_topology[i]->Write();
     h_digitized_nhits_zoom_all_tubes_by_topology[i]->Write();
+    h_digitized_nhits_top_tubes_by_topology[i]->Write();
+    h_digitized_nhits_side_tubes_by_topology[i]->Write();
+    h_digitized_nhits_bottom_tubes_by_topology[i]->Write();
   }
   h_digitized_nhits_top_physics_tubes.Write();
   h_digitized_nhits_side_physics_tubes.Write();
@@ -1745,9 +1817,12 @@ int main(){
   h_dynamic_range.Write();
   h_nhits_cluster_1_efficiency.Write();
   h_nhits_cluster_2_efficiency.Write();
+  h_nhits_cluster_1_zoom_efficiency.Write();
   h_npes_cluster_1_efficiency.Write();
   h_npes_cluster_2_efficiency.Write();
+  h_npes_cluster_1_zoom_efficiency.Write();
   h_nhits_cluster_1_center_of_mass_efficiency.Write();
+  h_nhits_cluster_1_zoom_center_of_mass_efficiency.Write();
   h_nhits_cluster_1_center_of_mass_efficiency_few_nhits.Write();
   h_nhits_cluster_1_center_of_mass_efficiency_many_nhits.Write();
   for(int i=0; i<n_muon_topologies; i++){
