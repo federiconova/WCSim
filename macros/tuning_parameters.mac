@@ -12,7 +12,8 @@
 /WCSim/tuning/tvspacing 100
 
 
-/WCSim/tuning/WCCladdingReflectivity 0.90
-/WCSim/tuning/WCODTyvekReflectivity 0.90
+/WCSim/tuning/WCCladdingReflectivity 0.99
+/WCSim/tuning/WCODTyvekReflectivityInWall 0.95
+/WCSim/tuning/WCODTyvekReflectivityOutWall 0.95
 
 

@@ -200,7 +200,7 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
 						false,
 						0);
 
-    G4LogicalSkinSurface *TyvekCollarSurface = new G4LogicalSkinSurface("TyvekCollarSurface", logicCollarTyvek, OpWaterTySurface);
+    G4LogicalSkinSurface *TyvekCollarSurface = new G4LogicalSkinSurface("TyvekCollarSurface", logicCollarTyvek, OpWaterTySurfaceInWall);
 
     G4VisAttributes *showTyvekCollar = new G4VisAttributes(green);
     showTyvekCollar->SetForceWireframe(true);// This line is used to give definition to the rings in OGLSX Visualizer
@@ -234,7 +234,7 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
 						false,
 						0);
 
-    G4LogicalSkinSurface *TyvekSkirtSurface = new G4LogicalSkinSurface("TyvekSkirtSurface", logicSkirtTyvek, OpWaterTySurface);
+    G4LogicalSkinSurface *TyvekSkirtSurface = new G4LogicalSkinSurface("TyvekSkirtSurface", logicSkirtTyvek, OpWaterTySurfaceInWall);
 
     G4VisAttributes *showTyvekSkirt = new G4VisAttributes(green);
     showTyvekSkirt->SetForceWireframe(true);// This line is used to give definition to the rings in OGLSX Visualizer
@@ -274,7 +274,7 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
                           false,
                           0);
 
-    G4LogicalSkinSurface *TyvekCaveBarrelSurface = new G4LogicalSkinSurface("TyvekCaveBarrelSurface", logicCaveTyvek, OpWaterTySurface);
+    G4LogicalSkinSurface *TyvekCaveBarrelSurface = new G4LogicalSkinSurface("TyvekCaveBarrelSurface", logicCaveTyvek, OpWaterTySurfaceOutWall);
     //-----------------------------------------------------
     // Cylinder caps' tyvek
     //-----------------------------------------------------
@@ -294,7 +294,7 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
                              "CaveCapTyvek",
                              0, 0, 0);
 
-    G4LogicalSkinSurface *TyvekCaveTopSurface = new G4LogicalSkinSurface("TyvekCaveTopSurface", logicCaveCapsTyvek, OpWaterTySurface);
+    G4LogicalSkinSurface *TyvekCaveTopSurface = new G4LogicalSkinSurface("TyvekCaveTopSurface", logicCaveCapsTyvek, OpWaterTySurfaceOutWall);
 
 
     G4VPhysicalVolume *physiTopCaveTyvek =
@@ -733,7 +733,7 @@ else {
 		          				logicWCTopVeto,
 				 				false,0,true);
 
-          G4LogicalSkinSurface *WaterTyTVSurfaceBot = new G4LogicalSkinSurface("WaterTyTVSurfaceBot", logicWCTVTyvek, OpWaterTySurface);
+          G4LogicalSkinSurface *WaterTyTVSurfaceBot = new G4LogicalSkinSurface("WaterTyTVSurfaceBot", logicWCTVTyvek, OpWaterTySurfaceInWall);
 	  //Top
 	  G4VPhysicalVolume* physiWCTVTyvekTop =
 			new G4PVPlacement(	0,
@@ -770,7 +770,7 @@ else {
 		          				logicWCTopVeto,
 				 				false,0,true);
 
-          G4LogicalSkinSurface *WaterTyTVSurfaceSurface = new G4LogicalSkinSurface("WaterTyTVSurfaceSide", logicWCTVTyvekSide, OpWaterTySurface);
+          G4LogicalSkinSurface *WaterTyTVSurfaceSurface = new G4LogicalSkinSurface("WaterTyTVSurfaceSide", logicWCTVTyvekSide, OpWaterTySurfaceInWall);
   }
 
   //
@@ -984,7 +984,7 @@ If used here, uncomment the SetVisAttributes(WClogic) line, and comment out the 
                           0);
 
     G4LogicalSkinSurface *WaterTySurfaceTop =
-        new G4LogicalSkinSurface("WaterTySurfaceTop", logicWCODCapTyvek, OpWaterTySurface);
+        new G4LogicalSkinSurface("WaterTySurfaceTop", logicWCODCapTyvek, OpWaterTySurfaceInWall);
 
     CapTyvekPosition.setZ(-CapTyvekPosition.getZ());
 
@@ -1043,7 +1043,7 @@ If used here, uncomment the SetVisAttributes(WClogic) line, and comment out the 
                           0,true);
 
     G4LogicalSkinSurface *WaterTySurfaceSide =
-        new G4LogicalSkinSurface("WaterTySurfaceSide", logicWCBarrelCellODTyvek, OpWaterTySurface);
+        new G4LogicalSkinSurface("WaterTySurfaceSide", logicWCBarrelCellODTyvek, OpWaterTySurfaceInWall);
 
     //-------------------------------------------------------------
     // WLS and OD PMTs Barrel Side
@@ -1147,7 +1147,7 @@ If used here, uncomment the SetVisAttributes(WClogic) line, and comment out the 
                               0,0,0);
 
       G4LogicalSkinSurface *WaterExtraTySurfaceSide =
-          new G4LogicalSkinSurface("WaterExtraTySurfaceSide", logicWCTowerODTyvek, OpWaterTySurface);
+          new G4LogicalSkinSurface("WaterExtraTySurfaceSide", logicWCTowerODTyvek, OpWaterTySurfaceInWall);
 
 
       logicWCTowerODTyvek->SetVisAttributes(G4VisAttributes::Invisible);

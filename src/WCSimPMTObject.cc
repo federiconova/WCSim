@@ -1986,6 +1986,7 @@ G4float* PMT3inch::Getqpe() //currently uses the same as 20inch
   return qpe0;
 }
 
+#if 0 // from ETEL
 //PMT QE Info extrapolated from ETEL datasheet
 G4float* PMT3inch::GetQE(){
   static G4float QE[20] = { 0.00, .005, .09, .21, .28, .30, .29, .28, .26, .24, .22, .18, .13, .075, .04, .02, .008, 0.00, 0.00, 0.00};
@@ -1998,6 +1999,55 @@ G4float  PMT3inch::GetmaxQE(){
   const G4float maxQE = 0.30;
   return maxQE;
 }
+#endif
+
+#if 1 // from Hamamatsu
+G4float* PMT3inch::GetQE(){
+  static G4float QE[35] = {7.333448596/100., 13.41850844/100., 18.85388087/100., 22.58789628/100., 24.83751724/100., 25.90372483/100., 26.09567109/100., 26.68416596/100., 27.11242269/100., 27.37569687/100., 27.15690678/100., 26.8828067/100., 26.78047372/100., 26.11524001/100., 25.44085118/100., 24.21266344/100., 23.28276282/100., 21.83662063/100., 20.62874459/100., 19.73618418/100., 18.59231943/100., 16.61159424/100., 13.50310127/100., 11.01111366/100., 9.511755535/100., 8.430844444/100., 7.428469476/100., 6.525186832/100., 5.512680184/100., 4.649601092/100., 3.720048567/100., 2.936519188/100., 2.188881819/100., 1.48734368/100., 0.934955148/100.};
+  return QE;
+}
+
+G4float* PMT3inch::GetQEWavelength(){static G4float wavelength[35] = { 300, 310, 320, 330, 340, 350, 360, 370, 380, 390, 400, 410, 420, 430, 440, 450, 460, 470, 480, 490, 500, 510, 520, 530, 540, 550, 560, 570, 580, 590, 600, 610, 620, 630, 640 };
+  return wavelength;}
+
+G4float  PMT3inch::GetmaxQE(){
+  const G4float maxQE = 0.27;
+  return maxQE;
+}
+#endif
+
+
+#if 0 // from NNVT
+G4float* PMT3inch::GetQE(){
+  static G4float QE[35] = {0.187399331/100., 1.83797986/100., 6.849267609/100., 14.53596403/100., 20.98046045/100., 24.82708625/100., 27.78453786/100., 28.88106058/100., 28.43121586/100., 28.69331522/100., 27.73683132/100., 25.45433263/100., 23.61911783/100., 21.52790058/100., 19.75096978/100., 18.09367601/100., 16.15956243/100., 14.08033797/100., 12.56868349/100., 11.86649274/100., 10.84294965/100., 9.909833721/100., 8.010004769/100., 6.253118113/100., 5.124670521/100., 4.433686592/100., 3.878838981/100., 3.267511401/100., 2.919435288/100., 2.392315593/100., 1.889523401/100., 1.500014957/100., 1.00341673/100., 0.718883368/100., 0.386247086/100.};
+  return QE;
+}
+
+G4float* PMT3inch::GetQEWavelength(){static G4float wavelength[35] = { 300, 310, 320, 330, 340, 350, 360, 370, 380, 390, 400, 410, 420, 430, 440, 450, 460, 470, 480, 490, 500, 510, 520, 530, 540, 550, 560, 570, 580, 590, 600, 610, 620, 630, 640 };
+  return wavelength;}
+
+G4float  PMT3inch::GetmaxQE(){
+  const G4float maxQE = 0.29;
+  return maxQE;
+}
+#endif
+
+
+#if 0 // flat in energy range
+G4float* PMT3inch::GetQE(){
+  static G4float QE[4] = {0., 1., 1., 0.};
+  return QE;
+}
+
+G4float* PMT3inch::GetQEWavelength(){static G4float wavelength[4] = { 649, 650, 700, 701}; // set here energy range
+  return wavelength;}
+
+G4float  PMT3inch::GetmaxQE(){
+  const G4float maxQE = 1.;
+  return maxQE;
+}
+#endif
+
 
 // Should be actual PMT Dark Rate, not effective dark rate in detector including other LE noise
 G4float PMT3inch::GetDarkRate(){
