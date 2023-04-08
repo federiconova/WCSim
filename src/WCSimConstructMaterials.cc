@@ -892,7 +892,7 @@ void WCSimDetectorConstruction::ConstructMaterials()
 
   double no_absorption = 1000.*m;
   double immediate_absorption = 0.*m;
-  double some_absorption = 1.*m;
+  double some_absorption = 4.*m;
 
   // active glass will be a thin layer absorbing everything in the right energy range
   // passive glass will be a thick layer responsible of absorption outside of the range
