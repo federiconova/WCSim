@@ -1150,6 +1150,19 @@ If used here, uncomment the SetVisAttributes(WClogic) line, and comment out the 
     G4RotationMatrix* WCCapPMTRotation = new G4RotationMatrix;
     WCCapPMTRotation->rotateY(180.*deg);
 
+	G4double qqq_top_pmt_support_height = 0.6*m;
+
+	G4Tubs* qqq_top_pmt_support = new G4Tubs("qqq_top_pmt_support",
+											 0.0*m,
+											 WCPMTRadius, 
+											 qqq_top_pmt_support_height/2.,
+											 0.*deg,
+											 360.*deg);
+	G4LogicalVolume* qqq_logic_top_pmt_support =
+      new G4LogicalVolume(qqq_top_pmt_support,
+                          G4Material::GetMaterial("Tyvek"),
+                          "qqq_logic_top_pmt_support",
+                          0,0,0);
 
     // loop over the cap
     G4int CapNCell = (G4int)(WCODCapEdgeLimit/WCODCapPMTSpacing) + 2;
@@ -1159,13 +1172,17 @@ If used here, uncomment the SetVisAttributes(WClogic) line, and comment out the 
         xoffset = i*WCODCapPMTSpacing + WCODCapPMTSpacing*0.5;
         yoffset = j*WCODCapPMTSpacing + WCODCapPMTSpacing*0.5;
 
-        G4ThreeVector topWLSpos = G4ThreeVector(xoffset,
-                                                yoffset,
-                                                ((WCIDHeight + 2*WCODDeadSpace)/2)+WCODTyvekSheetThickness);
+        G4ThreeVector qqq_topWLSpos_support = G4ThreeVector(xoffset,
+															yoffset,
+															((WCIDHeight + 2*WCODDeadSpace)/2)+WCODTyvekSheetThickness + qqq_top_pmt_support_height/2.);
+
+        G4ThreeVector qqq_topWLSpos_pmt = G4ThreeVector(xoffset,
+														yoffset,
+														((WCIDHeight + 2*WCODDeadSpace)/2)+WCODTyvekSheetThickness + qqq_top_pmt_support_height);
 
         G4ThreeVector bottomWLSpos = G4ThreeVector(xoffset,
                                                    yoffset,
-                                                   -topWLSpos.getZ());
+												   -((WCIDHeight + 2*WCODDeadSpace)/2)+WCODTyvekSheetThickness);
 
         if (((sqrt(xoffset*xoffset + yoffset*yoffset) + WCPMTODRadius) < WCODCapEdgeLimit) ) {
 
@@ -1173,9 +1190,18 @@ If used here, uncomment the SetVisAttributes(WClogic) line, and comment out the 
 		  //		  std::cout << " qqqqqqqqqqqqqqqqqqqqqqqq cap i " << i << " of " << CapNCell << " j " << j << " of " << CapNCell << " Container (" << topWLSpos.x() << ", " << topWLSpos.y()
 		  //				  << ", " << topWLSpos.z() << ") " << std::endl;
 
+			G4VPhysicalVolume* physiTopCapWLSPlate_support =
+					new G4PVPlacement(0,                   // its rotation
+									  qqq_topWLSpos_support,
+									  qqq_logic_top_pmt_support,   // its logical volume
+									  "WCTopCapContainerOD_support",// its name
+									  logicWCBarrel,       // its mother volume
+									  false,               // no boolean operations
+									  icopy);
+
 			G4VPhysicalVolume* physiTopCapWLSPlate =
 					new G4PVPlacement(0,                   // its rotation
-									  topWLSpos,
+									  qqq_topWLSpos_pmt,
 									  logicWCODWLSAndPMT,   // its logical volume
 									  "WCTopCapContainerOD",// its name
 									  logicWCBarrel,       // its mother volume
