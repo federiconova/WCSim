@@ -223,6 +223,7 @@ public:
           time_presmear.at(j) = time_presmear.at(j-1);
           pe.at(j) = pe.at(j-1);
           if(sort_digi_compositions) fDigiComp.at(j) = fDigiComp.at(j-1);
+          wavelength.at(j) = wavelength.at(j-1);
           trackID.at(j) = trackID.at(j-1);
           parentSavedTrackID.at(j) = parentSavedTrackID.at(j-1);
           photonStartTime.at(j) = photonStartTime.at(j-1);
@@ -238,6 +239,7 @@ public:
         pe.at(j) = index_pe;
         if(sort_digi_compositions) fDigiComp.at(j) = index_digicomp;
         trackID.at(j) = index_trackID;
+        wavelength.at(j) = index_wavelength;
         parentSavedTrackID.at(j) = index_parentSavedTrackID;
         photonStartTime.at(j) = index_photonstarttime;
         photonStartPos.at(j) = index_photonstartpos;
