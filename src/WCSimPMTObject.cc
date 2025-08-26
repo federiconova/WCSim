@@ -235,12 +235,14 @@ G4double* PMT20inch::Getqpe()
   }
 
 G4double* PMT20inch::GetQEWavelength(){
-  static G4double wavelength_value[20] = { 280., 300., 320., 340., 360., 380., 400., 420., 440., 460., 480., 500., 520., 540., 560., 580., 600., 620., 640., 660.};
+  //  static G4double wavelength_value[20] = { 280., 300., 320., 340., 360., 380., 400., 420., 440., 460., 480., 500., 520., 540., 560., 580., 600., 620., 640., 660.};
+  static G4double wavelength_value[4] = { 199., 200., 660., 661.};
   return wavelength_value;
 }
 
 G4double* PMT20inch::GetQE(){
-  static G4double QE[20] = { 0.00, .0139, .0854, .169, .203, .206, .211, .202,.188, .167, .140, .116, .0806, .0432, .0265, .0146, .00756, .00508, .00158, 0.00};
+  //  static G4double QE[20] = { 0.00, .0139, .0854, .169, .203, .206, .211, .202,.188, .167, .140, .116, .0806, .0432, .0265, .0146, .00756, .00508, .00158, 0.00};
+  static G4double QE[4] = { 0.00, 1., 1., 0.00};
   return QE;
 }
 G4double PMT20inch::GetmaxQE(){
@@ -271,7 +273,8 @@ G4double PMT20inch::GetDarkRateConversionFactor(){
 }
 
 G4int PMT20inch::GetNbOfQEDefined(){
-  const G4int factor = 20;
+  //  const G4int factor = 20;
+  const G4int factor = 4;
   return factor;
 }
 
@@ -426,10 +429,13 @@ G4double* PMT8inch::Getqpe() //currently uses the same as 20inch
 
 //Currenly the PMT QE info is the same as 20 inch.
 G4double* PMT8inch::GetQE(){
-  static G4double QE[20] = { 0.00, .0139, .0854, .169, .203, .206, .211, .202,.188, .167, .140, .116, .0806, .0432, .0265, .0146, .00756, .00508, .00158, 0.00};
+  //  static G4double QE[20] = { 0.00, .0139, .0854, .169, .203, .206, .211, .202,.188, .167, .140, .116, .0806, .0432, .0265, .0146, .00756, .00508, .00158, 0.00};
+  static G4double QE[4] = { 0.00, 1., 1., 0.00};
   return QE;
 }
-G4double* PMT8inch::GetQEWavelength(){static G4double wavelength[20] = { 280., 300., 320., 340., 360., 380., 400., 420., 440., 460., 480., 500., 520., 540., 560., 580., 600., 620., 640., 660.};
+G4double* PMT8inch::GetQEWavelength(){
+  //  static G4double wavelength[20] = { 280., 300., 320., 340., 360., 380., 400., 420., 440., 460., 480., 500., 520., 540., 560., 580., 600., 620., 640., 660.};
+  static G4double wavelength[4] = { 199., 200., 660., 661.};
   return wavelength;}
 
 G4double  PMT8inch::GetmaxQE(){
@@ -448,7 +454,8 @@ G4double PMT8inch::GetDarkRateConversionFactor(){
 }
 
 G4int PMT8inch::GetNbOfQEDefined(){
-  const G4int factor = 20;
+  //  const G4int factor = 20;
+  const G4int factor = 4;
   return factor;
 }
 
@@ -953,10 +960,13 @@ G4double* PMT3inch::Getqpe() //currently uses the same as 20inch
 
 //Currenly the PMT QE info is the same as 20 inch.
 G4double* PMT3inch::GetQE(){
-  static G4double QE[20] = { 0.00, .0139, .0854, .169, .203, .206, .211, .202,.188, .167, .140, .116, .0806, .0432, .0265, .0146, .00756, .00508, .00158, 0.00};
+  //  static G4double QE[20] = { 0.00, .0139, .0854, .169, .203, .206, .211, .202,.188, .167, .140, .116, .0806, .0432, .0265, .0146, .00756, .00508, .00158, 0.00};
+  static G4double QE[4] = { 0.00, 1., 1., 0.00};
   return QE;
 }
-G4double* PMT3inch::GetQEWavelength(){static G4double wavelength[20] = { 280., 300., 320., 340., 360., 380., 400., 420., 440., 460., 480., 500., 520., 540., 560., 580., 600., 620., 640., 660.};
+G4double* PMT3inch::GetQEWavelength(){
+  //  static G4double wavelength[20] = { 280., 300., 320., 340., 360., 380., 400., 420., 440., 460., 480., 500., 520., 540., 560., 580., 600., 620., 640., 660.};
+  static G4double wavelength[4] = { 199., 200., 660., 661.};
   return wavelength;}
 
 G4double  PMT3inch::GetmaxQE(){
@@ -975,7 +985,8 @@ G4double PMT3inch::GetDarkRateConversionFactor(){
 }
 
 G4int PMT3inch::GetNbOfQEDefined(){
-  const G4int factor = 20;
+  //  const G4int factor = 20;
+  const G4int factor = 4;
   return factor;
 }
 
@@ -1128,10 +1139,13 @@ G4double* PMT3inch_ETEL9302B::Getqpe() //currently uses the same as 20inch
 
 //PMT QE Info extrapolated from ETEL datasheet
 G4double* PMT3inch_ETEL9302B::GetQE(){
-  static G4double QE[20] = { 0.00, .005, .09, .21, .28, .30, .29, .28, .26, .24, .22, .18, .13, .075, .04, .02, .008, 0.00, 0.00, 0.00};
+  //  static G4double QE[20] = { 0.00, .005, .09, .21, .28, .30, .29, .28, .26, .24, .22, .18, .13, .075, .04, .02, .008, 0.00, 0.00, 0.00};
+  static G4double QE[4] = { 0.00, 1., 1., 0.00};
   return QE;
 }
-G4double* PMT3inch_ETEL9302B::GetQEWavelength(){static G4double wavelength[20] = { 260., 280., 300., 320., 340., 360., 380., 400., 420., 440., 460., 480., 500., 520., 540., 560., 580., 600., 620., 640.};
+G4double* PMT3inch_ETEL9302B::GetQEWavelength(){
+  //  static G4double wavelength[20] = { 260., 280., 300., 320., 340., 360., 380., 400., 420., 440., 460., 480., 500., 520., 540., 560., 580., 600., 620., 640.};
+  static G4double wavelength[4] = { 199., 200., 660., 661.};  
   return wavelength;}
 
 G4double  PMT3inch_ETEL9302B::GetmaxQE(){
@@ -1153,7 +1167,8 @@ G4double PMT3inch_ETEL9302B::GetDarkRateConversionFactor(){
 }
 
 G4int PMT3inch_ETEL9302B::GetNbOfQEDefined(){
-  const G4int factor = 20;
+  //  const G4int factor = 20;
+  const G4int factor = 4;
   return factor;
 }
 
@@ -1306,10 +1321,13 @@ G4double* PMT3inchGT::Getqpe() //currently uses the same as 20inch
 
 //Currenly the PMT QE info is the same as 20 inch.
 G4double* PMT3inchGT::GetQE(){
-  static G4double QE[20] = { 0.00, .0139, .0854, .169, .203, .206, .211, .202,.188, .167, .140, .116, .0806, .0432, .0265, .0146, .00756, .00508, .00158, 0.00};
+  //  static G4double QE[20] = { 0.00, .0139, .0854, .169, .203, .206, .211, .202,.188, .167, .140, .116, .0806, .0432, .0265, .0146, .00756, .00508, .00158, 0.00};
+  static G4double QE[4] = { 0.00, 1., 1., 0.00};
   return QE;
 }
-G4double* PMT3inchGT::GetQEWavelength(){static G4double wavelength[20] = { 280., 300., 320., 340., 360., 380., 400., 420., 440., 460., 480., 500., 520., 540., 560., 580., 600., 620., 640., 660.};
+G4double* PMT3inchGT::GetQEWavelength(){
+  //  static G4double wavelength[20] = { 280., 300., 320., 340., 360., 380., 400., 420., 440., 460., 480., 500., 520., 540., 560., 580., 600., 620., 640., 660.};
+  static G4double wavelength[4] = { 199., 200., 660., 661.};  
   return wavelength;}
 
 G4double  PMT3inchGT::GetmaxQE(){
@@ -1328,7 +1346,8 @@ G4double PMT3inchGT::GetDarkRateConversionFactor(){
 }
 
 G4int PMT3inchGT::GetNbOfQEDefined(){
-  const G4int factor = 20;
+  //  const G4int factor = 20;
+  const G4int factor = 4;
   return factor;
 }
 
@@ -1861,14 +1880,14 @@ G4double* HPD20inchHQE::Getqpe()
   }
 
 G4double* HPD20inchHQE::GetQEWavelength(){
-  static G4double wavelength_value[20] = { 280., 300., 320., 340., 360., 380., 400., 420., 440., 460., 480., 500., 520., 540., 560., 580., 600., 620., 640., 660.};
+  //  static G4double wavelength_value[20] = { 280., 300., 320., 340., 360., 380., 400., 420., 440., 460., 480., 500., 520., 540., 560., 580., 600., 620., 640., 660.};
+  static G4double wavelength_value[4] = { 199., 200., 660., 661.};
   return wavelength_value;
 }
 
 G4double* HPD20inchHQE::GetQE(){
-  static G4double QE[20] =
-    { 0.00, .0008, .1255, .254962, .2930, .3127, .3130, .2994, .2791, .2491,
-      .2070,  .1758, .1384, .0779, .0473, .0288, .0149, .0062, .0002, .0001};  
+  //  static G4double QE[20] =    { 0.00, .0008, .1255, .254962, .2930, .3127, .3130, .2994, .2791, .2491,      .2070,  .1758, .1384, .0779, .0473, .0288, .0149, .0062, .0002, .0001};  
+  static G4double QE[4] = { 0.00, 1., 1., 0.00};
   return QE;
 }
 G4double HPD20inchHQE::GetmaxQE(){
@@ -1893,7 +1912,8 @@ G4double HPD20inchHQE::GetDarkRateConversionFactor(){
 }
 
 G4int HPD20inchHQE::GetNbOfQEDefined(){
-  const G4int factor = 20;
+  //  const G4int factor = 20;
+  const G4int factor = 4;
   return factor;
 }
 
@@ -2264,15 +2284,17 @@ G4double* BoxandLine20inchHQE::Getqpe()
 }
 
 G4double* BoxandLine20inchHQE::GetQEWavelength(){
-  static G4double wavelength_value[20] = { 280., 300., 320., 340., 360., 380., 400., 420., 440., 460., 480., 500., 520., 540., 560., 580., 600., 620., 640., 660.};
+  //  static G4double wavelength_value[20] = { 280., 300., 320., 340., 360., 380., 400., 420., 440., 460., 480., 500., 520., 540., 560., 580., 600., 620., 640., 660.};
+  static G4double wavelength_value[4] = { 199., 200., 660., 661.};
   return wavelength_value;
 }
 
 G4double* BoxandLine20inchHQE::GetQE(){
   G4double correctionFactor = 1./0.73;//Correction factor added in July 2015 to scale the output of B&L PDs to 2.27 times the 20" PMTS based on Hamamatsu simulation. This was done in Pull Request #98 and will be removed once a more permanent solution is found.
-  static G4double QE[20] =                 //TF: to resolve "narrowing conversion" error in C++0x, make array G4double
-    {  0.00*correctionFactor, .0008*correctionFactor, .1255*correctionFactor, .254962*correctionFactor, .2930*correctionFactor, .3127*correctionFactor, .3130*correctionFactor, .2994*correctionFactor, .2791*correctionFactor, .2491*correctionFactor,
-      .2070*correctionFactor,  .1758*correctionFactor, .1384*correctionFactor, .0779*correctionFactor, .0473*correctionFactor, .0288*correctionFactor, .0149*correctionFactor, .0062*correctionFactor, .0002*correctionFactor, .0001*correctionFactor};  
+  // static G4double QE[20] =                 //TF: to resolve "narrowing conversion" error in C++0x, make array G4double
+  //   {  0.00*correctionFactor, .0008*correctionFactor, .1255*correctionFactor, .254962*correctionFactor, .2930*correctionFactor, .3127*correctionFactor, .3130*correctionFactor, .2994*correctionFactor, .2791*correctionFactor, .2491*correctionFactor,
+  //     .2070*correctionFactor,  .1758*correctionFactor, .1384*correctionFactor, .0779*correctionFactor, .0473*correctionFactor, .0288*correctionFactor, .0149*correctionFactor, .0062*correctionFactor, .0002*correctionFactor, .0001*correctionFactor};  
+  static G4double QE[4] = { 0.00, 1., 1., 0.00};
 
   return QE;
 }
@@ -2302,7 +2324,8 @@ G4double BoxandLine20inchHQE::GetDarkRateConversionFactor(){
 }
 
 G4int BoxandLine20inchHQE::GetNbOfQEDefined(){
-  const G4int factor = 20;
+  //  const G4int factor = 20;
+  const G4int factor = 4;
   return factor;
 }
 
@@ -2687,7 +2710,8 @@ G4double* PMT3inchR12199_02::GetQEWavelength(){
 
   //TEST: make QE same!!
   //static G4double wavelength_value[20] = { 280., 300., 320., 340., 360., 380., 400., 420., 440., 460., 480., 500., 520., 540., 560., 580., 600., 620., 640., 660.};
-  static G4double wavelength_value[21] = { 300., 320., 340., 360., 380., 400., 420., 440., 460., 480., 500., 520., 540., 560., 580., 600., 620., 640., 660., 680., 700.};
+  //  static G4double wavelength_value[21] = { 300., 320., 340., 360., 380., 400., 420., 440., 460., 480., 500., 520., 540., 560., 580., 600., 620., 640., 660., 680., 700.};
+  static G4double wavelength_value[4] = { 199., 200., 660., 661.};
   return wavelength_value;
 }
 
@@ -2696,10 +2720,11 @@ G4double* PMT3inchR12199_02::GetQE(){
   // TF: While the main reason is the 20" SK PMT, this correction factor has been applied
   // to the B&L PMT. Therefore all PMTs have to corrected in a similar way, unfortunately.
   
-  static G4double QE[21] =
-    { .0787*correctionFactor, .1838*correctionFactor, .2401*correctionFactor, .2521*correctionFactor, .2695*correctionFactor, .2676*correctionFactor, .2593*correctionFactor, .2472*correctionFactor, .2276*correctionFactor,
-      .1970*correctionFactor,  .1777*correctionFactor, .1547*correctionFactor, .1033*correctionFactor, .0727*correctionFactor, .0587*correctionFactor, .0470*correctionFactor, .0372*correctionFactor, .0285*correctionFactor, .0220*correctionFactor, .0130*correctionFactor, .0084*correctionFactor};
+  // static G4double QE[21] =
+  //   { .0787*correctionFactor, .1838*correctionFactor, .2401*correctionFactor, .2521*correctionFactor, .2695*correctionFactor, .2676*correctionFactor, .2593*correctionFactor, .2472*correctionFactor, .2276*correctionFactor,
+  //     .1970*correctionFactor,  .1777*correctionFactor, .1547*correctionFactor, .1033*correctionFactor, .0727*correctionFactor, .0587*correctionFactor, .0470*correctionFactor, .0372*correctionFactor, .0285*correctionFactor, .0220*correctionFactor, .0130*correctionFactor, .0084*correctionFactor};
   
+  static G4double QE[4] = { 0.00, 1., 1., 0.00};
 
 
   
@@ -2739,7 +2764,8 @@ G4double  PMT3inchR12199_02::GetDarkRateConversionFactor(){
 }
 
 G4int PMT3inchR12199_02::GetNbOfQEDefined(){
-  const G4int factor = 20;
+  //  const G4int factor = 20;
+  const G4int factor = 4;
   return factor;
 }
 
@@ -3305,7 +3331,8 @@ G4double* PMT3inchR14374::GetQEWavelength(){
 
   //TEST: make QE same!!
   //static G4double wavelength_value[20] = { 280., 300., 320., 340., 360., 380., 400., 420., 440., 460., 480., 500., 520., 540., 560., 580., 600., 620., 640., 660.};
-  static G4double wavelength_value[21] = { 300., 320., 340., 360., 380., 400., 420., 440., 460., 480., 500., 520., 540., 560., 580., 600., 620., 640., 660., 680., 700.};
+  //  static G4double wavelength_value[21] = { 300., 320., 340., 360., 380., 400., 420., 440., 460., 480., 500., 520., 540., 560., 580., 600., 620., 640., 660., 680., 700.};
+  static G4double wavelength_value[4] = { 199., 200., 660., 661.};
   return wavelength_value;
 }
 
@@ -3314,10 +3341,11 @@ G4double* PMT3inchR14374::GetQE(){
   // TF: While the main reason is the 20" SK PMT, this correction factor has been applied
   // to the B&L PMT. Therefore all PMTs have to corrected in a similar way, unfortunately.
 
-  static G4double QE[21] =
-  { .0787*correctionFactor, .1838*correctionFactor, .2401*correctionFactor, .2521*correctionFactor, .2695*correctionFactor, .2676*correctionFactor, .2593*correctionFactor, .2472*correctionFactor, .2276*correctionFactor,
-    .1970*correctionFactor,  .1777*correctionFactor, .1547*correctionFactor, .1033*correctionFactor, .0727*correctionFactor, .0587*correctionFactor, .0470*correctionFactor, .0372*correctionFactor, .0285*correctionFactor, .0220*correctionFactor, .0130*correctionFactor, .0084*correctionFactor};
+  // static G4double QE[21] =
+  // { .0787*correctionFactor, .1838*correctionFactor, .2401*correctionFactor, .2521*correctionFactor, .2695*correctionFactor, .2676*correctionFactor, .2593*correctionFactor, .2472*correctionFactor, .2276*correctionFactor,
+  //   .1970*correctionFactor,  .1777*correctionFactor, .1547*correctionFactor, .1033*correctionFactor, .0727*correctionFactor, .0587*correctionFactor, .0470*correctionFactor, .0372*correctionFactor, .0285*correctionFactor, .0220*correctionFactor, .0130*correctionFactor, .0084*correctionFactor};
 
+  static G4double QE[4] = { 0.00, 1., 1., 0.00};
 
 
 
@@ -3356,7 +3384,8 @@ G4double  PMT3inchR14374::GetDarkRateConversionFactor(){
 }
 
 G4int PMT3inchR14374::GetNbOfQEDefined(){
-  const G4int factor = 20;
+  //  const G4int factor = 20;
+  const G4int factor = 4;
   return factor;
 }
 
@@ -3531,7 +3560,8 @@ G4double* PMT3inchR14374_WCTE::GetQEWavelength(){
 
   //TEST: make QE same!!
   //static G4double wavelength_value[20] = { 280., 300., 320., 340., 360., 380., 400., 420., 440., 460., 480., 500., 520., 540., 560., 580., 600., 620., 640., 660.};
-  static G4double wavelength_value[21] = { 300., 320., 340., 360., 380., 400., 420., 440., 460., 480., 500., 520., 540., 560., 580., 600., 620., 640., 660., 680., 700.};
+  //  static G4double wavelength_value[21] = { 300., 320., 340., 360., 380., 400., 420., 440., 460., 480., 500., 520., 540., 560., 580., 600., 620., 640., 660., 680., 700.};
+  static G4double wavelength_value[4] = { 199., 200., 660., 661.};
   return wavelength_value;
 }
 
@@ -3540,9 +3570,10 @@ G4double* PMT3inchR14374_WCTE::GetQE(){
   // TF: While the main reason is the 20" SK PMT, this correction factor has been applied
   // to the B&L PMT. Therefore all PMTs have to corrected in a similar way, unfortunately.
   
-  static G4double QE[21] =
-    { .0787*correctionFactor, .1838*correctionFactor, .2401*correctionFactor, .2521*correctionFactor, .2695*correctionFactor, .2676*correctionFactor, .2593*correctionFactor, .2472*correctionFactor, .2276*correctionFactor,
-      .1970*correctionFactor,  .1777*correctionFactor, .1547*correctionFactor, .1033*correctionFactor, .0727*correctionFactor, .0587*correctionFactor, .0470*correctionFactor, .0372*correctionFactor, .0285*correctionFactor, .0220*correctionFactor, .0130*correctionFactor, .0084*correctionFactor};
+  // static G4double QE[21] =
+  //   { .0787*correctionFactor, .1838*correctionFactor, .2401*correctionFactor, .2521*correctionFactor, .2695*correctionFactor, .2676*correctionFactor, .2593*correctionFactor, .2472*correctionFactor, .2276*correctionFactor,
+  //     .1970*correctionFactor,  .1777*correctionFactor, .1547*correctionFactor, .1033*correctionFactor, .0727*correctionFactor, .0587*correctionFactor, .0470*correctionFactor, .0372*correctionFactor, .0285*correctionFactor, .0220*correctionFactor, .0130*correctionFactor, .0084*correctionFactor};
+  static G4double QE[4] = { 0.00, 1., 1., 0.00};
   return QE;
 }
 
@@ -3574,7 +3605,8 @@ G4double  PMT3inchR14374_WCTE::GetDarkRateConversionFactor(){
 }
 
 G4int PMT3inchR14374_WCTE::GetNbOfQEDefined(){
-  const G4int factor = 20;
+  //  const G4int factor = 20;
+  const G4int factor = 4;
   return factor;
 }
 
