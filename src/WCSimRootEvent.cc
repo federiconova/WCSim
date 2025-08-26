@@ -573,7 +573,8 @@ WCSimRootCherenkovHit *WCSimRootTrigger::AddCherenkovHit(Int_t tubeID,
 							 std::vector<TVector3> photonEndPos,
 							 std::vector<TVector3> photonStartDir,
 							 std::vector<TVector3> photonEndDir,
-               std::vector<ProcessType_t> photonCreatorProcess)
+							 std::vector<ProcessType_t> photonCreatorProcess,
+							 std::vector<double> wavelength)
 {
   // Add a new Cherenkov hit to the list of Cherenkov hits
   TClonesArray &cherenkovhittimes = *fCherenkovHitTimes;
@@ -592,12 +593,13 @@ WCSimRootCherenkovHit *WCSimRootTrigger::AddCherenkovHit(Int_t tubeID,
       endDir[j] = photonEndDir[i][j];
     }
     
-    ProcessType_t creatorProcess = photonCreatorProcess[i]; // Get the creator process for this p.e. 
+    ProcessType_t creatorProcess = photonCreatorProcess[i]; // Get the creator process for this p.e.
+    double the_wavelength = wavelength[i];
 
     //WCSimRootCherenkovHitTime *cherenkovhittime =
     new(cherenkovhittimes[fNcherenkovhittimes++]) WCSimRootCherenkovHitTime(truetime[i],parentSavedTrackID[i],
 									    photonStartTime[i], startPos, endPos,
-									    startDir, endDir, creatorProcess);
+									    startDir, endDir, creatorProcess, the_wavelength);
   }
   
 #ifdef DEBUG
@@ -666,13 +668,15 @@ WCSimRootCherenkovHitTime::WCSimRootCherenkovHitTime(Double_t truetime,
 						     Float_t photonEndPos[3],
 						     Float_t photonStartDir[3],
 						     Float_t photonEndDir[3],
-                 ProcessType_t photonCreatorProcess)
+						     ProcessType_t photonCreatorProcess,
+						     Double_t wavelength)
 {
   // Create a WCSimRootCherenkovHit object and fill it with stuff
   fTruetime        = truetime;
   fParentSavedTrackID = parentSavedTrackID;
   fPhotonStartTime = photonStartTime;
   fPhotonCreatorProcess = photonCreatorProcess;
+  fWavelength = wavelength;
   for (int i=0;i<3;i++) {
     fPhotonStartPos[i] = photonStartPos[i];
     fPhotonEndPos[i] = photonEndPos[i];
@@ -871,7 +875,7 @@ bool WCSimRootTrack::CompareAllVariables(const WCSimRootTrack * c) const
   failed = (!ComparisonPassedVec(boundaryTimes, c->GetBoundaryTimes(), typeid(*this).name(), __func__, "boundaryTimes")) || failed;
   failed = (!ComparisonPassedVec(boundaryTypes, c->GetBoundaryTypes(), typeid(*this).name(), __func__, "boundaryTypes")) || failed;
   failed = (!ComparisonPassed(fCreatorProcess, c->GetCreatorProcess(), typeid(*this).name(), __func__, "CreatorProcess")) || failed;
-
+  
   return !failed;
 }
 
