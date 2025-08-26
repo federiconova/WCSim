@@ -213,6 +213,8 @@ G4bool WCSimWCSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
     ratio = 1./(1.-0.25);
     photonQE = fdet->GetPMTQE(WCCollectionName, wavelength,1,240,660,ratio);
   }
+
+//  std::cout << " qqq method " << fdet->GetPMT_QE_Method() << " photonQE " << photonQE << " maxQE " << maxQE << " wavelength " << wavelength << std::endl;
   
   if (G4UniformRand() <= photonQE){
     
@@ -380,6 +382,8 @@ G4bool WCSimWCSD::ProcessHits_boundary(G4Step* aStep, G4TouchableHistory*)
     ratio = 1./(1.-0.25);
     photonQE = fdet->GetPMTQE(WCCollectionName, wavelength,1,240,660,ratio);
   }
+
+//  std::cout << " qqq2 method " << fdet->GetPMT_QE_Method() << " photonQE " << photonQE << " maxQE " << maxQE << " wavelength " << wavelength << std::endl;
   
   if (G4UniformRand() <= photonQE)
   {
