@@ -220,13 +220,15 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
 						  "3inch\n"
 						  "3inchR14374_FDOD\n"
 						  "3inchNNVT\n"
+			                          "3inchR14374\n"
 						  "5inch\n"
 						  "8inch\n");
   PMTODRadius->SetParameterName("PMTODRadius", false);
   PMTODRadius->SetCandidates("3inch "
 			     "3inchR14374_FDOD "
 			     "3inchNNVT "
-							 "5inch "
+			     "3inchR14374 "
+			     "5inch "
                              "8inch ");
   PMTODRadius->AvailableForStates(G4State_PreInit, G4State_Idle);
 
@@ -946,6 +948,8 @@ void WCSimDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
         WCSimDetector->SetWCPMTODSize("PMT3inchR14374_FDOD");
       }else if (newValue == "3inchNNVT"){
         WCSimDetector->SetWCPMTODSize("PMT3inchNNVT");
+      }else if (newValue == "3inchR14374"){
+        WCSimDetector->SetWCPMTODSize("PMT3inchR14374");
       }else if (newValue == "5inch"){
         WCSimDetector->SetWCPMTODSize("PMT5inch");
       }else if (newValue == "8inch"){
