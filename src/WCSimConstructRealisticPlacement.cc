@@ -208,22 +208,50 @@ G4LogicalVolume* BuildAndPlace_SinglePolyhedraTank(
   G4double rstart[2] = {start_radius,start_radius};
   G4double rend[2] = {end_radius,end_radius};
 
-  // Polyhedra solid object
-  G4Polyhedra* solid = new G4Polyhedra(name,
-                                        0, // phi start
-                                        360*deg,
-                                        48*6, //NPhi-gon
-                                        2,
-                                        zplane,
-                                        rstart,
-                                        rend);
+  if( (name.compare("BlackSheet") == 0) || (name.compare("WhiteTyvek") == 0) ){
 
-  // Logical to be placed
-  logic = 
+	// Polyhedra solid object
+	G4Polyhedra* solid_base = new G4Polyhedra(name,
+										 0, // phi start
+										 360*deg,
+										 48*6, //NPhi-gon
+										 2,
+										 zplane,
+										 rstart,
+										 rend);
+	
+	G4Sphere* BShole = new G4Sphere(    "BShole",
+										0.0*m,1570.*cm,
+										0.0*deg,360.0*deg,
+										0.0*deg,180.0*deg);
+	G4SubtractionSolid *solid = new G4SubtractionSolid(name, solid_base, BShole, 0, G4ThreeVector(3250.*cm,0.,2500.*cm));
+	// Logical to be placed
+	logic = 
       new G4LogicalVolume(solid,
                           material,
                           name,
                           0,0,0);
+	
+  }else{
+
+	// Polyhedra solid object
+	G4Polyhedra* solid = new G4Polyhedra(name,
+										 0, // phi start
+										 360*deg,
+										 48*6, //NPhi-gon
+										 2,
+										 zplane,
+										 rstart,
+										 rend);
+	
+	// Logical to be placed
+	logic = 
+      new G4LogicalVolume(solid,
+                          material,
+                          name,
+                          0,0,0);
+	
+  }
 
   // If a mother has been given it means we need to place the logical
   // inside the mother volume.
